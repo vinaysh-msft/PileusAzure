@@ -71,6 +71,7 @@
     <Compile Include="CapCloudBlob.cs" />
     <Compile Include="CapCloudBlobClient.cs" />
     <Compile Include="CapCloudBlobContainer.cs" />
+    <Compile Include="CapCloudBlobShim.cs" />
     <Compile Include="CapCloudStorageAccount.cs" />
     <Compile Include="Configuration\Action\AddPrimaryServer.cs" />
     <Compile Include="Configuration\Action\AddSecondaryServer.cs" />

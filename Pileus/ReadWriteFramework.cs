@@ -35,13 +35,43 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         // The configuration that specifies the primary and secondary replicas.
         private ReplicaConfiguration configuration;
 
+        // The blob that was accessed for the last read operation
+        private ICloudBlob blobForRead;
+
         public ReadWriteFramework(string blobName, ReplicaConfiguration configuration, ConsistencySLAEngine engine)
         {
             this.blobName = blobName;
             this.containerName = configuration.Name;
             this.configuration = configuration;
             this.slaEngine = engine;
+            this.blobForRead = null;
             this.watch = new Stopwatch();
+        }
+
+        /// <summary>
+        /// Returns the blob for the main primary site of the current configuration.
+        /// </summary>
+        /// <returns>the primary blob (or null if unable to renew the lease on the configuration)</returns>
+        public ICloudBlob Main()
+        {
+            ICloudBlob primary = null;
+            if (configuration.IsInFastMode(renew: true))
+            {
+                string server = configuration.PrimaryServers.First();
+                primary = ClientRegistry.GetCloudBlob(server, configuration.Name, blobName);
+            }
+            return primary;
+        }
+
+        /// <summary>
+        /// Returns the blob that was used for the previous read operation.
+        /// This is useful if the client wants to read from the same blob again 
+        /// or wants to access the properties/metadata of this blob.
+        /// </summary>
+        /// <returns>the previously read blob</returns>
+        public ICloudBlob PrevRead()
+        {
+            return blobForRead;
         }
 
         #region Read operations
@@ -67,14 +97,14 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         private void FastRead(ReadOp op)
         {
             ServerState ss = slaEngine.FindServerToRead(blobName);
-            ICloudBlob blob = ClientRegistry.GetCloudBlob(ss.Name, containerName, blobName);
+            blobForRead = ClientRegistry.GetCloudBlob(ss.Name, containerName, blobName);
             
             watch.Start();
-            op(blob);
+            op(blobForRead);
             watch.Stop();
             
             ss.AddRtt(watch.ElapsedMilliseconds);
-            slaEngine.Session.RecordObjectRead(blob.Name, Timestamp(blob), ss, slaEngine.Sla.Id);
+            slaEngine.Session.RecordObjectRead(blobForRead.Name, Timestamp(blobForRead), ss, slaEngine.Sla.Id);
             // TODO: compute delivered utility
         }
 
@@ -96,7 +126,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                 do  // until we enter fast mode or succeed at reading in slow mode with the correct configuration
                 {
                     ss = slaEngine.FindServerToRead(blobName);
-                    ICloudBlob blob = ClientRegistry.GetCloudBlob(ss.Name, containerName, blobName);
+                    blobForRead = ClientRegistry.GetCloudBlob(ss.Name, containerName, blobName);
 
                     // TODO: this should really check if the reader wants strong consistency
                     // It could be that eventual consistency is fine but the SLA Engine just happened to choose a primary server
@@ -112,7 +142,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                     {
                         // read from the selected replica that we believe to be a primary replica 
                         watch.Start();
-                        op(blob);
+                        op(blobForRead);
                         watch.Stop();
 
                         // then see if the configuration has changed and the selected replica is no longer primary
@@ -127,7 +157,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                         {
                             //We have contacted the primary replica, hence we are good to go.
                             ss.AddRtt(watch.ElapsedMilliseconds);
-                            slaEngine.Session.RecordObjectRead(blob.Name, Timestamp(blob), ss, slaEngine.Sla.Id);
+                            slaEngine.Session.RecordObjectRead(blobForRead.Name, Timestamp(blobForRead), ss, slaEngine.Sla.Id);
                             isDone = true;
                         }
                         isDone = false;  // not done
@@ -164,6 +194,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public void Write(WriteOp op)
         {
             // TODO: ensure that there is enough time left on the lease to complete the write
+            // Can set a timeout using BlobRequestOptions and/or renew a least that is about to expire
             if (configuration.IsInFastMode())
             {
                 if (configuration.PrimaryServers.Count == 1)
@@ -210,21 +241,21 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             do  // while unable to lease the configuration
             {
                 if (configuration.IsInFastMode(renew: true))
+                {
+                    if (configuration.PrimaryServers.Count == 1)
                     {
-                        if (configuration.PrimaryServers.Count == 1)
-                        {
-                            FastWrite(op);
-                        }
-                        else
-                        {
-                            MultiWrite(op);
-                        }
-                        isDone = true;
+                        FastWrite(op);
                     }
                     else
                     {
-                        Thread.Sleep(ConstPool.CONFIGURATION_ACTION_DURATION);
+                        MultiWrite(op);
                     }
+                    isDone = true;
+                }
+                else
+                {
+                    Thread.Sleep(ConstPool.CONFIGURATION_ACTION_DURATION);
+                }
             }
             while (!isDone);
         }
@@ -271,6 +302,26 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Perform a local write operation, e.g. set a property, on all blobs holding a replica.
+        /// This does not bother to check the lease on the configuration.  
+        /// It should not be used for arbitrary writes that need to be performed atomically.
+        /// </summary>
+        /// <param name="op">the write operation being done</param>
+        public void SetProperty(WriteOp op)
+        {
+            foreach (string server in configuration.PrimaryServers)
+            {
+                ICloudBlob blob = ClientRegistry.GetCloudBlob(server, configuration.Name, blobName);
+                op(blob);
+            }
+            foreach (string server in configuration.SecondaryServers)
+            {
+                ICloudBlob blob = ClientRegistry.GetCloudBlob(server, configuration.Name, blobName);
+                op(blob);
             }
         }
 

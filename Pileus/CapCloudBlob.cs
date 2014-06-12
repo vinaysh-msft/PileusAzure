@@ -19,7 +19,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
     /// Moreover, write operations are performed synchronously on all primary replicas (CloudBlobContainer).
     /// </summary>
     /// TODO Implement all methods.  Note that some methods should respect the notion of slow and fast mode. 
-    /// TODO Debug those exceptions that are being returned (e.g., MD5, null reference)
     /// Since they happens at the init time, or just right after a new configuration, they don't affect the results. 
     public class CapCloudBlob
 
