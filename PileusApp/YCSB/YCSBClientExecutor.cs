@@ -300,7 +300,7 @@ namespace PileusApp.YCSB
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            CapCloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
+            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
             using (MemoryStream ms = new MemoryStream())
             {
                 blob.DownloadToStream(ms);
@@ -313,7 +313,7 @@ namespace PileusApp.YCSB
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            CapCloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
+            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
             
             using (var ms = new MemoryStream(data))
             {
@@ -327,7 +327,7 @@ namespace PileusApp.YCSB
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
-            CapCloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
+            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
             blob.Delete();
 
             watch.Stop();
