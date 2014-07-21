@@ -77,9 +77,9 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         /// <param name="accessCondition">An object that represents the access conditions for the container. If null, no condition is used.</param>
         /// <param name="options">An object that specifies any additional options for the request.</param>
         /// <returns>A reference to the blob.</returns>
-        public ICloudBlob GetBlobReferenceFromServer(string blobName, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        public CapCloudBlob GetBlobReferenceFromServer(string blobName, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            return new CapCloudBlobShim(blobName, configuration, slaEngine);
+            return new CapCloudBlob(blobName, configuration, slaEngine);
         }
 
         //#region CloudBlobContainer public methods
@@ -91,13 +91,13 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// <param name="options">An object that specifies any additional options for the request.</param>
         ///// <param name="operationContext">An OperationContext object that represents the context for the current operation. This object
         ///// is used to track requests to the storage service, and to provide additional runtime information about the operation. </param>
-        //public void Create(BlobRequestOptions requestOptions = null, OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    mainPrimaryContainer.Create(requestOptions, operationContext);
-        //    mainPrimaryServerState.AddRtt(watch.ElapsedMilliseconds);
-        //    slaEngine.SessionState.RecordObjectWritten("C:" + mainPrimaryContainer.Name, Timestamp(mainPrimaryContainer), mainPrimaryServerState);
-        //}
+        public void Create(BlobRequestOptions requestOptions = null, OperationContext operationContext = null)
+        {
+            // watch.Start();
+            mainPrimaryContainer.Create(requestOptions, operationContext);
+            //mainPrimaryServerState.AddRtt(watch.ElapsedMilliseconds);
+            //slaEngine.SessionState.RecordObjectWritten("C:" + mainPrimaryContainer.Name, Timestamp(mainPrimaryContainer), mainPrimaryServerState);
+        }
 
         ///// <summary>
         ///// Begins an asynchronous operation to create a container.
@@ -239,15 +239,16 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// </summary>
         ///// <param name="accessCondition">An object that represents the access conditions for the container. If null, no condition is used.</param>
         ///// <param name="options">An object that specifies any additional options for the request.</param>
-        //public void Delete(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    primaryContainer.Delete(accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //    // deleted object no longer has a LastWritten property; 
-        //    // record current time as its timestamp to force future reads to fail at primary.
-        //    slaEngine.SessionState.RecordObjectWritten("C:" + primaryContainer.Name, DateTimeOffset.Now, primaryServer);
-        //}
+        public void Delete(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            // WARNING: Don't we delete at the back???
+            // watch.Start();
+            mainPrimaryContainer.Delete(accessCondition, options, operationContext);
+            // primaryServer.AddRtt(watch.ElapsedMilliseconds);
+            // deleted object no longer has a LastWritten property; 
+            // record current time as its timestamp to force future reads to fail at primary.
+            // slaEngine.SessionState.RecordObjectWritten("C:" + primaryContainer.Name, DateTimeOffset.Now, primaryServer);
+        }
 
         ///// <summary>
         ///// Begins an asynchronous operation to delete a container.
@@ -428,18 +429,20 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// <param name="blobListingDetails">A <see cref="BlobListingDetails"/> enumeration describing which items to include in the listing.</param>
         ///// <param name="options">An object that specifies any additional options for the request.</param>
         ///// <returns>An enumerable collection of objects that implement <see cref="IListBlobItem"/> and are retrieved lazily.</returns>
-        //public IEnumerable<IListBlobItem> ListBlobs(string prefix = null, bool useFlatBlobListing = false, BlobListingDetails blobListingDetails = BlobListingDetails.None, BlobRequestOptions options = null, OperationContext operationContext = null)
-        //{
-        //    IEnumerable<IListBlobItem> result;
-        //    ServerState ss = slaEngine.FindServerToRead("C:" + primaryContainer.Name);
-        //    CloudBlobContainer container = (ss.IsPrimary) ? primaryContainer : secondaryContainer;
+        public IEnumerable<IListBlobItem> ListBlobs(string prefix = null, bool useFlatBlobListing = false, BlobListingDetails blobListingDetails = BlobListingDetails.None, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            //IEnumerable<IListBlobItem> result;
+            //ServerState ss = slaEngine.FindServerToRead("C:" + primaryContainer.Name);
+            //CloudBlobContainer container = (ss.IsPrimary) ? primaryContainer : secondaryContainer;
+
+            //watch.Start();
+            //result = container.ListBlobs(prefix, useFlatBlobListing, blobListingDetails, options, operationContext);
+            //ss.AddRtt(watch.ElapsedMilliseconds);
+            //slaEngine.SessionState.RecordObjectRead("C:" + container.Name, Timestamp(container), ss);
             
-        //    watch.Start();
-        //    result = container.ListBlobs(prefix, useFlatBlobListing, blobListingDetails, options, operationContext);
-        //    ss.AddRtt(watch.ElapsedMilliseconds);
-        //    slaEngine.SessionState.RecordObjectRead("C:" + container.Name, Timestamp(container), ss);
-        //    return result;
-        //}
+            // WARNING: check if we need to update session state
+            return mainPrimaryContainer.ListBlobs(prefix, useFlatBlobListing, blobListingDetails, options, operationContext);
+        }
 
         ///// <summary>
         ///// Returns a result segment containing a collection of blob items 
@@ -490,11 +493,12 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// <param name="callback">The callback delegate that will receive notification when the asynchronous operation completes.</param>
         ///// <param name="state">A user-defined object that will be passed to the callback delegate.</param>
         ///// <returns>An <see cref="IAsyncResult"/> that references the asynchronous operation.</returns>
-        //public ICancellableAsyncResult BeginListBlobsSegmented(BlobContinuationToken currentToken, AsyncCallback callback, object state)
-        //{
-        //    // Note: We could read asynchronously from the secondary container (if allowed by the SLA), but we don't bother.
-        //    return primaryContainer.BeginListBlobsSegmented(currentToken, callback, state);
-        //}
+        public ICancellableAsyncResult BeginListBlobsSegmented(BlobContinuationToken currentToken, AsyncCallback callback, object state)
+        {
+          // Note: We could read asynchronously from the secondary container (if allowed by the SLA), but we don't bother.
+            return mainPrimaryContainer.BeginListBlobsSegmented(currentToken, callback, state);
+              
+        }
 
         ///// <summary>
         ///// Begins an asynchronous operation to return a result segment containing a collection of blob items 
@@ -509,10 +513,10 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// <param name="callback">The callback delegate that will receive notification when the asynchronous operation completes.</param>
         ///// <param name="state">A user-defined object that will be passed to the callback delegate.</param>
         ///// <returns>An <see cref="IAsyncResult"/> that references the asynchronous operation.</returns>
-        //public ICancellableAsyncResult BeginListBlobsSegmented(string prefix, bool useFlatBlobListing, BlobListingDetails blobListingDetails, int? maxResults, BlobContinuationToken currentToken, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return primaryContainer.BeginListBlobsSegmented(prefix, useFlatBlobListing, blobListingDetails, maxResults, currentToken, options, operationContext, callback, state);
-        //}
+        public ICancellableAsyncResult BeginListBlobsSegmented(string prefix, bool useFlatBlobListing, BlobListingDetails blobListingDetails, int? maxResults, BlobContinuationToken currentToken, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return mainPrimaryContainer.BeginListBlobsSegmented(prefix, useFlatBlobListing, blobListingDetails, maxResults, currentToken, options, operationContext, callback, state);
+        }
 
         ///// <summary>
         ///// Ends an asynchronous operation to return a result segment containing a collection of blob items 
@@ -520,10 +524,10 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// </summary>
         ///// <param name="asyncResult">An <see cref="IAsyncResult"/> that references the pending asynchronous operation.</param>
         ///// <returns>A result segment containing objects that implement <see cref="IListBlobItem"/>.</returns>
-        //public BlobResultSegment EndListBlobsSegmented(IAsyncResult asyncResult)
-        //{
-        //    return primaryContainer.EndListBlobsSegmented(asyncResult);
-        //}
+        public BlobResultSegment EndListBlobsSegmented(IAsyncResult asyncResult)
+        {
+           return mainPrimaryContainer.EndListBlobsSegmented(asyncResult);
+        }
 
         ///// <summary>
         ///// Sets permissions for the container.
@@ -1044,10 +1048,10 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// </summary>
         ///// <param name="policy">The access policy for the shared access signature.</param>
         ///// <returns>A shared access signature.</returns>
-        //public string GetSharedAccessSignature(SharedAccessBlobPolicy policy)
-        //{
-        //    return primaryContainer.GetSharedAccessSignature(policy);
-        //}
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy)
+        {
+            return mainPrimaryContainer.GetSharedAccessSignature(policy);
+        }
 
         ///// <summary>
         ///// Returns a shared access signature for the container.
@@ -1055,20 +1059,20 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// <param name="policy">The access policy for the shared access signature.</param>
         ///// <param name="groupPolicyIdentifier">A container-level access policy.</param>
         ///// <returns>A shared access signature.</returns>
-        //public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, string groupPolicyIdentifier)
-        //{
-        //    return primaryContainer.GetSharedAccessSignature(policy, groupPolicyIdentifier);
-        //}
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, string groupPolicyIdentifier)
+        {
+            return mainPrimaryContainer.GetSharedAccessSignature(policy, groupPolicyIdentifier);
+        }
 
         ///// <summary>
         ///// Gets a reference to a page blob in this container.
         ///// </summary>
         ///// <param name="blobName">The name of the blob.</param>
         ///// <returns>A reference to a page blob.</returns>
-        //public CloudPageBlob GetPageBlobReference(string blobName)
-        //{
-        //    return primaryContainer.GetPageBlobReference(blobName);
-        //}
+        public CloudPageBlob GetPageBlobReference(string blobName)
+        {
+            return mainPrimaryContainer.GetPageBlobReference(blobName);
+        }
 
         ///// <summary>
         ///// Returns a reference to a page blob in this virtual directory.
@@ -1076,20 +1080,20 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// <param name="itemName">The name of the page blob.</param>
         ///// <param name="snapshotTime">The snapshot timestamp, if the blob is a snapshot.</param>
         ///// <returns>A reference to a page blob.</returns>
-        //public CloudPageBlob GetPageBlobReference(string blobName, DateTimeOffset? snapshotTime)
-        //{
-        //    return primaryContainer.GetPageBlobReference(blobName, snapshotTime);
-        //}
+        public CloudPageBlob GetPageBlobReference(string blobName, DateTimeOffset? snapshotTime)
+        {
+            return mainPrimaryContainer.GetPageBlobReference(blobName, snapshotTime);
+        }
 
         ///// <summary>
         ///// Gets a reference to a block blob in this container.
         ///// </summary>
         ///// <param name="blobName">The name of the blob.</param>
         ///// <returns>A reference to a block blob.</returns>
-        //public CloudBlockBlob GetBlockBlobReference(string blobName)
-        //{
-        //    return primaryContainer.GetBlockBlobReference(blobName);
-        //}
+        public CloudBlockBlob GetBlockBlobReference(string blobName)
+        {
+            return mainPrimaryContainer.GetBlockBlobReference(blobName);
+        }
 
         ///// <summary>
         ///// Gets a reference to a block blob in this container.
@@ -1097,20 +1101,20 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         ///// <param name="blobName">The name of the blob.</param>
         ///// <param name="snapshotTime">The snapshot timestamp, if the blob is a snapshot.</param>
         ///// <returns>A reference to a block blob.</returns>
-        //public CloudBlockBlob GetBlockBlobReference(string blobName, DateTimeOffset? snapshotTime)
-        //{
-        //    return primaryContainer.GetBlockBlobReference(blobName, snapshotTime);
-        //}
+        public CloudBlockBlob GetBlockBlobReference(string blobName, DateTimeOffset? snapshotTime)
+        {
+            return mainPrimaryContainer.GetBlockBlobReference(blobName, snapshotTime);
+        }
 
         ///// <summary>
         ///// Gets a reference to a virtual blob directory beneath this container.
         ///// </summary>
         ///// <param name="relativeAddress">The name of the virtual blob directory.</param>
         ///// <returns>A reference to a virtual blob directory.</returns>
-        //public CloudBlobDirectory GetDirectoryReference(string relativeAddress)
-        //{
-        //    return primaryContainer.GetDirectoryReference(relativeAddress);
-        //}
+        public CloudBlobDirectory GetDirectoryReference(string relativeAddress)
+        {
+            return mainPrimaryContainer.GetDirectoryReference(relativeAddress);
+        }
 
         //#endregion
     }
