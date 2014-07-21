@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.Storage.Pileus
 {
+    
+    /// DEPRECATED: DO NOT USE.
+    
     /// <summary>
     /// Provides a simple wrapper around most methods in the ICloudBlob interface,
     /// but allows some read operations to take an SLA and implements those methods accordingly.
