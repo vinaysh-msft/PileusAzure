@@ -194,7 +194,7 @@ namespace PileusApp.YCSB
         public static void Put(string blobName, byte[] blobDataBuffer)
         {
             Interlocked.Increment(ref concurrentWorkers);
-            ICloudBlob blob = container.GetBlobReferenceFromServer(blobName);
+            CapCloudBlob blob = container.GetBlobReferenceFromServer(blobName);
 
             using (var ms = new MemoryStream(blobDataBuffer))
             {

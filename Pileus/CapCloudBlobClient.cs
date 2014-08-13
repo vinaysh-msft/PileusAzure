@@ -54,6 +54,15 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             CapCloudBlobClient.numberOfClients = numberOfClients;
         }
 
+        public static int ActualNumberOfClients()
+        {
+            return 1;
+        }
+
+        public CapCloudBlobClient(): this(ActualNumberOfClients)
+        {
+        }
+
         /// <summary>
         /// Name of the client.
         /// </summary>

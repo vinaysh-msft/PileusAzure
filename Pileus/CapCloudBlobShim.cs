@@ -729,6 +729,11 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             return protocol.Main().FetchAttributesAsync();
         }
 
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers, string groupPolicyIdentifier, string sasVersion)
+        {
+            return protocol.Main().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier,sasVersion);
+        }
+
         public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers, string groupPolicyIdentifier)
         {
             return protocol.Main().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier);
@@ -1086,5 +1091,8 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         {
             get { return protocol.Main().Uri; }
         }
+
+
+        
     }
 }

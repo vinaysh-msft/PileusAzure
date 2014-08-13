@@ -66,6 +66,8 @@ namespace TechFestDemo
 
         #region Configurations and stuff
 
+       
+
         public static void Initialize()
         {
             // get list of Azure storage accounts
