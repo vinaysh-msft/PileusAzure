@@ -15,8 +15,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         
         private SessionState session;
 
-        // TODO: use configuration for authorative source of primary and secondary replicas rather than replicas in server monitor
-        // but then use monitor get state for each server
         private ReplicaConfiguration config;
 
         private ServerMonitor monitor;
@@ -72,7 +70,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                     break;
 
                 case Consistency.BoundedReadMyWrites:
-                    // Todo: Fix this.
                     selected = SelectServersForBoundedStaleness(objectName, bound);
                     selected.IntersectWith(SelectServersForReadMyWrites(objectName));
                     break;

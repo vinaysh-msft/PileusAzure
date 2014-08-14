@@ -77,9 +77,9 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         /// <param name="accessCondition">An object that represents the access conditions for the container. If null, no condition is used.</param>
         /// <param name="options">An object that specifies any additional options for the request.</param>
         /// <returns>A reference to the blob.</returns>
-        public CapCloudBlob GetBlobReferenceFromServer(string blobName, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        public ICloudBlob GetBlobReferenceFromServer(string blobName, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            return new CapCloudBlob(blobName, configuration, slaEngine);
+            return new CapCloudBlobShim(blobName, configuration, slaEngine);
         }
 
         //#region CloudBlobContainer public methods

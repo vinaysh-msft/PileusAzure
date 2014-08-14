@@ -35,8 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCMakeCert">
+      <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\BCMakeCert.dll</HintPath>
+    </Reference>
+    <Reference Include="CertMaker">
+      <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\CertMaker.dll</HintPath>
+    </Reference>
     <Reference Include="FiddlerCore">
       <HintPath>..\..\azure-storage-net\Test\FaultInjection\AzureStorageMangler\bin\Debug\FiddlerCore.dll</HintPath>
+    </Reference>
+    <Reference Include="FiddlerCore4">
+      <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\FiddlerCore4.dll</HintPath>
     </Reference>
     <Reference Include="HttpMangler">
       <HintPath>..\..\azure-storage-net\Test\FaultInjection\AzureStorageMangler\bin\Debug\HttpMangler.dll</HintPath>

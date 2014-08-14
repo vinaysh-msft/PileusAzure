@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public static Dictionary<string, List<ConsistencySLAEngine>> slaEngines = new Dictionary<string, List<ConsistencySLAEngine>>();
 
         /// <summary>
-        ///TODO: this is only for the emulation purposes. In real executions, this functino should not be used. 
+        ///Note: this is only for the emulation purposes. In real executions, this function should not be used. 
         ///Pointer to a delegate that returns the correct number of clients at a particular time. 
         ///This function is used for adjusting the hit and miss ratios because: in emulation, at each tick, and once a client exits, a new client is created to replace it. 
         ///Suppose there must be one client in the U.S. during 1 hour. Once the client finishes its execution, and system will create a new client, so to always keeps the total number of active clients equal to one. 

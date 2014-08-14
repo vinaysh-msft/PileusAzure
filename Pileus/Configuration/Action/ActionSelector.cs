@@ -10,7 +10,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
     /// <summary>
     /// Chooses actions for the provided SLA
     /// 
-    /// TODO: uncomment AddPrimary when SLA for put operations is added.
     /// </summary>
     static class ActionSelector
     {

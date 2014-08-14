@@ -17,7 +17,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
     /// For a particular CapCloudBlobContainer, it synchronizes the container's secondary replicas with the primary.
     /// 
     /// This class assumes that synchronization duration is smaller than synchronization intervals.
-    /// TODO: fix this.
     /// Note that it's very hard to fix this with current architecture where we read from primary, and write to secondary.
     /// In real systems, synchronizations should be performed by replica servers directly. I.e., secondary should pull updates from a primary.
     /// </summary>

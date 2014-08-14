@@ -187,7 +187,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             }
         }
         /// <summary>
-        /// TODO remove me. This function is not part of final code.
         /// This is only for the emulation purposes, and measurements.
         /// </summary>
         /// <param name="numberOfClients"></param>
