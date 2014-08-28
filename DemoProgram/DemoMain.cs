@@ -85,6 +85,7 @@ namespace TechFestDemo
             //
             Print("Read and write average latencies:");
             Print(DemoLib.PrintReadWriteTimes(sampler));
+   
             //
             // Compute better configuration
             //

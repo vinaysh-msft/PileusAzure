@@ -26,8 +26,9 @@ namespace PileusApp
 
         #region Locals
         private static string containerName = null;
-        private static CapCloudBlobClient blobClient;
-        private static CapCloudBlobContainer container;
+        private static CloudBlobClient blobClient;
+        private static CloudBlobContainer blobContainer;
+        private static CapCloudBlobContainer capContainer;
 
         private static double blobs = 1;
         private static int iterations = 1;
@@ -139,11 +140,10 @@ namespace PileusApp
             else
                 slaEngine = new ConsistencySLAEngine(CreateShoppingCartSla2(), configuration);
 
-            CapCloudStorageAccount storageAccount = new CapCloudStorageAccount();
-            blobClient = storageAccount.CreateCloudBlobClient(null);
-
-            container = blobClient.GetContainerReference(containerName, slaEngine);
-            container.CreateIfNotExists("dbtsouthstorage", null);
+            blobClient = accounts["dbtsouthstorage"].CreateCloudBlobClient();
+            blobContainer = blobClient.GetContainerReference(containerName);
+            blobContainer.CreateIfNotExists();
+            capContainer = new CapCloudBlobContainer(blobContainer);
 
             // Generate random data
             BlobDataBuffer = new byte[1024 * blobSizeInKB];
@@ -174,7 +174,7 @@ namespace PileusApp
                             DoGetAndDelete(blobsList);
                             Console.WriteLine("DoGetAndDelete Finished ...\n");
                             
-                            configure(blobClient.Name, containerName);
+                            configure("client", containerName);
                             Console.WriteLine("Configure Finished ...\n");
                         }
                         catch (Exception e)
@@ -198,7 +198,7 @@ namespace PileusApp
 
             Console.WriteLine("Finished execution. ");
             ClientRegistry.GetConfigurationContainer(containerName).Delete();
-            container.DeleteIfExists();
+            blobContainer.DeleteIfExists();
 
             totalWatch.Stop();
             long totalTimeTaken = totalWatch.ElapsedMilliseconds;
@@ -212,14 +212,12 @@ namespace PileusApp
                 DisplayResults(sw, "Get", getTimes);
                 DisplayResults(sw, "Delete", deleteTimes);
 
-                float tmp=0;
-                foreach (ConsistencySLAEngine engine in CapCloudBlobClient.slaEngines[containerName]){
-                    foreach (SubSLA s in engine.Sla)
-                    {
-                        tmp +=  s.Utility * s.NumberOfHits;
-                    }
-
+                float tmp = 0;
+                foreach (SubSLA s in capContainer.SLA)
+                {
+                    tmp += s.Utility * s.NumberOfHits;
                 }
+
                 sw.Write(String.Format("Current utility ", tmp));
 
 
@@ -266,7 +264,7 @@ namespace PileusApp
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
+            ICloudBlob blob = cont.GetBlobReference(blobName);
             using (MemoryStream ms = new MemoryStream())
             {
                 blob.DownloadToStream(ms);
@@ -281,7 +279,7 @@ namespace PileusApp
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
+            ICloudBlob blob = cont.GetBlobReference(blobName);
 
             using (var ms = new MemoryStream(data))
             {
@@ -298,7 +296,7 @@ namespace PileusApp
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
-            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
+            ICloudBlob blob = cont.GetBlobReference(blobName);
             blob.Delete();
 
             watch.Stop();
@@ -342,7 +340,7 @@ namespace PileusApp
             for (int i = 0; i < blobs; i++)
             {
                 string blobName = Guid.NewGuid().ToString();
-                long time = PutBlob(blobName, BlobDataBuffer, container);
+                long time = PutBlob(blobName, BlobDataBuffer, capContainer);
                 result.Add(blobName);
                 insertTimes.Add(time);
             }
@@ -354,10 +352,10 @@ namespace PileusApp
         {
             for (int i = 0; i < blobList.Count; i++)
             {
-                long time = GetBlob(blobList[i], container);
+                long time = GetBlob(blobList[i], capContainer);
                 getTimes.Add(time);
 
-                time = DeleteBlob(blobList[i], container);
+                time = DeleteBlob(blobList[i], capContainer);
                 deleteTimes.Add(time);
             }
         }

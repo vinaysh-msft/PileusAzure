@@ -73,13 +73,30 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public static CloudTableClient GenerateCloudTableClient()
         {
             CloudTableClient client = null;
-
             return client;
         }
 
-        public static CapCloudBlobClient GenerateCloudBlobClient()
+        public static CloudBlobClient GenerateCloudBlobClient()
         {
-            CapCloudBlobClient client = null;
+            CloudBlobClient client;
+            if (string.IsNullOrEmpty(TestBase.TargetTenantConfig.BlobServiceSecondaryEndpoint))
+            {
+                Uri baseAddressUri = new Uri(TestBase.TargetTenantConfig.BlobServiceEndpoint);
+                client = new CloudBlobClient(baseAddressUri, TestBase.StorageCredentials);
+            }
+            else
+            {
+                StorageUri baseAddressUri = new StorageUri(
+                    new Uri(TestBase.TargetTenantConfig.BlobServiceEndpoint),
+                    new Uri(TestBase.TargetTenantConfig.BlobServiceSecondaryEndpoint));
+                client = new CloudBlobClient(baseAddressUri, TestBase.StorageCredentials);
+            }
+
+            client.AuthenticationScheme = DefaultAuthenticationScheme;
+
+#if WINDOWS_DESKTOP
+            client.BufferManager = TableBufferManager;
+#endif
 
             return client;
         }

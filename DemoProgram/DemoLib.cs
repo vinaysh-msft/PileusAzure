@@ -27,7 +27,6 @@ namespace TechFestDemo
         
         static int numReadWrites = 10;
         static int opsBetweenSyncs = 6;
-        static int numBlobs = 1000;
         static int numBlobsToUse = 10;
 
         static string containerName = "democontainer";
@@ -39,9 +38,7 @@ namespace TechFestDemo
         static List<string> NonReplicaServers = new List<string>() { "dbtsouthstorage" };
         static List<string> ReadOnlySecondaryServers = new List<string>() { "dbteuropestorage-secondary", "dbtwestusstorage-secondary" };
 
-        static CapCloudBlobClient blobClient;
         static CapCloudBlobContainer container;
-        static Dictionary<string, CapCloudBlobContainer> containers;
 
         static Dictionary<string, CloudStorageAccount> accounts;
         static ReplicaConfiguration config;
@@ -49,7 +46,7 @@ namespace TechFestDemo
         static Configurator configurator;
         static List<ConfigurationAction> proposedActions;
 
-        static Dictionary<string, ConsistencySLAEngine> slaEngines;
+        static Dictionary<string, ServiceLevelAgreement> slas;
         static ServiceLevelAgreement currentSLA;
 
         static Sampler sampler;
@@ -64,7 +61,7 @@ namespace TechFestDemo
         #endregion
 
 
-        #region Configurations and stuff
+        #region Configuration and Initialization
 
         public static void Initialize()
         {
@@ -88,30 +85,29 @@ namespace TechFestDemo
             config = new ReplicaConfiguration(containerName, PrimaryServers, SecondaryServers, NonReplicaServers, ReadOnlySecondaryServers, cloudBackedConfiguration, stableConfiguration);
             ClientRegistry.AddConfiguration(config);
 
-            // create server monitor that is shared by all SLA engines
-            ServerMonitor monitor = new ServerMonitor(config, true);
-            
-            // create SLA engines
-            slaEngines = new Dictionary<string, ConsistencySLAEngine>();
-            slaEngines["strong"] = new ConsistencySLAEngine(CreateConsistencySla(Consistency.Strong), config, null, monitor);
-            slaEngines["causal"] = new ConsistencySLAEngine(CreateConsistencySla(Consistency.Causal), config, null, monitor);
-            slaEngines["bounded"] = new ConsistencySLAEngine(CreateBoundedConsistencySla(120), config, null, monitor);
-            slaEngines["readmywrites"] = new ConsistencySLAEngine(CreateConsistencySla(Consistency.ReadMyWrites), config, null, monitor);
-            slaEngines["monotonic"] = new ConsistencySLAEngine(CreateConsistencySla(Consistency.MonotonicReads), config, null, monitor);
-            slaEngines["eventual"] = new ConsistencySLAEngine(CreateConsistencySla(Consistency.Eventual), config, null, monitor);
+            // create SLAs
+            slas = new Dictionary<string, ServiceLevelAgreement>();
+            slas["strong"] = CreateConsistencySla(Consistency.Strong);
+            slas["causal"] = CreateConsistencySla(Consistency.Causal);
+            slas["bounded"] = CreateBoundedConsistencySla(120);
+            slas["readmywrites"] = CreateConsistencySla(Consistency.ReadMyWrites);
+            slas["monotonic"] = CreateConsistencySla(Consistency.MonotonicReads);
+            slas["eventual"] = CreateConsistencySla(Consistency.Eventual);
             currentSLA = CreateFastOrStrongSla();
-            slaEngines["sla"] = new ConsistencySLAEngine(currentSLA, config, null, monitor);
+            slas["sla"] = currentSLA;
 
             // get/create replicated container
-            CapCloudStorageAccount storageAccount = new CapCloudStorageAccount();
-            blobClient = storageAccount.CreateCloudBlobClient(ActualNumberOfClients);
-            container = blobClient.GetContainerReference(containerName, slaEngines["sla"]);
-            //container.CreateIfNotExists(primarySite, secondarySite);
-            containers = new Dictionary<string, CapCloudBlobContainer>();
-            foreach (string cons in slaEngines.Keys)
+            Log("Creating replicated container...");
+            Dictionary<string, CloudBlobContainer> containers = new Dictionary<string, CloudBlobContainer>();
+            foreach (string site in accounts.Keys)
             {
-                containers[cons] = blobClient.GetContainerReference(containerName, slaEngines[cons]);
+                CloudBlobClient blobClient = accounts[site].CreateCloudBlobClient();
+                CloudBlobContainer blobContainer = blobClient.GetContainerReference(containerName);
+                blobContainer.CreateIfNotExists();
+                containers.Add(site, blobContainer);
             }
+            container = new CapCloudBlobContainer(containers, PrimaryServers.First());
+            container.Configuration = config;
 
             configurator  = new Configurator(containerName);
         }
@@ -132,7 +128,7 @@ namespace TechFestDemo
             // start new epoch and upload to cloud
             config.StartNewEpoch();
 
-            slaEngines["sla"].Sla.ResetHitsAndMisses();
+            slas["sla"].ResetHitsAndMisses();
         }
 
         public static void ProposeNewConfiguration() 
@@ -142,7 +138,7 @@ namespace TechFestDemo
             // constraints.Add(new LocationConstraint(containerName, "dbtwestusstorage", LocationConstraintType.Replicate));
             // constraints.Add(new ReplicationFactorConstraint(containerName, 1, 2));
 
-            proposedActions = configurator.PickNewConfiguration(containerName, slaEngines["sla"].Sla, slaEngines["sla"].Session, slaEngines["sla"].Monitor, config, constraints);
+            proposedActions = configurator.PickNewConfiguration(containerName, slas["sla"], container.Sessions["sla"], container.Monitor, config, constraints);
         }
 
         public static void InstallNewConfiguration()
@@ -152,11 +148,12 @@ namespace TechFestDemo
                 return;  // nothing to do
             }
             configurator.InstallNewConfiguration(proposedActions);
-            slaEngines["sla"].Sla.ResetHitsAndMisses();
+            slas["sla"].ResetHitsAndMisses();
         }
 
         public static void CreateDatabase(int numBlobs)
         {
+            // TODO: upload data to *all* primary and secondary sites
             foreach (string secondarySite in SecondaryServers)
             {
                 if (!ReadOnlySecondaryServers.Contains(secondarySite))
@@ -179,7 +176,7 @@ namespace TechFestDemo
             if (sampler == null)
             {
                 sampler = YCSBClientExecutor.NewSampler();
-                foreach (string cons in containers.Keys)
+                foreach (string cons in slas.Keys)
                 {
                     sampler.AddSampleName(cons + "Latency", Sampler.OutputType.Average);
                     sampler.AddSampleName(cons + "PrimaryAccesses", Sampler.OutputType.Total);
@@ -217,12 +214,14 @@ namespace TechFestDemo
                     //duration = YCSBClientExecutor.GetBlob(op.KeyName, containers["eventual"]);
                     //duration = YCSBClientExecutor.GetBlob(op.KeyName, containers["strong"]);
 
-                    foreach (string cons in containers.Keys)
+                    foreach (string cons in slas.Keys)
                     {
-                        ServerState ss = slaEngines[cons].FindServerToRead(op.KeyName);
+                        CapCloudBlob blob = (CapCloudBlob) container.GetBlobReference(op.KeyName, cons);
+                        blob.Sla = slas[cons];
+                        ServerState ss = blob.engine.FindServerToRead(op.KeyName);
                         // executing GetBlob twice substantially reduces the latency variance
-                        duration = YCSBClientExecutor.GetBlob(op.KeyName, containers[cons]);
-                        duration = YCSBClientExecutor.GetBlob(op.KeyName, containers[cons]);
+                        duration = YCSBClientExecutor.GetBlob(blob);
+                        duration = YCSBClientExecutor.GetBlob(blob);
                         sampler.AddSample(cons + "Latency", duration);
                         sampler.AddSample(cons + "TotalAccesses", 1);
                         if (ss.IsPrimary == true)
@@ -237,9 +236,10 @@ namespace TechFestDemo
                 else if (op.Type == YCSBOperationType.UPDATE)
                 {
                     random.NextBytes(BlobDataBuffer);
-                    foreach (string cons in containers.Keys)
+                    foreach (string cons in slas.Keys)
                     {
-                        duration = YCSBClientExecutor.PutBlob(op.KeyName, BlobDataBuffer, containers[cons]);
+                        ICloudBlob blob = container.GetBlobReference(op.KeyName, cons);
+                        duration = YCSBClientExecutor.PutBlob(blob, BlobDataBuffer);
                         Log("Performed " + cons + "Write for " + op.KeyName + " in " + duration); 
                     }
                     sampler.AddSample("WriteCount", 1);
@@ -258,22 +258,24 @@ namespace TechFestDemo
 
         public static void PingAllServers()
         {
-            ServerMonitor ss = slaEngines.First().Value.Monitor;
+            ServerMonitor ss = container.Monitor;
             Stopwatch watch = new Stopwatch();
             for (int pingCount = 0; pingCount < 5; pingCount++)
             {
-                // foreach (string server in ss.replicas.Keys)
                 foreach (string server in ss.replicas.Keys)
                 {
-                    // ServerState serverState = ss.replicas[server];
                     ServerState serverState = ss.replicas[server];
-                    CloudBlobContainer tmpContainer = ClientRegistry.GetCloudBlobContainer(server, containerName);
-                    watch.Restart();
-                    //we perform a dummy operation to get the rtt latency!
-                    bool ok = tmpContainer.Exists();
-                    long el = watch.ElapsedMilliseconds;
-                    serverState.AddRtt(el);
-                    Log("Pinged " + SiteName(server) + " in " + el + " milliseconds");
+                    if (accounts.ContainsKey(server))
+                    {
+                        CloudBlobClient blobClient = accounts[server].CreateCloudBlobClient();
+                        CloudBlobContainer blobContainer = blobClient.GetContainerReference(containerName);
+                        watch.Restart();
+                        //we perform a dummy operation to get the rtt latency!
+                        bool ok = blobContainer.Exists();
+                        long el = watch.ElapsedMilliseconds;
+                        serverState.AddRtt(el);
+                        Log("Pinged " + SiteName(server) + " in " + el + " milliseconds");
+                    }
                 }
             }
         }
@@ -371,11 +373,11 @@ namespace TechFestDemo
             {
                 case "Fast or Strong":
                     currentSLA = CreateFastOrStrongSla();
-                    slaEngines["sla"].Sla = currentSLA;
+                    slas["sla"] = currentSLA;
                     break;
                 case "Shopping Cart":
                     currentSLA = CreateShoppingCartSla();
-                    slaEngines["sla"].Sla = currentSLA;
+                    slas["sla"] = currentSLA;
                     break;
                 default:
                     // do nothing
@@ -453,7 +455,7 @@ namespace TechFestDemo
         public static string PrintReadWriteTimes(Sampler sampler)
         {
             string result = null;
-            foreach (string cons in containers.Keys)
+            foreach (string cons in slas.Keys)
             {
                 result += cons + " read: " + sampler.GetSampleValue(cons + "Latency") + "\r\n";
             }
@@ -499,14 +501,5 @@ namespace TechFestDemo
 
         #endregion
 
-
-        #region Miscellaneous
-
-        public static int ActualNumberOfClients()
-        {
-            return 1;
-        }
-
-        #endregion
     }
 }

@@ -28,9 +28,9 @@ namespace PileusApp.YCSB
         private static Sampler sampler;
 
         private static string containerName = null;
-        private static string configurationSite;
-        private static CapCloudBlobClient blobClient;
-        private static CapCloudBlobContainer container;
+        private static string testSite;
+        private static CloudBlobClient blobClient;
+        private static CloudBlobContainer container;
 
         private static int numberOfClientAtPickTime;
         public static int parallelRequestsPerBlob = 1;
@@ -136,7 +136,7 @@ namespace PileusApp.YCSB
             intervalLength = Int32.Parse(args[6]);
             totalExperimentLength = Int32.Parse(args[7]);
 
-            configurationSite = args[8];
+            testSite = args[8];
             containerName = args[9];
 
             currentEmulationHour = Int32.Parse(args[10]);
@@ -147,17 +147,6 @@ namespace PileusApp.YCSB
             }
 
             resultFile = string.Format(@"{5}\{6}_{0}_{1}_{2}_{3}_{4}.csv", blobSizeInB, parallelRequestsPerBlob, numberOfClientAtPickTime, useHttps,  workloadType, resultFileFolderName, Dns.GetHostName());
-
-            //Get the account info
-            Dictionary<string, CloudStorageAccount> accounts=Account.GetStorageAccounts(true);
-
-            //Init the configurationLookup service.
-            ClientRegistry.Init(accounts, Account.GetStorageAccounts(useHttps)[configurationSite]);
-
-            CapCloudStorageAccount storageAccount = new CapCloudStorageAccount();
-            blobClient = storageAccount.CreateCloudBlobClient(ActualNumberOfClients);
-
-            container = blobClient.GetContainerReference(containerName, new ConsistencySLAEngine(CreateShoppingCartSla1(), new ReplicaConfiguration(containerName), null, null, ChosenUtility));
 
             ClientDistribution distribution = new ClientDistribution(intervalLength, intervalLength / 2, 4);
             double probabilityMean = distribution.GetNextProbability(intervalLength / 2);
@@ -221,6 +210,8 @@ namespace PileusApp.YCSB
             return ;
         }
 
+        
+        /*
         public static ServiceLevelAgreement CreateShoppingCartSla1()
         {
             ServiceLevelAgreement sla = new ServiceLevelAgreement(""+1);
@@ -234,6 +225,7 @@ namespace PileusApp.YCSB
             sla.Add(subSla4);
             return sla;
         }
+        */
 
 
         #region Client
@@ -245,6 +237,10 @@ namespace PileusApp.YCSB
             Random random = new Random();
             random.NextBytes(BlobDataBuffer);
 
+            Dictionary<string, CloudStorageAccount> accounts = Account.GetStorageAccounts(false);
+            blobClient = accounts[testSite].CreateCloudBlobClient();
+            container = blobClient.GetContainerReference(containerName);
+            container.CreateIfNotExists();
 
             try
             {
@@ -254,9 +250,11 @@ namespace PileusApp.YCSB
                 while (op != null)
                 {
                     long duration = 0;
+                    ICloudBlob blob = container.GetBlobReferenceFromServer(op.KeyName);
+                    
                     if (op.Type == YCSBOperationType.READ)
                     {
-                        duration = GetBlob(op.KeyName, container);
+                        duration = GetBlob(blob);
                         if (PileusAppConstPool.ENABLE_CLIENT_READWRITE_OUTPUT)
                             Console.WriteLine("Performed Read for " + op.KeyName + " in " + duration);
                         sampler.AddSample("ReadCount", 1);
@@ -266,7 +264,7 @@ namespace PileusApp.YCSB
                     else if (op.Type == YCSBOperationType.UPDATE)
                     {
                         random.NextBytes(BlobDataBuffer);
-                        duration = PutBlob(op.KeyName, BlobDataBuffer, container);
+                        duration = PutBlob(blob, BlobDataBuffer);
                         if (PileusAppConstPool.ENABLE_CLIENT_READWRITE_OUTPUT)
                             Console.WriteLine("Performed Write for " + op.KeyName + " in " + duration);
                         sampler.AddSample("WriteCount", 1);
@@ -296,11 +294,10 @@ namespace PileusApp.YCSB
 
         }
 
-        public static long GetBlob(string blobName, CapCloudBlobContainer cont)
+        public static long GetBlob(ICloudBlob blob)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
             using (MemoryStream ms = new MemoryStream())
             {
                 blob.DownloadToStream(ms);
@@ -309,12 +306,10 @@ namespace PileusApp.YCSB
             return watch.ElapsedMilliseconds;
         }
 
-        public static long PutBlob(string blobName, byte[] data, CapCloudBlobContainer cont)
+        public static long PutBlob(ICloudBlob blob, byte[] data)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
-            
             using (var ms = new MemoryStream(data))
             {
                 blob.UploadFromStream(ms);
@@ -322,14 +317,11 @@ namespace PileusApp.YCSB
             return watch.ElapsedMilliseconds;
         }
 
-        public static long DeleteBlob(string blobName, CapCloudBlobContainer cont)
+        public static long DeleteBlob(ICloudBlob blob)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
-
-            ICloudBlob blob = cont.GetBlobReferenceFromServer(blobName);
             blob.Delete();
-
             watch.Stop();
             return watch.ElapsedMilliseconds;
         }
@@ -362,6 +354,7 @@ namespace PileusApp.YCSB
             {
                 sw.Write(String.Format("Args:Concurrency: {0} BlobSizeInKB:{1} ParallelRequestsPerBlob:{2} UsingHttps:{3} \n", numberOfClientAtPickTime, blobSizeInB, parallelRequestsPerBlob, useHttps));
 
+                /*
                 float tmp = 0;
                 foreach (ConsistencySLAEngine engine in CapCloudBlobClient.slaEngines[containerName])
                 {
@@ -372,12 +365,14 @@ namespace PileusApp.YCSB
 
                 }
                 sw.Write(String.Format("Current utility ", tmp));
+                */
 
                 // Display perf results
                 PerfMetrics metrics = new PerfMetrics();
                 metrics.Update(currProc);
                 metrics.Print(sw);
 
+                /*
                 foreach (ConsistencySLAEngine engine in CapCloudBlobClient.slaEngines[containerName])
                 {
                     Console.WriteLine("Average utility/seconds for SLA " + engine.Sla.Id);
@@ -386,6 +381,7 @@ namespace PileusApp.YCSB
                     Console.WriteLine(samples);
                     sw.Write(samples);
                 }
+                */
             }
         }
 

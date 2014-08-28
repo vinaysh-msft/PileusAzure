@@ -51,7 +51,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         }
 #endif
 
-        public static List<string> CreateBlobs(CapCloudBlobContainer container, int count, BlobType type)
+        public static List<string> CreateBlobs(CloudBlobContainer container, int count, BlobType type)
         {
             string name;
             List<string> blobs = new List<string>();

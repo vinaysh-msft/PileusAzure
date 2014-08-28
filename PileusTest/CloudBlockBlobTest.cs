@@ -122,7 +122,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Get a block blob reference using its constructor")]
         public void CloudBlockBlobConstructor()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             CloudBlockBlob blob = container.GetBlockBlobReference("blob1");
             CloudBlockBlob blob2 = new CloudBlockBlob(blob.StorageUri, null, null);
             Assert.AreEqual(blob.Name, blob2.Name);
@@ -135,7 +135,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Create a zero-length block blob and then delete it")]
         public void CloudBlockBlobCreateAndDelete()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -155,7 +155,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Create a zero-length block blob and then delete it")]
         public void CloudBlockBlobCreateAndDeleteAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -208,7 +208,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Try to delete a non-existing block blob")]
        public void CloudBlockBlobDeleteIfExists()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -229,7 +229,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Try to delete a non-existing block blob")]
         public void CloudBlockBlobDeleteIfExistsAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -292,7 +292,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Check a blob's existence")]
         public void CloudBlockBlobExists()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
 
             try
@@ -321,7 +321,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Check a blob's existence")]
         public void CloudBlockBlobExistsAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
 
             try
@@ -400,7 +400,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify the attributes of a blob")]
         public void CloudBlockBlobFetchAttributes()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -443,7 +443,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify the attributes of a blob")]
         public void CloudBlockBlobFetchAttributesAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -540,7 +540,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify setting the properties of a blob")]
         public void CloudBlockBlobSetProperties()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -595,7 +595,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify setting the properties of a blob")]
         public void CloudBlockBlobSetPropertiesAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -729,7 +729,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Try retrieving properties of a block blob using a page blob reference")]
         public void CloudBlockBlobFetchAttributesInvalidType()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -753,7 +753,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify that creating a block blob can also set its metadata")]
         public void CloudBlockBlobCreateWithMetadata()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -777,7 +777,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify that empty metadata on a block blob can be retrieved.")]
         public void CloudBlockBlobGetEmptyMetadata()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -808,7 +808,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify that a block blob's metadata can be updated")]
         public void CloudBlockBlobSetMetadata()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -865,7 +865,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Verify that a block blob's metadata can be updated")]
         public void CloudBlockBlobSetMetadataAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1067,7 +1067,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             byte[] buffer = GetRandomBuffer(1024);
             List<string> blocks = GetBlockIdList(3);
             List<string> extraBlocks = GetBlockIdList(2);
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1204,7 +1204,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             byte[] buffer = GetRandomBuffer(1024);
             List<string> blocks = GetBlockIdList(3);
             List<string> extraBlocks = GetBlockIdList(2);
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1267,7 +1267,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             byte[] buffer = GetRandomBuffer(1024);
             List<string> blocks = GetBlockIdList(3);
             List<string> extraBlocks = GetBlockIdList(2);
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1412,7 +1412,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public void CloudBlockBlobDownloadToStream()
         {
             byte[] buffer = GetRandomBuffer(1 * 1024 * 1024);
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1440,7 +1440,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public void CloudBlockBlobDownloadToStreamAPM()
         {
             byte[] buffer = GetRandomBuffer(1 * 1024 * 1024);
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1479,7 +1479,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public void CloudBlockBlobDownloadToStreamAPMOverload()
         {
             byte[] buffer = GetRandomBuffer(1 * 1024 * 1024);
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1593,7 +1593,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                 StoreBlobContentMD5 = false,
             };
 
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1622,7 +1622,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                 StoreBlobContentMD5 = false,
             };
 
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -1680,7 +1680,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
        public void CloudBlockBlobUploadFromStreamWithAccessCondition()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1725,7 +1725,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
       public void CloudBlockBlobUploadFromStreamAPMWithAccessCondition()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1771,7 +1771,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
         public void CloudBlockBlobUploadFromStreamWithNonSeekableStream()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1790,7 +1790,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
         public void CloudBlockBlobUploadFromStreamAPMWithNonSeekableStream()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1809,7 +1809,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
          public void CloudBlockBlobUploadFromStream()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1828,7 +1828,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
         public void CloudBlockBlobUploadFromStreamAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1847,7 +1847,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
         public void CloudBlockBlobUploadFromStreamLength()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1879,7 +1879,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
         public void CloudBlockBlobUploadFromStreamLengthAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1911,7 +1911,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
         public void CloudBlockBlobUploadFromStreamLengthInvalid()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -1973,7 +1973,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Single put blob and get blob")]
         public void CloudBlockBlobUploadFromStreamLengthInvalidAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
             try
             {
@@ -2035,7 +2035,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Upload blob using multiple threads and get blob")]
         public void CloudBlockBlobParallelUploadFromStream()
         {
-            //CapCloudBlobContainer container = GetRandomContainerReference();
+            //CloudBlobContainer container = GetRandomContainerReference();
             //container.ServiceClient.DefaultRequestOptions.ParallelOperationThreadCount = 8;
             //// container.Create();
             //try
@@ -2053,7 +2053,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Upload blob using multiple threads and get blob")]
         public void CloudBlockBlobParallelUploadFromStreamAPM()
         {
-            //CapCloudBlobContainer container = GetRandomContainerReference();
+            //CloudBlobContainer container = GetRandomContainerReference();
             //container.ServiceClient.DefaultRequestOptions.ParallelOperationThreadCount = 8;
             //// container.Create();
             //try
@@ -2071,7 +2071,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Upload blob using multiple threads and get blob set via BlobRequestOptions")]
         public void CloudBlockBlobParallelUploadFromStreamRequestOptions()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             // container.Create();
 
             try
@@ -2143,7 +2143,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             }
         }
 
-        private void CloudBlockBlobUploadFromStream(CapCloudBlobContainer container, int size, long? copyLength, AccessCondition accessCondition, bool seekableSourceStream, bool allowSinglePut, int startOffset, bool isAsync, bool testMd5)
+        private void CloudBlockBlobUploadFromStream(CloudBlobContainer container, int size, long? copyLength, AccessCondition accessCondition, bool seekableSourceStream, bool allowSinglePut, int startOffset, bool isAsync, bool testMd5)
         {
             byte[] buffer = GetRandomBuffer(size);
 
@@ -2257,7 +2257,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Create snapshots of a block blob")]
         public void CloudBlockBlobSnapshot()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                // container.Create();
@@ -2335,7 +2335,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Create snapshots of a block blob")]
         public void CloudBlockBlobSnapshotAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -2527,7 +2527,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Create a snapshot with explicit metadata")]
         public void CloudBlockBlobSnapshotMetadata()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -2567,7 +2567,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Create a snapshot with explicit metadata")]
         public void CloudBlockBlobSnapshotMetadataAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -2660,7 +2660,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Test conditional access on a blob")]
         public void CloudBlockBlobConditionalAccess()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -2763,7 +2763,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Put block boundaries")]
         public void CloudBlockBlobPutBlockBoundaries()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                // container.Create();
@@ -2811,7 +2811,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Put block boundaries")]
        public void CloudBlockBlobPutBlockBoundariesAPM()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -2937,7 +2937,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             MD5 md5 = MD5.Create();
             string contentMD5 = Convert.ToBase64String(md5.ComputeHash(buffer));
 
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -2991,7 +2991,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             MD5 md5 = MD5.Create();
             string contentMD5 = Convert.ToBase64String(md5.ComputeHash(buffer));
 
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -3058,7 +3058,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Test block blob methods on a page blob")]
         public void CloudBlockBlobMethodsOnPageBlob()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                // container.Create();
@@ -3099,7 +3099,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Test block removal/addition/reordering in a block blob")]
         public void CloudBlockBlobBlockReordering()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -3170,7 +3170,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("Upload and download null/empty data")]
         public void CloudBlockBlobUploadDownloadNoData()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.Create();
@@ -3205,7 +3205,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         [Description("List committed and uncommitted blobs")]
         public void CloudBlockBlobListUncommittedBlobs()
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                // container.Create();
@@ -3264,7 +3264,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             //Assert.IsTrue(creds.IsSAS);
 
             //// Client with shared key access.
-            //CapCloudBlobContainer container = GetRandomContainerReference();
+            //CloudBlobContainer container = GetRandomContainerReference();
             //try
             //{
             //    // container.Create();
@@ -3335,7 +3335,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         private void DoTextUploadDownload(string text, bool checkDifferentEncoding, bool isAsync)
         {
-            CapCloudBlobContainer container = GetRandomContainerReference();
+            CloudBlobContainer container = GetRandomContainerReference();
             try
             {
                 // container.CreateIfNotExists();

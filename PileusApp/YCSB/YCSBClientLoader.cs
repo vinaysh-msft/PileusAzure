@@ -26,12 +26,12 @@ namespace PileusApp.YCSB
     /// </summary>
     public class YCSBClientLoader
     {
-        private static  int concurrentWorkers = 0;
+        private static int concurrentWorkers = 0;
 
         #region Locals
         private static string containerName = "democontainer";
-        private static CapCloudBlobClient blobClient;
-        private static CapCloudBlobContainer container;
+        private static CloudBlobClient blobClient;
+        private static CloudBlobContainer container;
 
         public static int YCSBNumberofObjects = 1000;
 
@@ -66,12 +66,12 @@ namespace PileusApp.YCSB
                 args[2] = "false";
 
                 // primary site account
-                args[3] = "dbteastasiastorage";
+                args[3] = "dbtwestusstorage";
 
                 // secondary site account, or empty string if no secondary is desired.
                 args[4] = "dbteuropestorage"; //dbteuropestorage, dbtsouthstorage, dbteastasiastorage
 
-                // configuration site account. I.e., the site holds configuration of a CapCloudBlobAccount. 
+                // configuration site account. I.e., the site holds the configuration blob. 
                 args[5] = "dbtsouthstorage";
 
                 //true if we want to remove all blobs and containers in our storage account.
@@ -84,14 +84,14 @@ namespace PileusApp.YCSB
             blobSizeInB = Int32.Parse(args[1]);
             useHttps = bool.Parse(args[2]);
 
-            primarySite= args[3];
+            primarySite = args[3];
             secondarySite = args[4].Equals("") ? null : args[4];
-            configurationSite= args[5];
+            configurationSite = args[5];
 
             wipeEverythingBeforeLoading = bool.Parse(args[6]);
 
             UploadData(YCSBNumberofObjects, blobSizeInB, useHttps, primarySite, secondarySite, configurationSite, wipeEverythingBeforeLoading);
- 
+
             Console.WriteLine("Finihsed populating blobs");
             Console.Read();
         }
@@ -99,6 +99,8 @@ namespace PileusApp.YCSB
 
         public static void UploadData(int numBlobs, long sizeBlobs, bool secure, string primary, string secondary, string configSite, bool wipe)
         {
+            // TODO: generalize to any number of replicas
+
             YCSBNumberofObjects = numBlobs;
             blobSizeInB = sizeBlobs;
             useHttps = secure;
@@ -107,9 +109,11 @@ namespace PileusApp.YCSB
             configurationSite = configSite;
             wipeEverythingBeforeLoading = wipe;
 
+            Dictionary<string, CloudStorageAccount> accounts = Account.GetStorageAccounts(false);
+
             if (wipeEverythingBeforeLoading)
             {
-                foreach (CloudStorageAccount account in Account.GetStorageAccounts(false).Values)
+                foreach (CloudStorageAccount account in accounts.Values)
                 {
                     foreach (CloudBlobContainer cont in account.CreateCloudBlobClient().ListContainers())
                     {
@@ -142,6 +146,7 @@ namespace PileusApp.YCSB
                         }
                         cont.DeleteIfExists();
                     }
+
                     //Delete configuration blob for this name
                     account.CreateCloudBlobClient().GetContainerReference(ConstPool.CONFIGURATION_CONTAINER_PREFIX + containerName).DeleteIfExists();
                     //account.CreateCloudBlobClient().GetContainerReference(containerName).DeleteIfExists();
@@ -158,18 +163,6 @@ namespace PileusApp.YCSB
                 Thread.Sleep(40000);
             }
 
-            CapCloudStorageAccount storageAccount = new CapCloudStorageAccount();
-            blobClient = storageAccount.CreateCloudBlobClient(null);
-
-            ReplicaConfiguration configuration = new ReplicaConfiguration(containerName);
-            configuration.PrimaryServers.Add(primarySite);
-            configuration.SecondaryServers.Add(secondarySite);
-
-            container = blobClient.GetContainerReference(containerName, new ConsistencySLAEngine(DummySLA(), configuration));
-
-            container.CreateIfNotExists(primarySite, secondarySite);
-
-
             ThreadPool.SetMaxThreads(50, 50);
 
             byte[] BlobDataBuffer = new byte[blobSizeInB];
@@ -177,11 +170,23 @@ namespace PileusApp.YCSB
             random.NextBytes(BlobDataBuffer);
             List<string> keys = YCSBWorkload.GetAllKeys(YCSBNumberofObjects);
 
+            blobClient = accounts[primary].CreateCloudBlobClient();
+            container = blobClient.GetContainerReference(containerName);
+            container.CreateIfNotExists();
+
             for (int i = 0; i < keys.Count; i++)
             {
                 Put(keys[i], BlobDataBuffer);
             }
 
+            blobClient = accounts[secondary].CreateCloudBlobClient();
+            container = blobClient.GetContainerReference(containerName);
+            container.CreateIfNotExists();
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                Put(keys[i], BlobDataBuffer);
+            }
 
             while (Interlocked.CompareExchange(ref concurrentWorkers, -1, 0) != -1)
             {
@@ -203,14 +208,5 @@ namespace PileusApp.YCSB
             Console.WriteLine("Populated " + blobName);
             Interlocked.Decrement(ref concurrentWorkers);
         }
-
-        public static ServiceLevelAgreement DummySLA()
-        {
-            ServiceLevelAgreement sla = new ServiceLevelAgreement("" + 1);
-            SubSLA subSla1 = new SubSLA(1, Consistency.Strong, 0, 1);
-            sla.Add(subSla1);
-            return sla;
-        }
     }
-
 }

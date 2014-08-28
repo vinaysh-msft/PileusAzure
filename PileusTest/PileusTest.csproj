@@ -42,13 +42,10 @@
       <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\CertMaker.dll</HintPath>
     </Reference>
     <Reference Include="FiddlerCore">
-      <HintPath>..\..\azure-storage-net\Test\FaultInjection\AzureStorageMangler\bin\Debug\FiddlerCore.dll</HintPath>
-    </Reference>
-    <Reference Include="FiddlerCore4">
-      <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\FiddlerCore4.dll</HintPath>
+      <HintPath>..\packages\FiddlerCore.dll</HintPath>
     </Reference>
     <Reference Include="HttpMangler">
-      <HintPath>..\..\azure-storage-net\Test\FaultInjection\AzureStorageMangler\bin\Debug\HttpMangler.dll</HintPath>
+      <HintPath>..\packages\HttpMangler.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Data.Edm, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

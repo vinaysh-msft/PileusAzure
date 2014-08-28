@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.Storage.Pileus
 {
+    
+    /*
+     * DEPRECATED - DO NOT USE.
+     */
+
     public class CapCloudStorageAccount
     {
         
@@ -27,5 +32,15 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         {
             return new CapCloudBlobClient(numberOfClients);
         }
+
+        /// <summary>
+        /// Creates the Blob service client.
+        /// </summary>
+        /// <returns>A client object that specifies the Blob service endpoint.</returns>
+        public CapCloudBlobClient CreateCloudBlobClient()
+        {
+            return new CapCloudBlobClient();
+        }
+
     }
 }

@@ -89,6 +89,11 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
                 // use primary account for Azure geo-replicated secondary
                 accountName = serverName.Replace("-secondary", "");
             }
+
+            if (accounts == null)
+            {
+                accounts = new Dictionary<string, CloudStorageAccount>();
+            }
             if (accounts.ContainsKey(accountName))
             {
                 account = accounts[accountName];
@@ -99,6 +104,10 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
         public static CloudBlobClient GetCloudBlobClient(string serverName)
         {
             CloudBlobClient client = null;
+            if (sharedClients == null)
+            {
+                sharedClients = new Dictionary<string, CloudBlobClient>();
+            }
             if (sharedClients.ContainsKey(serverName))
             {
                 client = sharedClients[serverName];
@@ -111,11 +120,11 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
                     client = account.CreateCloudBlobClient();
                     if (serverName.EndsWith("-secondary"))
                     {
-                        client.LocationMode = LocationMode.SecondaryOnly;
+                        client.DefaultRequestOptions.LocationMode = LocationMode.SecondaryOnly;
                     }
                     else
                     {
-                        client.LocationMode = LocationMode.PrimaryOnly;
+                        client.DefaultRequestOptions.LocationMode = LocationMode.PrimaryOnly;
                     }
                     sharedClients[serverName] = client;
                 }

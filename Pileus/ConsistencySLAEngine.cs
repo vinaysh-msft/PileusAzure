@@ -56,7 +56,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             
             this.chosenUtility = chosenUtility;
             this.selector = new ServerSelector(Session, Config, Monitor);
-            
         }
 
         /// <summary>

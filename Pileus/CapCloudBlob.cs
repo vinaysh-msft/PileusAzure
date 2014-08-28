@@ -1,10 +1,7 @@
-﻿using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Pileus.Configuration;
-using Microsoft.WindowsAzure.Storage.Pileus.Utils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,32 +10,28 @@ using System.Threading.Tasks;
 
 namespace Microsoft.WindowsAzure.Storage.Pileus
 {
-    
-    /// DEPRECATED: DO NOT USE.
-    
     /// <summary>
-    /// Provides a simple wrapper around most methods in the ICloudBlob interface,
-    /// but allows some read operations to take an SLA and implements those methods accordingly.
-    /// Moreover, write operations are performed synchronously on all primary replicas (CloudBlobContainer).
+    /// Allows operations on blobs that are replicated across any number of Azure storage sites.
+    /// Read operations are controlled by consistency-based SLAs that indirectly select the replica 
+    /// from which a blob's contents or metadata is read.
     /// </summary>
-    public class CapCloudBlob
 
+    public class CapCloudBlob: ICloudBlob
     {
 
-        // The Consistency-based SLA engine that makes decisions on which blob to use
-        private ConsistencySLAEngine slaEngine;
-
-        // Stopwatch for timing roundtrip latencies
-        private Stopwatch watch;
-
-        // The container configuration that specifies what are the primary and secondary containers.
-        private ReplicaConfiguration configuration;
+        /// <summary>
+        /// The service level agreement used to select replicas from which to read
+        /// </summary>
+        public ServiceLevelAgreement Sla {
+            get { return engine.Sla; }
+            set { engine.Sla = value; } 
+        }
 
         // The class that implements the read/write protocol
         private ReadWriteFramework protocol;
 
-        // Default constructor
-        public CapCloudBlob() {}
+        // The SLA Engine used to select sites for reads and writes
+        public ConsistencySLAEngine engine;
 
         /// <summary>
         /// Creates a new instance of a CapCloudBlob.
@@ -48,761 +41,1064 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         /// <param name="engine">The SLA enforcement engine.</param>
         public CapCloudBlob(string name, ReplicaConfiguration configuration, ConsistencySLAEngine engine)
         {
-            this.Name = name;
-            this.slaEngine = engine;
-            this.configuration = configuration;
-            this.watch = new Stopwatch();
             this.protocol = new ReadWriteFramework(name, configuration, engine);
+            this.engine = engine;
         }
 
-        private DateTimeOffset Timestamp(ICloudBlob blob) 
+        /*
+         * Below is a shim for each of the methods in the ICloudBlob interface (in alphabetical order).
+         * Most of the implementations simply call on the main primary blob using protocol.Main().
+         * Read operations should call protocol.Read with a delegate for the operation.
+         * Write operations should call protocol.Write with a delegate for the operation.
+         */
+
+        public void AbortCopy(string copyId, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            // TODO: ensure that this works in the case where the primary server changes
-            // get timestamp from metadata if present since primary and secondary will have different LastModified times for same version of blob
-            DateTimeOffset result;
-            if (blob.Metadata.ContainsKey("LastModifiedOnPrimary"))
-            {
-                result = DateTimeOffset.Parse(blob.Metadata["LastModifiedOnPrimary"]);
-            }
-            else
-            {
-                result = blob.Properties.LastModified ?? DateTimeOffset.MinValue;
-            }
+            protocol.Main().AbortCopy(copyId, accessCondition, options, operationContext);
+        }
+
+        public Task AbortCopyAsync(string copyId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().AbortCopyAsync(copyId, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task AbortCopyAsync(string copyId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().AbortCopyAsync(copyId, accessCondition, options, operationContext);
+        }
+
+        public Task AbortCopyAsync(string copyId, CancellationToken cancellationToken)
+        {
+            return protocol.Main().AbortCopyAsync(copyId, cancellationToken);
+        }
+
+        public Task AbortCopyAsync(string copyId)
+        {
+            return protocol.Main().AbortCopyAsync(copyId);
+        }
+
+        public string AcquireLease(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            return protocol.Main().AcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext);
+        }
+
+        public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId, accessCondition, options, operationContext);
+        }
+
+        public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId, CancellationToken cancellationToken)
+        {
+            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId, cancellationToken);
+        }
+
+        public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId)
+        {
+            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId);
+        }
+
+        public ICancellableAsyncResult BeginAbortCopy(string copyId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginAbortCopy(copyId, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginAbortCopy(string copyId, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginAbortCopy(copyId, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginAcquireLease(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginAcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginAcquireLease(TimeSpan? leaseTime, string proposedLeaseId, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginAcquireLease(leaseTime, proposedLeaseId, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginBreakLease(TimeSpan? breakPeriod, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginBreakLease(breakPeriod, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginBreakLease(TimeSpan? breakPeriod, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginBreakLease(breakPeriod, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginChangeLease(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginChangeLease(proposedLeaseId, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginChangeLease(string proposedLeaseId, AccessCondition accessCondition, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginChangeLease(proposedLeaseId, accessCondition, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDelete(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDelete(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDelete(AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDelete(callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDeleteIfExists(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDeleteIfExists(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDeleteIfExists(AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDeleteIfExists(callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadRangeToByteArray(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadRangeToByteArray(target, index, blobOffset, length, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadRangeToByteArray(byte[] target, int index, long? blobOffset, long? length, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadRangeToByteArray(target, index, blobOffset, length, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadRangeToStream(Stream target, long? offset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadRangeToStream(target, offset, length, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadRangeToStream(Stream target, long? offset, long? length, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadRangeToStream(target, offset, length, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadToByteArray(byte[] target, int index, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadToByteArray(target, index, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadToByteArray(byte[] target, int index, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadToByteArray(target, index, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadToFile(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadToFile(path, mode, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadToFile(string path, FileMode mode, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadToFile(path, mode, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadToStream(Stream target, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadToStream(target, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginDownloadToStream(Stream target, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginDownloadToStream(target, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginExists(BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginExists(options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginExists(AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginExists(callback, state);
+        }
+
+        public ICancellableAsyncResult BeginFetchAttributes(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginFetchAttributes(accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginFetchAttributes(AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginFetchAttributes(callback, state);
+        }
+
+        public ICancellableAsyncResult BeginOpenRead(AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginOpenRead(callback, state);
+        }
+
+        public ICancellableAsyncResult BeginOpenRead(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginOpenRead(accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginReleaseLease(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginReleaseLease(accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginReleaseLease(AccessCondition accessCondition, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginReleaseLease(accessCondition, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginRenewLease(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginRenewLease(accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginRenewLease(AccessCondition accessCondition, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginRenewLease(accessCondition, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginSetMetadata(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginSetMetadata(accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginSetMetadata(AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginSetMetadata(callback, state);
+        }
+
+        public ICancellableAsyncResult BeginSetProperties(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginSetProperties(accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginSetProperties(AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginSetProperties(callback, state);
+        }
+
+        public ICancellableAsyncResult BeginStartCopyFromBlob(Uri source, AccessCondition sourceAccessCondition, AccessCondition destAccessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginStartCopyFromBlob(source, sourceAccessCondition, destAccessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginStartCopyFromBlob(Uri source, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginStartCopyFromBlob(source, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromByteArray(byte[] buffer, int index, int count, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromByteArray(buffer, index, count, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromByteArray(byte[] buffer, int index, int count, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromByteArray(buffer, index, count, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromFile(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromFile(path, mode, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromFile(string path, FileMode mode, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromFile(path, mode, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromStream(Stream source, long length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromStream(source, length, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromStream(Stream source, long length, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromStream(source, length, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromStream(Stream source, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromStream(source, accessCondition, options, operationContext, callback, state);
+        }
+
+        public ICancellableAsyncResult BeginUploadFromStream(Stream source, AsyncCallback callback, object state)
+        {
+            return protocol.Main().BeginUploadFromStream(source, callback, state);
+        }
+
+        public BlobType BlobType
+        {
+            get { return protocol.Main().BlobType; }
+        }
+
+        public TimeSpan BreakLease(TimeSpan? breakPeriod = null, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            return protocol.Main().BreakLease(breakPeriod, accessCondition, options, operationContext);
+        }
+
+        public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().BreakLeaseAsync(breakPeriod, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().BreakLeaseAsync(breakPeriod, accessCondition, options, operationContext);
+        }
+
+        public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod, CancellationToken cancellationToken)
+        {
+            return protocol.Main().BreakLeaseAsync(breakPeriod, cancellationToken);
+        }
+
+        public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod)
+        {
+            return protocol.Main().BreakLeaseAsync(breakPeriod);
+        }
+
+        public string ChangeLease(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            return protocol.Main().ChangeLease(proposedLeaseId, accessCondition, options, operationContext);
+        }
+
+        public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition, options, operationContext);
+        }
+
+        public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition, CancellationToken cancellationToken)
+        {
+            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition, cancellationToken);
+        }
+
+        public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition)
+        {
+            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition);
+        }
+
+        public CopyState CopyState
+        {
+            get { return protocol.Main().CopyState; }
+        }
+
+        public void Delete(DeleteSnapshotsOption deleteSnapshotsOption = DeleteSnapshotsOption.None, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Write(blob => blob.Delete(deleteSnapshotsOption, accessCondition, options, operationContext));
+        }
+
+        public Task DeleteAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DeleteAsync(deleteSnapshotsOption, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task DeleteAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().DeleteAsync(deleteSnapshotsOption, accessCondition, options, operationContext);
+        }
+
+        public Task DeleteAsync(CancellationToken cancellationToken)
+        {
+            return protocol.Main().DeleteAsync(cancellationToken);
+        }
+
+        public Task DeleteAsync()
+        {
+            return protocol.Main().DeleteAsync();
+        }
+
+        public bool DeleteIfExists(DeleteSnapshotsOption deleteSnapshotsOption = DeleteSnapshotsOption.None, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            bool result = false;
+            protocol.Write(blob => result = blob.DeleteIfExists(deleteSnapshotsOption, accessCondition, options, operationContext));
             return result;
         }
 
-        #region operations that use the SLA to choose between the strong and eventual blobs
-
-        /// <summary>
-        /// Download to stream from a blob acording to the SLA.
-        /// 
-        /// Fast mode => 2Delta
-        /// slow mode for strong consistency => 4Delta (i.e., 2Delta for reading optimistically, 2Delta for checking that primary is not changed)
-        /// TODO: it is only required to perform the second check if it is necessary to read from the primary replica, not because it is a nearby replica.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="accessCondition"></param>
-        /// <param name="options"></param>
-        /// <param name="operationContext"></param>
-        public void DownloadToStream(System.IO.Stream target, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        public Task<bool> DeleteIfExistsAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            if (options == null)
-            {
-                options = new BlobRequestOptions();
-            }
-            options.DisableContentMD5Validation = true;
-            
-            //ReadOp op = blob => blob.DownloadToStream(target, accessCondition, options, operationContext);
-            //protocol.Read(op);
-            protocol.Read(blob => blob.DownloadToStream(target, accessCondition, options, operationContext));
-            /*
-            ServerState ss=null;
-            try
-            {
-                if (options == null)
-                {
-                    options = new BlobRequestOptions();
-                }
-                options.DisableContentMD5Validation = true;
-
-                bool isDone = false;
-                do
-                {
-                    ss = slaEngine.FindServerToRead(Name);
-                    ICloudBlob blob = ClientRegistry.GetCloudBlob(ss.Name, configuration.Name, Name);
-                    
-                    if (configuration.IsInFastMode() || !ss.IsPrimary)
-                    {
-                        //it suffices to read from this replica which is secondary
-                        watch.Start();
-
-                        blob.DownloadToStream(target, accessCondition, options, operationContext);
-                        watch.Stop();
-                        Console.WriteLine("Downloaded blob from " + ss.Name + " in " + watch.ElapsedMilliseconds);
-                        ss.AddRtt(watch.ElapsedMilliseconds);
-                        slaEngine.Session.RecordObjectRead(blob.Name, Timestamp(blob), ss, slaEngine.Sla.Id);
-                        isDone = true;
-                    }
-                    else
-                    {
-                        //we must read from this replica that is primary. 
-                        //We first read, then refresh the container to see if the configuration is changed.
-
-                        watch.Start();
-                        blob.DownloadToStream(target, accessCondition, options, operationContext);
-                        
-                        watch.Stop();
-                        Console.WriteLine("Downloaded blob from " + ss.Name + " in " + watch.ElapsedMilliseconds + " in slow mode");
-                        configuration.SyncWithCloud(ClientRegistry.GetConfigurationAccount());
-                        
-                        if (configuration.PrimaryServers.Contains(ss.Name))
-                        {
-                            //We have contacted the primary replica, hence we are good to go.
-
-                            ss.AddRtt(watch.ElapsedMilliseconds);
-                          //  slaEngine.SessionState.RecordObjectRead(blob.Name, Timestamp(blob), ss);
-                            slaEngine.Session.RecordObjectRead(blob.Name, Timestamp(blob), ss, slaEngine.Sla.Id);
-                            isDone = true;
-                        }
-                    }
-                } while (!isDone);
-
-            }
-            catch (StorageException se)
-            {
-                if (StorageExceptionCode.NotFound(se))
-                {
-                    //blob is not found.
-                    //this is fine because the replica might have removed.
-                    //it simply returns, so client need to re-execute if this happens. 
-                    //We can also re-execute the read here, but for debugging purposes, it's simpler for the client to re-execute. 
-                    //Of course in real system, we need to re-execute at this level.
-                    return;
-                }
-                Console.WriteLine(se.StackTrace.ToString());
-                throw se;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Object reference not set to an instance of an object"))
-                    return;
-                Console.WriteLine(ex.StackTrace.ToString());
-                throw ex;
-            }
-            */
-
+            return protocol.Main().DeleteIfExistsAsync(deleteSnapshotsOption, accessCondition, options, operationContext, cancellationToken);
         }
 
-        // TODO: implement this
-        //public void DownloadRangeToStream(System.IO.Stream target, long? offset, long? length, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    ServerState ss = slaEngine.FindServerToRead(name);
-        //    ICloudBlob blob = configuration.GetCloudBlobContainerDetail(ss.Name).GetCloudBlob(name);
-
-        //    watch.Start();
-        //    blob.DownloadRangeToStream(target, offset, length, accessCondition, options, operationContext);
-        //    ss.AddRtt(watch.ElapsedMilliseconds);
-        //    slaEngine.SessionState.RecordObjectRead(blob.Name, Timestamp(blob), ss);
-        //}
-
-        public bool Exists(Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
+        public Task<bool> DeleteIfExistsAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            // Note sure that it's a good idea to ask a secondary site if a blob exists...
+            return protocol.Main().DeleteIfExistsAsync(deleteSnapshotsOption, accessCondition, options, operationContext);
+        }
+
+        public Task<bool> DeleteIfExistsAsync(CancellationToken cancellationToken)
+        {
+            return protocol.Main().DeleteIfExistsAsync(cancellationToken);
+        }
+
+        public Task<bool> DeleteIfExistsAsync()
+        {
+            return protocol.Main().DeleteIfExistsAsync();
+        }
+
+        public int DownloadRangeToByteArray(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            int result = 0;
+            protocol.Read(blob => result = blob.DownloadRangeToByteArray(target, index, blobOffset, length, accessCondition, options, operationContext));
+            return result;
+        }
+
+        public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, accessCondition, options, operationContext);
+        }
+
+        public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, cancellationToken);
+        }
+
+        public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length)
+        {
+            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length);
+        }
+
+        public void DownloadRangeToStream(Stream target, long? offset, long? length, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Read(blob => blob.DownloadRangeToStream(target, offset, length, accessCondition, options, operationContext));
+        }
+
+        public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length, accessCondition, options, operationContext);
+        }
+
+        public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length, cancellationToken);
+        }
+
+        public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length)
+        {
+            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length);
+        }
+
+        public int DownloadToByteArray(byte[] target, int index, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            int result = 0;
+            protocol.Read(blob => result = blob.DownloadToByteArray(target, index, accessCondition, options, operationContext));
+            return result;
+        }
+
+        public Task<int> DownloadToByteArrayAsync(byte[] target, int index, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadToByteArrayAsync(target, index, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task<int> DownloadToByteArrayAsync(byte[] target, int index, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().DownloadToByteArrayAsync(target, index, accessCondition, options, operationContext);
+        }
+
+        public Task<int> DownloadToByteArrayAsync(byte[] target, int index, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadToByteArrayAsync(target, index, cancellationToken);
+        }
+
+        public Task<int> DownloadToByteArrayAsync(byte[] target, int index)
+        {
+            return protocol.Main().DownloadToByteArrayAsync(target, index);
+        }
+
+        public void DownloadToFile(string path, FileMode mode, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Read(blob => blob.DownloadToFile(path, mode, accessCondition, options, operationContext));
+        }
+
+        public Task DownloadToFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadToFileAsync(path, mode, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task DownloadToFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().DownloadToFileAsync(path, mode, accessCondition, options, operationContext);
+        }
+
+        public Task DownloadToFileAsync(string path, FileMode mode, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadToFileAsync(path, mode, cancellationToken);
+        }
+
+        public Task DownloadToFileAsync(string path, FileMode mode)
+        {
+            return protocol.Main().DownloadToFileAsync(path, mode);
+        }
+
+        public void DownloadToStream(Stream target, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Read(blob => blob.DownloadToStream(target, accessCondition, options, operationContext));
+        }
+
+        public Task DownloadToStreamAsync(Stream target, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadToStreamAsync(target, accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task DownloadToStreamAsync(Stream target, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().DownloadToStreamAsync(target, accessCondition, options, operationContext);
+        }
+
+        public Task DownloadToStreamAsync(Stream target, CancellationToken cancellationToken)
+        {
+            return protocol.Main().DownloadToStreamAsync(target, cancellationToken);
+        }
+
+        public Task DownloadToStreamAsync(Stream target)
+        {
+            return protocol.Main().DownloadToStreamAsync(target);
+        }
+
+        public void EndAbortCopy(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndAbortCopy(asyncResult);
+        }
+
+        public string EndAcquireLease(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndAcquireLease(asyncResult);
+        }
+
+        public TimeSpan EndBreakLease(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndBreakLease(asyncResult);
+        }
+
+        public string EndChangeLease(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndChangeLease(asyncResult);
+        }
+
+        public void EndDelete(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndDelete(asyncResult);
+        }
+
+        public bool EndDeleteIfExists(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndDeleteIfExists(asyncResult);
+        }
+
+        public int EndDownloadRangeToByteArray(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndDownloadRangeToByteArray(asyncResult);
+        }
+
+        public void EndDownloadRangeToStream(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndDownloadRangeToStream(asyncResult);
+        }
+
+        public int EndDownloadToByteArray(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndDownloadToByteArray(asyncResult);
+        }
+
+        public void EndDownloadToFile(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndDownloadToFile(asyncResult);
+        }
+
+        public void EndDownloadToStream(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndDownloadToStream(asyncResult);
+        }
+
+        public bool EndExists(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndExists(asyncResult);
+        }
+
+        public void EndFetchAttributes(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndFetchAttributes(asyncResult);
+        }
+
+        public Stream EndOpenRead(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndOpenRead(asyncResult);
+        }
+
+        public void EndReleaseLease(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndReleaseLease(asyncResult);
+        }
+
+        public void EndRenewLease(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndRenewLease(asyncResult);
+        }
+
+        public void EndSetMetadata(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndSetMetadata(asyncResult);
+        }
+
+        public void EndSetProperties(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndSetProperties(asyncResult);
+        }
+
+        public string EndStartCopyFromBlob(IAsyncResult asyncResult)
+        {
+            return protocol.Main().EndStartCopyFromBlob(asyncResult);
+        }
+
+        public void EndUploadFromByteArray(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndUploadFromByteArray(asyncResult);
+        }
+
+        public void EndUploadFromFile(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndUploadFromFile(asyncResult);
+        }
+
+        public void EndUploadFromStream(IAsyncResult asyncResult)
+        {
+            protocol.Main().EndUploadFromStream(asyncResult);
+        }
+
+        public bool Exists(BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
             bool result = false;
             protocol.Read(blob => result = blob.Exists(options, operationContext));
-            /*
-            ServerState ss = slaEngine.FindServerToRead(Name);
-            ICloudBlob blob = ClientRegistry.GetCloudBlob(ss.Name, configuration.Name, Name);
-
-            watch.Start();
-            bool result = blob.Exists(options, operationContext);
-            ss.AddRtt(watch.ElapsedMilliseconds);
-            // slaEngine.SessionState.RecordObjectRead(blob.Name, Timestamp(blob), ss);
-            slaEngine.Session.RecordObjectRead(blob.Name, Timestamp(blob), ss, "");
-            */
             return result;
         }
 
-        public void FetchAttributes(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
+        public Task<bool> ExistsAsync(BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            // TODO: use protocol
-            ServerState ss = slaEngine.FindServerToRead(Name);
-            ICloudBlob blob = ClientRegistry.GetCloudBlob(ss.Name, configuration.Name, Name);
-
-            watch.Start();
-            blob.FetchAttributes(accessCondition, options, operationContext);
-            ss.AddRtt(watch.ElapsedMilliseconds);
-            // slaEngine.SessionState.RecordObjectRead(blob.Name, Timestamp(blob), ss);
-            slaEngine.Session.RecordObjectRead(blob.Name, Timestamp(blob), ss,"");
+            return protocol.Main().ExistsAsync(options, operationContext, cancellationToken);
         }
 
-        #endregion
+        public Task<bool> ExistsAsync(BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().ExistsAsync(options, operationContext);
+        }
 
-        // TODO: Add public CloudBlob Main return configuration.PrimaryServers.First().ServiceClient.GetCloudBlob
-        // This allows clients to call routines that are not implemented here or to contact the primary directly
-        // e.g. blob.Main.FetchAttributes()
-        
+        public Task<bool> ExistsAsync(CancellationToken cancellationToken)
+        {
+            return protocol.Main().ExistsAsync(cancellationToken);
+        }
+
+        public Task<bool> ExistsAsync()
+        {
+            return protocol.Main().ExistsAsync();
+        }
+
+        public void FetchAttributes(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Read(blob => blob.FetchAttributes(accessCondition, options, operationContext));
+        }
+
+        public Task FetchAttributesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().FetchAttributesAsync(accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task FetchAttributesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().FetchAttributesAsync(accessCondition, options, operationContext);
+        }
+
+        public Task FetchAttributesAsync(CancellationToken cancellationToken)
+        {
+            return protocol.Main().FetchAttributesAsync(cancellationToken);
+        }
+
+        public Task FetchAttributesAsync()
+        {
+            return protocol.Main().FetchAttributesAsync();
+        }
+
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers, string groupPolicyIdentifier, string sasVersion)
+        {
+            return protocol.Main().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier,sasVersion);
+        }
+
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers, string groupPolicyIdentifier)
+        {
+            return protocol.Main().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier);
+        }
+
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers)
+        {
+            return protocol.Main().GetSharedAccessSignature(policy, headers);
+        }
+
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, string groupPolicyIdentifier)
+        {
+            return protocol.Main().GetSharedAccessSignature(policy, groupPolicyIdentifier);
+        }
+
+        public string GetSharedAccessSignature(SharedAccessBlobPolicy policy)
+        {
+            return protocol.Main().GetSharedAccessSignature(policy);
+        }
+
+        public bool IsSnapshot
+        {
+            get { return protocol.Main().IsSnapshot; }
+        }
+
+        public IDictionary<string, string> Metadata
+        {
+            get { return protocol.PrevRead().Metadata; }
+        }
+
         public string Name
         {
-            get;
-            private set;
+            get { return protocol.Main().Name; }
         }
 
-        public Microsoft.WindowsAzure.Storage.Blob.CloudBlobClient ServiceClient
+        public Stream OpenRead(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            Stream result = null;
+            protocol.Read(blob => result = blob.OpenRead(accessCondition, options, operationContext));
+            return result;
+        }
+
+        public Task<Stream> OpenReadAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().OpenReadAsync(accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task<Stream> OpenReadAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().OpenReadAsync(accessCondition, options, operationContext);
+        }
+
+        public Task<Stream> OpenReadAsync(CancellationToken cancellationToken)
+        {
+            return protocol.Main().OpenReadAsync(cancellationToken);
+        }
+
+        public Task<Stream> OpenReadAsync()
+        {
+            return protocol.Main().OpenReadAsync();
+        }
+
+        public BlobProperties Properties
+        {
+            get { return protocol.PrevRead().Properties; }
+        }
+
+        public void ReleaseLease(AccessCondition accessCondition, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Main().ReleaseLease(accessCondition, options, operationContext);
+        }
+
+        public Task ReleaseLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().ReleaseLeaseAsync(accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task ReleaseLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().ReleaseLeaseAsync(accessCondition, options, operationContext);
+        }
+
+        public Task ReleaseLeaseAsync(AccessCondition accessCondition, CancellationToken cancellationToken)
+        {
+            return protocol.Main().ReleaseLeaseAsync(accessCondition, cancellationToken);
+        }
+
+        public Task ReleaseLeaseAsync(AccessCondition accessCondition)
+        {
+            return protocol.Main().ReleaseLeaseAsync(accessCondition);
+        }
+
+        public void RenewLease(AccessCondition accessCondition, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Main().RenewLease(accessCondition, options, operationContext);
+        }
+
+        public Task RenewLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().RenewLeaseAsync(accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task RenewLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().RenewLeaseAsync(accessCondition, options, operationContext);
+        }
+
+        public Task RenewLeaseAsync(AccessCondition accessCondition, CancellationToken cancellationToken)
+        {
+            return protocol.Main().RenewLeaseAsync(accessCondition, cancellationToken);
+        }
+
+        public Task RenewLeaseAsync(AccessCondition accessCondition)
+        {
+            return protocol.Main().RenewLeaseAsync(accessCondition);
+        }
+
+        public CloudBlobClient ServiceClient
+        {
+            get { return protocol.Main().ServiceClient; }
+        }
+
+        public void SetMetadata(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Write(blob => blob.SetMetadata(accessCondition, options, operationContext));
+        }
+
+        public Task SetMetadataAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().SetMetadataAsync(accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task SetMetadataAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().SetMetadataAsync(accessCondition, options, operationContext);
+        }
+
+        public Task SetMetadataAsync(CancellationToken cancellationToken)
+        {
+            return protocol.Main().SetMetadataAsync(cancellationToken);
+        }
+
+        public Task SetMetadataAsync()
+        {
+            return protocol.Main().SetMetadataAsync();
+        }
+
+        public void SetProperties(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Write(blob => blob.SetProperties(accessCondition, options, operationContext));
+        }
+
+        public Task SetPropertiesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().SetPropertiesAsync(accessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task SetPropertiesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().SetPropertiesAsync(accessCondition, options, operationContext);
+        }
+
+        public Task SetPropertiesAsync(CancellationToken cancellationToken)
+        {
+            return protocol.Main().SetPropertiesAsync(cancellationToken);
+        }
+
+        public Task SetPropertiesAsync()
+        {
+            return protocol.Main().SetPropertiesAsync();
+        }
+
+        public StorageUri SnapshotQualifiedStorageUri
+        {
+            get { return protocol.Main().SnapshotQualifiedStorageUri; }
+        }
+
+        public Uri SnapshotQualifiedUri
+        {
+            get { return protocol.Main().SnapshotQualifiedUri; }
+        }
+
+        public DateTimeOffset? SnapshotTime
+        {
+            get { return protocol.Main().SnapshotTime; }
+        }
+
+        public string StartCopyFromBlob(Uri source, AccessCondition sourceAccessCondition = null, AccessCondition destAccessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            string result = null;
+            protocol.Write(blob => result = blob.StartCopyFromBlob(source, sourceAccessCondition, destAccessCondition, options, operationContext));
+            return result;
+        }
+
+        public Task<string> StartCopyFromBlobAsync(Uri source, AccessCondition sourceAccessCondition, AccessCondition destAccessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().StartCopyFromBlobAsync(source, sourceAccessCondition, destAccessCondition, options, operationContext, cancellationToken);
+        }
+
+        public Task<string> StartCopyFromBlobAsync(Uri source, AccessCondition sourceAccessCondition, AccessCondition destAccessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().StartCopyFromBlobAsync(source, sourceAccessCondition, destAccessCondition, options, operationContext);
+        }
+
+        public Task<string> StartCopyFromBlobAsync(Uri source, CancellationToken cancellationToken)
+        {
+            return protocol.Main().StartCopyFromBlobAsync(source, cancellationToken);
+        }
+
+        public Task<string> StartCopyFromBlobAsync(Uri source)
+        {
+            return protocol.Main().StartCopyFromBlobAsync(source);
+        }
+
+        public int StreamMinimumReadSizeInBytes
         {
             get
             {
-                CloudBlobContainer primaryContainer = ClientRegistry.GetCloudBlobContainer(configuration.PrimaryServers.First(), Name);
-                return primaryContainer.ServiceClient;
+                return protocol.Main().StreamMinimumReadSizeInBytes;
+            }
+            set
+            {
+                protocol.SetProperty(blob => blob.StreamMinimumReadSizeInBytes = value);
             }
         }
 
-        //public int StreamWriteSizeInBytes
-        //{
-        //    get
-        //    {
-        //        return strongBlob.StreamWriteSizeInBytes;
-        //    }
-        //    set
-        //    {
-        //        strongBlob.StreamWriteSizeInBytes = value;
-        //        eventualBlob.StreamWriteSizeInBytes = value;
-        //    }
-        //}
-
-        //public int StreamMinimumReadSizeInBytes
-        //{
-        //    get
-        //    {
-        //        return strongBlob.StreamMinimumReadSizeInBytes;
-        //    }
-        //    set
-        //    {
-        //        strongBlob.StreamMinimumReadSizeInBytes = value;
-        //        eventualBlob.StreamMinimumReadSizeInBytes = value;
-        //    }
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.Blob.BlobProperties Properties
-        //{
-        //    get { return strongBlob.Properties; }
-        //}
-
-        //public IDictionary<string, string> Metadata
-        //{
-        //    get { return strongBlob.Metadata; }
-        //}
-
-        //public DateTimeOffset? SnapshotTime
-        //{
-        //    get { return strongBlob.SnapshotTime; }
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.Blob.CopyState CopyState
-        //{
-        //    get { return strongBlob.CopyState; }
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.Blob.BlobType BlobType
-        //{
-        //    get { return strongBlob.BlobType; }
-        //}
-
-        /// <summary>
-        /// Upload to primary blobs from the provided stream.
-        /// 
-        /// Our put is using an optimization where it does not take lease on blobs if there is only one primary container. 
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="accessCondition"></param>
-        /// <param name="options"></param>
-        /// <param name="operationContext"></param>
-        public void UploadFromStream(System.IO.Stream source, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
+        public int StreamWriteSizeInBytes
         {
-            source.Position = 0;
-            protocol.Write(blob => blob.UploadFromStream(source, /*lease.getAccessConditionWithLeaseId(accessCondition)*/ accessCondition, options, operationContext));
-            /*
-            bool isDone = false;
-
-            do
+            get
             {
-                try
-                {
-
-                    if (configuration.IsInFastMode())
-                    {
-                        DoUploadFromStream(source, accessCondition, options, operationContext);
-                        isDone = true;
-                    }
-                    else
-                    {
-                        //We are not sure if reconfiguration is happening or not. We execute put in slow mode.
-                        using (CloudBlobLease lease = new CloudBlobLease(configuration.Name, LeaseTakingPolicy.TryOnce))
-                        {
-                            if (lease.HasLease)
-                            {
-                                configuration.SyncWithCloud(ClientRegistry.GetConfigurationAccount());
-                                DoUploadFromStream(source, accessCondition, options, operationContext);
-                                isDone = true;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                }
-                catch (StorageException ex)
-                {
-                    throw ex;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.StackTrace.ToString());
-                    throw ex;
-                }
+                return protocol.Main().StreamWriteSizeInBytes;
             }
-            while (!isDone);
-            */
+            set
+            {
+                protocol.SetProperty(blob => blob.StreamWriteSizeInBytes = value);
+            }
         }
 
-        private void DoUploadFromStream(System.IO.Stream source, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
+        public void UploadFromByteArray(byte[] buffer, int index, int count, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            try
-            {
-                bool done = false;
-                while (!done)
-                {
-                    using (PrimaryCloudBlobLease lease = new PrimaryCloudBlobLease(Name, configuration, true))
-                    {
-                        if (lease.HasLease)
-                        {
-                            foreach (string server in configuration.PrimaryServers)
-                            {
-                                watch.Start();
-
-                                ICloudBlob blob = ClientRegistry.GetCloudBlob(server, configuration.Name, Name, false);
-
-                                source.Position = 0;
-                                blob.UploadFromStream(source, lease.getAccessConditionWithLeaseId(accessCondition), options, operationContext);
-
-                                watch.Stop();
-
-                               if (slaEngine.Monitor.replicas.ContainsKey(server))
-                                {
-                                    ServerState ss = slaEngine.Monitor.GetServerState(server);
-                                    ss.AddRtt(watch.ElapsedMilliseconds);
-                                    slaEngine.Session.RecordObjectWritten(Name, Timestamp(blob), ss);
-                                }
-                            }
-
-                            done = true;
-                        }
-                    }
-                }
-
-            }
-            catch (StorageException se)
-            {
-                throw se;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            protocol.Write(blob => blob.UploadFromByteArray(buffer, index, count, accessCondition, options, operationContext));
         }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginUploadFromStream(System.IO.Stream source, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginUploadFromStream(source, callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginUploadFromStream(System.IO.Stream source, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginUploadFromStream(source, accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public void EndUploadFromStream(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndUploadFromStream(asyncResult);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDownloadToStream(System.IO.Stream target, AsyncCallback callback, object state)
-        //{
-        //    // TODO: Use SLA to decide from which server to download.
-        //    return strongBlob.BeginDownloadToStream(target, callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDownloadToStream(System.IO.Stream target, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginDownloadToStream(target, accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public void EndDownloadToStream(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndDownloadToStream(asyncResult);
-        //    slaEngine.SessionState.RecordObjectRead(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDownloadRangeToStream(System.IO.Stream target, long? offset, long? length, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginDownloadRangeToStream(target, offset, length, callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDownloadRangeToStream(System.IO.Stream target, long? offset, long? length, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginDownloadRangeToStream(target, offset, length, accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public void EndDownloadRangeToStream(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndDownloadRangeToStream(asyncResult);
-        //    slaEngine.SessionState.RecordObjectRead(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginExists(AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginExists(callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginExists(Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginExists(options, operationContext, callback, state);
-        //}
-
-        //public bool EndExists(IAsyncResult asyncResult)
-        //{
-        //    bool result = strongBlob.EndExists(asyncResult);
-        //    slaEngine.SessionState.RecordObjectRead(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //    return result;
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginFetchAttributes(AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginFetchAttributes(callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginFetchAttributes(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginFetchAttributes(accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public void EndFetchAttributes(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndFetchAttributes(asyncResult);
-        //    slaEngine.SessionState.RecordObjectRead(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        //public void SetMetadata(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    strongBlob.SetMetadata(accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginSetMetadata(AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginSetMetadata(callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginSetMetadata(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginSetMetadata(accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public void EndSetMetadata(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndSetMetadata(asyncResult);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        //public void SetProperties(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    strongBlob.SetProperties(accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginSetProperties(AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginSetProperties(callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginSetProperties(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginSetProperties(accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public void EndSetProperties(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndSetProperties(asyncResult);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, Timestamp(strongBlob), primaryServer);
-        //}
-
-        public void Delete(Microsoft.WindowsAzure.Storage.Blob.DeleteSnapshotsOption deleteSnapshotsOption = DeleteSnapshotsOption.None, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
+        public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-
-            bool isDone = false;
-
-            do
-            {
-                try
-                {
-
-                    if (configuration.IsInFastMode())
-                    {
-                        DoDelete(deleteSnapshotsOption, accessCondition, options, operationContext);
-                        isDone = true;
-                    }
-                    else
-                    {
-                        //We are not sure if reconfiguration is happening or not. We execute put in slow mode.
-                        using (CloudBlobLease lease = new CloudBlobLease(configuration.Name, LeaseTakingPolicy.TryOnce))
-                        {
-                            if (lease.HasLease)
-                            {
-                                configuration.SyncWithCloud(ClientRegistry.GetConfigurationAccount());
-                                DoDelete(deleteSnapshotsOption, accessCondition, options, operationContext);
-                                isDone = true;
-                            }
-                        }
-                    }
-                }
-                catch (StorageException ex)
-                {
-                    throw ex;
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-
-            } while (!isDone);
-
-
+            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count, accessCondition, options, operationContext, cancellationToken);
         }
 
-        private void DoDelete(Microsoft.WindowsAzure.Storage.Blob.DeleteSnapshotsOption deleteSnapshotsOption = DeleteSnapshotsOption.None, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
+        public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            bool done = false;
-            while (!done)
-            {
-                using (PrimaryCloudBlobLease lease = new PrimaryCloudBlobLease(this.Name, configuration, true))
-                {
-                    if (lease.HasLease)
-                    {
-                        Dictionary<ICloudBlob, IAsyncResult> results = new Dictionary<ICloudBlob, IAsyncResult>();
-                        foreach (string serverName in configuration.PrimaryServers)
-                        {
-                            watch.Start();
-                            ICloudBlob blob = ClientRegistry.GetCloudBlob(serverName, configuration.Name, Name);
-                            results[blob] = blob.BeginDelete(deleteSnapshotsOption, lease.getAccessConditionWithLeaseId(accessCondition), options, operationContext, null, null);
-                            ServerState ss = slaEngine.Monitor.GetServerState(serverName);
-                            ss.AddRtt(watch.ElapsedMilliseconds);
-                            slaEngine.Session.RecordObjectWritten(Name, Timestamp(blob), ss);
-                        }
-
-                        foreach (ICloudBlob blob in results.Keys)
-                        {
-                            blob.EndDelete(results[blob]);
-                        }
-                        done = true;
-                    }
-                }
-            }
+            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count, accessCondition, options, operationContext);
         }
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDelete(AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginDelete(callback, state);
-        //}
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDelete(Microsoft.WindowsAzure.Storage.Blob.DeleteSnapshotsOption deleteSnapshotsOption, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginDelete(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
-        //}
+        public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count, CancellationToken cancellationToken)
+        {
+            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count, cancellationToken);
+        }
 
-        //public void EndDelete(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndDelete(asyncResult);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, DateTimeOffset.Now, primaryServer);
-        //}
+        public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count)
+        {
+            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count);
+        }
 
-        //public bool DeleteIfExists(Microsoft.WindowsAzure.Storage.Blob.DeleteSnapshotsOption deleteSnapshotsOption = DeleteSnapshotsOption.None, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    bool result = strongBlob.DeleteIfExists(deleteSnapshotsOption, accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, DateTimeOffset.Now, primaryServer);
-        //    return result;
-        //}
+        public void UploadFromFile(string path, FileMode mode, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Write(blob => blob.UploadFromFile(path, mode, accessCondition, options, operationContext));
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDeleteIfExists(AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginDeleteIfExists(callback, state);
-        //}
+        public Task UploadFromFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().UploadFromFileAsync(path, mode, accessCondition, options, operationContext, cancellationToken);
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginDeleteIfExists(Microsoft.WindowsAzure.Storage.Blob.DeleteSnapshotsOption deleteSnapshotsOption, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginDeleteIfExists(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
-        //}
+        public Task UploadFromFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().UploadFromFileAsync(path, mode, accessCondition, options, operationContext);
+        }
 
-        //public bool EndDeleteIfExists(IAsyncResult asyncResult)
-        //{
-        //    bool result = strongBlob.EndDeleteIfExists(asyncResult);
-        //    slaEngine.SessionState.RecordObjectWritten(strongBlob.Name, DateTimeOffset.Now, primaryServer);
-        //    return result;
-        //}
+        public Task UploadFromFileAsync(string path, FileMode mode, CancellationToken cancellationToken)
+        {
+            return protocol.Main().UploadFromFileAsync(path, mode, cancellationToken);
+        }
 
-        //public string AcquireLease(TimeSpan? leaseTime, string proposedLeaseId, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    string result = strongBlob.AcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //    return result;
-        //}
+        public Task UploadFromFileAsync(string path, FileMode mode)
+        {
+            return protocol.Main().UploadFromFileAsync(path, mode);
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginAcquireLease(TimeSpan? leaseTime, string proposedLeaseId, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginAcquireLease(leaseTime, proposedLeaseId, callback, state);
-        //}
+        public void UploadFromStream(Stream source, long length, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Write(blob => blob.UploadFromStream(source, length, accessCondition, options, operationContext));
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginAcquireLease(TimeSpan? leaseTime, string proposedLeaseId, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginAcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext, callback, state);
-        //}
+        public void UploadFromStream(Stream source, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
+        {
+            protocol.Write(blob => blob.UploadFromStream(source, accessCondition, options, operationContext));
+        }
 
-        //public string EndAcquireLease(IAsyncResult asyncResult)
-        //{
-        //    return strongBlob.EndAcquireLease(asyncResult);
-        //}
+        public Task UploadFromStreamAsync(Stream source, long length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().UploadFromStreamAsync(source, length, accessCondition, options, operationContext, cancellationToken);
+        }
 
-        //public void RenewLease(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    strongBlob.RenewLease(accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //}
+        public Task UploadFromStreamAsync(Stream source, long length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().UploadFromStreamAsync(source, length, accessCondition, options, operationContext);
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginRenewLease(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginRenewLease(accessCondition, callback, state);
-        //}
+        public Task UploadFromStreamAsync(Stream source, long length, CancellationToken cancellationToken)
+        {
+            return protocol.Main().UploadFromStreamAsync(source, length, cancellationToken);
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginRenewLease(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginRenewLease(accessCondition, options, operationContext, callback, state);
-        //}
+        public Task UploadFromStreamAsync(Stream source, long length)
+        {
+            return protocol.Main().UploadFromStreamAsync(source, length);
+        }
 
-        //public void EndRenewLease(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndRenewLease(asyncResult);
-        //}
+        public Task UploadFromStreamAsync(Stream source, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
+        {
+            return protocol.Main().UploadFromStreamAsync(source, accessCondition, options, operationContext, cancellationToken);
+        }
 
-        //public string ChangeLease(string proposedLeaseId, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    string result = strongBlob.ChangeLease(proposedLeaseId, accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //    return result;
-        //}
+        public Task UploadFromStreamAsync(Stream source, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
+        {
+            return protocol.Main().UploadFromStreamAsync(source, accessCondition, options, operationContext);
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginChangeLease(string proposedLeaseId, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginChangeLease(proposedLeaseId, accessCondition, callback, state);
-        //}
+        public Task UploadFromStreamAsync(Stream source, CancellationToken cancellationToken)
+        {
+            return protocol.Main().UploadFromStreamAsync(source, cancellationToken);
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginChangeLease(string proposedLeaseId, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginChangeLease(proposedLeaseId, accessCondition, options, operationContext, callback, state);
-        //}
+        public Task UploadFromStreamAsync(Stream source)
+        {
+            return protocol.Main().UploadFromStreamAsync(source);
+        }
 
-        //public string EndChangeLease(IAsyncResult asyncResult)
-        //{
-        //    return strongBlob.EndChangeLease(asyncResult);
-        //}
+        public CloudBlobContainer Container
+        {
+            get { return protocol.Main().Container; }
+        }
 
-        //public void ReleaseLease(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    strongBlob.ReleaseLease(accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //}
+        public CloudBlobDirectory Parent
+        {
+            get { return protocol.Main().Parent; }
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginReleaseLease(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginReleaseLease(accessCondition, callback, state);
-        //}
+        public StorageUri StorageUri
+        {
+            get { return protocol.Main().StorageUri; }
+        }
 
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginReleaseLease(Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginReleaseLease(accessCondition, options, operationContext, callback, state);
-        //}
+        public Uri Uri
+        {
+            get { return protocol.Main().Uri; }
+        }
 
-        //public void EndReleaseLease(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndReleaseLease(asyncResult);
-        //}
 
-        //public TimeSpan BreakLease(TimeSpan? breakPeriod = null, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    watch.Start();
-        //    TimeSpan result = strongBlob.BreakLease(breakPeriod, accessCondition, options, operationContext);
-        //    primaryServer.AddRtt(watch.ElapsedMilliseconds);
-        //    return result;
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginBreakLease(TimeSpan? breakPeriod, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginBreakLease(breakPeriod, callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginBreakLease(TimeSpan? breakPeriod, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginBreakLease(breakPeriod, accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public TimeSpan EndBreakLease(IAsyncResult asyncResult)
-        //{
-        //    return strongBlob.EndBreakLease(asyncResult);
-        //}
-
-        //public string StartCopyFromBlob(Uri source, Microsoft.WindowsAzure.Storage.AccessCondition sourceAccessCondition = null, Microsoft.WindowsAzure.Storage.AccessCondition destAccessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    return strongBlob.StartCopyFromBlob(source, sourceAccessCondition, destAccessCondition, options, operationContext);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginStartCopyFromBlob(Uri source, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginStartCopyFromBlob(source, callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginStartCopyFromBlob(Uri source, Microsoft.WindowsAzure.Storage.AccessCondition sourceAccessCondition, Microsoft.WindowsAzure.Storage.AccessCondition destAccessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginStartCopyFromBlob(source, sourceAccessCondition, destAccessCondition, options, operationContext, callback, state);
-        //}
-
-        //public string EndStartCopyFromBlob(IAsyncResult asyncResult)
-        //{
-        //    return strongBlob.EndStartCopyFromBlob(asyncResult);
-        //}
-
-        //public void AbortCopy(string copyId, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
-        //{
-        //    strongBlob.AbortCopy(copyId, accessCondition, options, operationContext);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginAbortCopy(string copyId, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginAbortCopy(copyId, callback, state);
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.ICancellableAsyncResult BeginAbortCopy(string copyId, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options, Microsoft.WindowsAzure.Storage.OperationContext operationContext, AsyncCallback callback, object state)
-        //{
-        //    return strongBlob.BeginAbortCopy(copyId, accessCondition, options, operationContext, callback, state);
-        //}
-
-        //public void EndAbortCopy(IAsyncResult asyncResult)
-        //{
-        //    strongBlob.EndAbortCopy(asyncResult);
-        //}
-
-        //public Uri Uri
-        //{
-        //    get { return strongBlob.Uri; }
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.Blob.CloudBlobDirectory Parent
-        //{
-        //    get { return strongBlob.Parent; }
-        //}
-
-        //public Microsoft.WindowsAzure.Storage.Blob.CloudBlobContainer Container
-        //{
-        //    get { return strongBlob.Container; }
-        //}
-
+        
     }
 }

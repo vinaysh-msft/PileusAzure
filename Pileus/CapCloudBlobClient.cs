@@ -14,7 +14,11 @@ using System.Net;
 
 namespace Microsoft.WindowsAzure.Storage.Pileus
 {
- 
+
+    /*
+     * DEPRECATED - DO NOT USE.
+     */
+
     /// <summary>
     /// Returns actual number of clients per tick divided by standard number of clients per tick.
     /// </summary>
@@ -54,6 +58,15 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             CapCloudBlobClient.numberOfClients = numberOfClients;
         }
 
+        public static int ActualNumberOfClients()
+        {
+            return 1;
+        }
+
+        public CapCloudBlobClient(): this(ActualNumberOfClients)
+        {
+        }
+
         /// <summary>
         /// Name of the client.
         /// </summary>
@@ -67,18 +80,37 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         /// <returns>A reference to a container.</returns>
         public CapCloudBlobContainer GetContainerReference(string containerName, ConsistencySLAEngine slaEngine)
         {
-            CapCloudBlobContainer result;
+            CapCloudBlobContainer result = null;
             if (!slaEngines.ContainsKey(containerName))
             {
                 slaEngines[containerName] = new List<ConsistencySLAEngine>();
             }
             slaEngines[containerName].Add(slaEngine);
 
-            result = new CapCloudBlobContainer(containerName, slaEngine, this.Name);
+            //result = new CapCloudBlobContainer(containerName, slaEngine, this.Name);
             return result;
         }
 
-        
+        /// <summary>
+        /// Returns a reference to a <see cref="CapCloudBlobContainer"/> object with the specified name.
+        /// </summary>
+        /// <param name="containerName">The name of the container, or an absolute URI to the container.</param>
+        /// <returns>A reference to a container.</returns>
+        public CapCloudBlobContainer GetContainerReference(string containerName)
+        {
+            CapCloudBlobContainer result = null;
+            if (!slaEngines.ContainsKey(containerName))
+            {
+                slaEngines[containerName] = new List<ConsistencySLAEngine>();
+            }
+            // TODO: Create a default SLA and default configuration
+            ConsistencySLAEngine slaEngine = new ConsistencySLAEngine(null, null);
+            slaEngines[containerName].Add(slaEngine);
+
+            //result = new CapCloudBlobContainer(containerName, slaEngine, this.Name);
+            return result;
+        }
+       
     }
 
 }
