@@ -16,7 +16,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         {
             List<string> locations = new List<string> 
             { "North Central US", "South Central US", "East US", "West US", "North Europe", "West Europe",
-            "South East Asia", "East Asia", "East China", "North China", "East Japan", "West Japan" };
+            "South East Asia", "East Asia", "East China", "North China", "East Japan", "West Japan", "Brazil" };
             return locations;
         }
 
@@ -64,6 +64,9 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                     break;
                 case "West Japan":
                     secondary = "East Japan";
+                    break;
+                case "Brazil":
+                    secondary = "South Central US";
                     break;
                 default:
                     secondary = "unknown";

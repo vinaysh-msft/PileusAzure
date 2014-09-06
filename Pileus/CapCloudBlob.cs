@@ -47,401 +47,403 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         /*
          * Below is a shim for each of the methods in the ICloudBlob interface (in alphabetical order).
-         * Most of the implementations simply call on the main primary blob using protocol.Main().
+         * Most of the implementations simply call on the main primary blob using protocol.MainPrimary().
          * Read operations should call protocol.Read with a delegate for the operation.
          * Write operations should call protocol.Write with a delegate for the operation.
          */
 
         public void AbortCopy(string copyId, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Main().AbortCopy(copyId, accessCondition, options, operationContext);
+            protocol.MainPrimary().AbortCopy(copyId, accessCondition, options, operationContext);
         }
 
         public Task AbortCopyAsync(string copyId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().AbortCopyAsync(copyId, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().AbortCopyAsync(copyId, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task AbortCopyAsync(string copyId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().AbortCopyAsync(copyId, accessCondition, options, operationContext);
+            return protocol.MainPrimary().AbortCopyAsync(copyId, accessCondition, options, operationContext);
         }
 
         public Task AbortCopyAsync(string copyId, CancellationToken cancellationToken)
         {
-            return protocol.Main().AbortCopyAsync(copyId, cancellationToken);
+            return protocol.MainPrimary().AbortCopyAsync(copyId, cancellationToken);
         }
 
         public Task AbortCopyAsync(string copyId)
         {
-            return protocol.Main().AbortCopyAsync(copyId);
+            return protocol.MainPrimary().AbortCopyAsync(copyId);
         }
 
         public string AcquireLease(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            return protocol.Main().AcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext);
+            return protocol.MainPrimary().AcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext);
         }
 
         public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().AcquireLeaseAsync(leaseTime, proposedLeaseId, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId, accessCondition, options, operationContext);
+            return protocol.MainPrimary().AcquireLeaseAsync(leaseTime, proposedLeaseId, accessCondition, options, operationContext);
         }
 
         public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId, CancellationToken cancellationToken)
         {
-            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId, cancellationToken);
+            return protocol.MainPrimary().AcquireLeaseAsync(leaseTime, proposedLeaseId, cancellationToken);
         }
 
         public Task<string> AcquireLeaseAsync(TimeSpan? leaseTime, string proposedLeaseId)
         {
-            return protocol.Main().AcquireLeaseAsync(leaseTime, proposedLeaseId);
+            return protocol.MainPrimary().AcquireLeaseAsync(leaseTime, proposedLeaseId);
         }
 
         public ICancellableAsyncResult BeginAbortCopy(string copyId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginAbortCopy(copyId, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginAbortCopy(copyId, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginAbortCopy(string copyId, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginAbortCopy(copyId, callback, state);
+            return protocol.MainPrimary().BeginAbortCopy(copyId, callback, state);
         }
 
         public ICancellableAsyncResult BeginAcquireLease(TimeSpan? leaseTime, string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginAcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginAcquireLease(leaseTime, proposedLeaseId, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginAcquireLease(TimeSpan? leaseTime, string proposedLeaseId, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginAcquireLease(leaseTime, proposedLeaseId, callback, state);
+            return protocol.MainPrimary().BeginAcquireLease(leaseTime, proposedLeaseId, callback, state);
         }
 
         public ICancellableAsyncResult BeginBreakLease(TimeSpan? breakPeriod, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginBreakLease(breakPeriod, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginBreakLease(breakPeriod, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginBreakLease(TimeSpan? breakPeriod, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginBreakLease(breakPeriod, callback, state);
+            return protocol.MainPrimary().BeginBreakLease(breakPeriod, callback, state);
         }
 
         public ICancellableAsyncResult BeginChangeLease(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginChangeLease(proposedLeaseId, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginChangeLease(proposedLeaseId, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginChangeLease(string proposedLeaseId, AccessCondition accessCondition, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginChangeLease(proposedLeaseId, accessCondition, callback, state);
+            return protocol.MainPrimary().BeginChangeLease(proposedLeaseId, accessCondition, callback, state);
         }
 
         public ICancellableAsyncResult BeginDelete(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDelete(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginDelete(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginDelete(AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDelete(callback, state);
+            return protocol.MainPrimary().BeginDelete(callback, state);
         }
 
         public ICancellableAsyncResult BeginDeleteIfExists(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDeleteIfExists(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginDeleteIfExists(deleteSnapshotsOption, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginDeleteIfExists(AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDeleteIfExists(callback, state);
+            return protocol.MainPrimary().BeginDeleteIfExists(callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadRangeToByteArray(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadRangeToByteArray(target, index, blobOffset, length, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginDownloadRangeToByteArray(target, index, blobOffset, length, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadRangeToByteArray(byte[] target, int index, long? blobOffset, long? length, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadRangeToByteArray(target, index, blobOffset, length, callback, state);
+            return protocol.MainPrimary().BeginDownloadRangeToByteArray(target, index, blobOffset, length, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadRangeToStream(Stream target, long? offset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadRangeToStream(target, offset, length, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginDownloadRangeToStream(target, offset, length, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadRangeToStream(Stream target, long? offset, long? length, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadRangeToStream(target, offset, length, callback, state);
+            return protocol.MainPrimary().BeginDownloadRangeToStream(target, offset, length, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadToByteArray(byte[] target, int index, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadToByteArray(target, index, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginDownloadToByteArray(target, index, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadToByteArray(byte[] target, int index, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadToByteArray(target, index, callback, state);
+            return protocol.MainPrimary().BeginDownloadToByteArray(target, index, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadToFile(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadToFile(path, mode, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginDownloadToFile(path, mode, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadToFile(string path, FileMode mode, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadToFile(path, mode, callback, state);
+            return protocol.MainPrimary().BeginDownloadToFile(path, mode, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadToStream(Stream target, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadToStream(target, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginDownloadToStream(target, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginDownloadToStream(Stream target, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginDownloadToStream(target, callback, state);
+            return protocol.MainPrimary().BeginDownloadToStream(target, callback, state);
         }
 
         public ICancellableAsyncResult BeginExists(BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginExists(options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginExists(options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginExists(AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginExists(callback, state);
+            return protocol.MainPrimary().BeginExists(callback, state);
         }
 
         public ICancellableAsyncResult BeginFetchAttributes(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginFetchAttributes(accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginFetchAttributes(accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginFetchAttributes(AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginFetchAttributes(callback, state);
+            return protocol.MainPrimary().BeginFetchAttributes(callback, state);
         }
 
         public ICancellableAsyncResult BeginOpenRead(AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginOpenRead(callback, state);
+            return protocol.MainPrimary().BeginOpenRead(callback, state);
         }
 
         public ICancellableAsyncResult BeginOpenRead(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginOpenRead(accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginOpenRead(accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginReleaseLease(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginReleaseLease(accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginReleaseLease(accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginReleaseLease(AccessCondition accessCondition, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginReleaseLease(accessCondition, callback, state);
+            return protocol.MainPrimary().BeginReleaseLease(accessCondition, callback, state);
         }
 
         public ICancellableAsyncResult BeginRenewLease(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginRenewLease(accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginRenewLease(accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginRenewLease(AccessCondition accessCondition, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginRenewLease(accessCondition, callback, state);
+            return protocol.MainPrimary().BeginRenewLease(accessCondition, callback, state);
         }
 
         public ICancellableAsyncResult BeginSetMetadata(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginSetMetadata(accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginSetMetadata(accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginSetMetadata(AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginSetMetadata(callback, state);
+            return protocol.MainPrimary().BeginSetMetadata(callback, state);
         }
 
         public ICancellableAsyncResult BeginSetProperties(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginSetProperties(accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginSetProperties(accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginSetProperties(AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginSetProperties(callback, state);
+            return protocol.MainPrimary().BeginSetProperties(callback, state);
         }
 
         public ICancellableAsyncResult BeginStartCopyFromBlob(Uri source, AccessCondition sourceAccessCondition, AccessCondition destAccessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginStartCopyFromBlob(source, sourceAccessCondition, destAccessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginStartCopyFromBlob(source, sourceAccessCondition, destAccessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginStartCopyFromBlob(Uri source, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginStartCopyFromBlob(source, callback, state);
+            return protocol.MainPrimary().BeginStartCopyFromBlob(source, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromByteArray(byte[] buffer, int index, int count, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromByteArray(buffer, index, count, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginUploadFromByteArray(buffer, index, count, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromByteArray(byte[] buffer, int index, int count, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromByteArray(buffer, index, count, callback, state);
+            return protocol.MainPrimary().BeginUploadFromByteArray(buffer, index, count, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromFile(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromFile(path, mode, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginUploadFromFile(path, mode, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromFile(string path, FileMode mode, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromFile(path, mode, callback, state);
+            return protocol.MainPrimary().BeginUploadFromFile(path, mode, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromStream(Stream source, long length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromStream(source, length, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginUploadFromStream(source, length, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromStream(Stream source, long length, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromStream(source, length, callback, state);
+            return protocol.MainPrimary().BeginUploadFromStream(source, length, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromStream(Stream source, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromStream(source, accessCondition, options, operationContext, callback, state);
+            return protocol.MainPrimary().BeginUploadFromStream(source, accessCondition, options, operationContext, callback, state);
         }
 
         public ICancellableAsyncResult BeginUploadFromStream(Stream source, AsyncCallback callback, object state)
         {
-            return protocol.Main().BeginUploadFromStream(source, callback, state);
+            return protocol.MainPrimary().BeginUploadFromStream(source, callback, state);
         }
 
         public BlobType BlobType
         {
-            get { return protocol.Main().BlobType; }
+            get { return protocol.MainPrimary().BlobType; }
         }
 
         public TimeSpan BreakLease(TimeSpan? breakPeriod = null, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            return protocol.Main().BreakLease(breakPeriod, accessCondition, options, operationContext);
+            return protocol.MainPrimary().BreakLease(breakPeriod, accessCondition, options, operationContext);
         }
 
         public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().BreakLeaseAsync(breakPeriod, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().BreakLeaseAsync(breakPeriod, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().BreakLeaseAsync(breakPeriod, accessCondition, options, operationContext);
+            return protocol.MainPrimary().BreakLeaseAsync(breakPeriod, accessCondition, options, operationContext);
         }
 
         public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod, CancellationToken cancellationToken)
         {
-            return protocol.Main().BreakLeaseAsync(breakPeriod, cancellationToken);
+            return protocol.MainPrimary().BreakLeaseAsync(breakPeriod, cancellationToken);
         }
 
         public Task<TimeSpan> BreakLeaseAsync(TimeSpan? breakPeriod)
         {
-            return protocol.Main().BreakLeaseAsync(breakPeriod);
+            return protocol.MainPrimary().BreakLeaseAsync(breakPeriod);
         }
 
         public string ChangeLease(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            return protocol.Main().ChangeLease(proposedLeaseId, accessCondition, options, operationContext);
+            return protocol.MainPrimary().ChangeLease(proposedLeaseId, accessCondition, options, operationContext);
         }
 
         public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().ChangeLeaseAsync(proposedLeaseId, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition, options, operationContext);
+            return protocol.MainPrimary().ChangeLeaseAsync(proposedLeaseId, accessCondition, options, operationContext);
         }
 
         public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition, CancellationToken cancellationToken)
         {
-            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition, cancellationToken);
+            return protocol.MainPrimary().ChangeLeaseAsync(proposedLeaseId, accessCondition, cancellationToken);
         }
 
         public Task<string> ChangeLeaseAsync(string proposedLeaseId, AccessCondition accessCondition)
         {
-            return protocol.Main().ChangeLeaseAsync(proposedLeaseId, accessCondition);
+            return protocol.MainPrimary().ChangeLeaseAsync(proposedLeaseId, accessCondition);
         }
 
         public CopyState CopyState
         {
-            get { return protocol.Main().CopyState; }
+            get { return protocol.MainPrimary().CopyState; }
         }
 
         public void Delete(DeleteSnapshotsOption deleteSnapshotsOption = DeleteSnapshotsOption.None, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Write(blob => blob.Delete(deleteSnapshotsOption, accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => blob.Delete(deleteSnapshotsOption, ac, options, operationContext), ac);
         }
 
         public Task DeleteAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().DeleteAsync(deleteSnapshotsOption, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().DeleteAsync(deleteSnapshotsOption, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task DeleteAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().DeleteAsync(deleteSnapshotsOption, accessCondition, options, operationContext);
+            return protocol.MainPrimary().DeleteAsync(deleteSnapshotsOption, accessCondition, options, operationContext);
         }
 
         public Task DeleteAsync(CancellationToken cancellationToken)
         {
-            return protocol.Main().DeleteAsync(cancellationToken);
+            return protocol.MainPrimary().DeleteAsync(cancellationToken);
         }
 
         public Task DeleteAsync()
         {
-            return protocol.Main().DeleteAsync();
+            return protocol.MainPrimary().DeleteAsync();
         }
 
         public bool DeleteIfExists(DeleteSnapshotsOption deleteSnapshotsOption = DeleteSnapshotsOption.None, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
             bool result = false;
-            protocol.Write(blob => result = blob.DeleteIfExists(deleteSnapshotsOption, accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => result = blob.DeleteIfExists(deleteSnapshotsOption, ac, options, operationContext), ac);
             return result;
         }
 
         public Task<bool> DeleteIfExistsAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().DeleteIfExistsAsync(deleteSnapshotsOption, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().DeleteIfExistsAsync(deleteSnapshotsOption, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<bool> DeleteIfExistsAsync(DeleteSnapshotsOption deleteSnapshotsOption, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().DeleteIfExistsAsync(deleteSnapshotsOption, accessCondition, options, operationContext);
+            return protocol.MainPrimary().DeleteIfExistsAsync(deleteSnapshotsOption, accessCondition, options, operationContext);
         }
 
         public Task<bool> DeleteIfExistsAsync(CancellationToken cancellationToken)
         {
-            return protocol.Main().DeleteIfExistsAsync(cancellationToken);
+            return protocol.MainPrimary().DeleteIfExistsAsync(cancellationToken);
         }
 
         public Task<bool> DeleteIfExistsAsync()
         {
-            return protocol.Main().DeleteIfExistsAsync();
+            return protocol.MainPrimary().DeleteIfExistsAsync();
         }
 
         public int DownloadRangeToByteArray(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
@@ -453,22 +455,22 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, accessCondition, options, operationContext);
+            return protocol.MainPrimary().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, accessCondition, options, operationContext);
         }
 
         public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, cancellationToken);
+            return protocol.MainPrimary().DownloadRangeToByteArrayAsync(target, index, blobOffset, length, cancellationToken);
         }
 
         public Task<int> DownloadRangeToByteArrayAsync(byte[] target, int index, long? blobOffset, long? length)
         {
-            return protocol.Main().DownloadRangeToByteArrayAsync(target, index, blobOffset, length);
+            return protocol.MainPrimary().DownloadRangeToByteArrayAsync(target, index, blobOffset, length);
         }
 
         public void DownloadRangeToStream(Stream target, long? offset, long? length, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
@@ -478,22 +480,22 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().DownloadRangeToStreamAsync(target, offset, length, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length, accessCondition, options, operationContext);
+            return protocol.MainPrimary().DownloadRangeToStreamAsync(target, offset, length, accessCondition, options, operationContext);
         }
 
         public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length, cancellationToken);
+            return protocol.MainPrimary().DownloadRangeToStreamAsync(target, offset, length, cancellationToken);
         }
 
         public Task DownloadRangeToStreamAsync(Stream target, long? offset, long? length)
         {
-            return protocol.Main().DownloadRangeToStreamAsync(target, offset, length);
+            return protocol.MainPrimary().DownloadRangeToStreamAsync(target, offset, length);
         }
 
         public int DownloadToByteArray(byte[] target, int index, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
@@ -505,22 +507,22 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public Task<int> DownloadToByteArrayAsync(byte[] target, int index, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadToByteArrayAsync(target, index, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().DownloadToByteArrayAsync(target, index, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<int> DownloadToByteArrayAsync(byte[] target, int index, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().DownloadToByteArrayAsync(target, index, accessCondition, options, operationContext);
+            return protocol.MainPrimary().DownloadToByteArrayAsync(target, index, accessCondition, options, operationContext);
         }
 
         public Task<int> DownloadToByteArrayAsync(byte[] target, int index, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadToByteArrayAsync(target, index, cancellationToken);
+            return protocol.MainPrimary().DownloadToByteArrayAsync(target, index, cancellationToken);
         }
 
         public Task<int> DownloadToByteArrayAsync(byte[] target, int index)
         {
-            return protocol.Main().DownloadToByteArrayAsync(target, index);
+            return protocol.MainPrimary().DownloadToByteArrayAsync(target, index);
         }
 
         public void DownloadToFile(string path, FileMode mode, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
@@ -530,157 +532,159 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public Task DownloadToFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadToFileAsync(path, mode, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().DownloadToFileAsync(path, mode, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task DownloadToFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().DownloadToFileAsync(path, mode, accessCondition, options, operationContext);
+            return protocol.MainPrimary().DownloadToFileAsync(path, mode, accessCondition, options, operationContext);
         }
 
         public Task DownloadToFileAsync(string path, FileMode mode, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadToFileAsync(path, mode, cancellationToken);
+            return protocol.MainPrimary().DownloadToFileAsync(path, mode, cancellationToken);
         }
 
         public Task DownloadToFileAsync(string path, FileMode mode)
         {
-            return protocol.Main().DownloadToFileAsync(path, mode);
+            return protocol.MainPrimary().DownloadToFileAsync(path, mode);
         }
 
         public void DownloadToStream(Stream target, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Read(blob => blob.DownloadToStream(target, accessCondition, options, operationContext));
+            BlobRequestOptions bro = (options == null) ? new BlobRequestOptions() : options;
+            bro.DisableContentMD5Validation = true;
+            protocol.Read(blob => blob.DownloadToStream(target, accessCondition, bro, operationContext));
         }
 
         public Task DownloadToStreamAsync(Stream target, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadToStreamAsync(target, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().DownloadToStreamAsync(target, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task DownloadToStreamAsync(Stream target, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().DownloadToStreamAsync(target, accessCondition, options, operationContext);
+            return protocol.MainPrimary().DownloadToStreamAsync(target, accessCondition, options, operationContext);
         }
 
         public Task DownloadToStreamAsync(Stream target, CancellationToken cancellationToken)
         {
-            return protocol.Main().DownloadToStreamAsync(target, cancellationToken);
+            return protocol.MainPrimary().DownloadToStreamAsync(target, cancellationToken);
         }
 
         public Task DownloadToStreamAsync(Stream target)
         {
-            return protocol.Main().DownloadToStreamAsync(target);
+            return protocol.MainPrimary().DownloadToStreamAsync(target);
         }
 
         public void EndAbortCopy(IAsyncResult asyncResult)
         {
-            protocol.Main().EndAbortCopy(asyncResult);
+            protocol.MainPrimary().EndAbortCopy(asyncResult);
         }
 
         public string EndAcquireLease(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndAcquireLease(asyncResult);
+            return protocol.MainPrimary().EndAcquireLease(asyncResult);
         }
 
         public TimeSpan EndBreakLease(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndBreakLease(asyncResult);
+            return protocol.MainPrimary().EndBreakLease(asyncResult);
         }
 
         public string EndChangeLease(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndChangeLease(asyncResult);
+            return protocol.MainPrimary().EndChangeLease(asyncResult);
         }
 
         public void EndDelete(IAsyncResult asyncResult)
         {
-            protocol.Main().EndDelete(asyncResult);
+            protocol.MainPrimary().EndDelete(asyncResult);
         }
 
         public bool EndDeleteIfExists(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndDeleteIfExists(asyncResult);
+            return protocol.MainPrimary().EndDeleteIfExists(asyncResult);
         }
 
         public int EndDownloadRangeToByteArray(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndDownloadRangeToByteArray(asyncResult);
+            return protocol.MainPrimary().EndDownloadRangeToByteArray(asyncResult);
         }
 
         public void EndDownloadRangeToStream(IAsyncResult asyncResult)
         {
-            protocol.Main().EndDownloadRangeToStream(asyncResult);
+            protocol.MainPrimary().EndDownloadRangeToStream(asyncResult);
         }
 
         public int EndDownloadToByteArray(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndDownloadToByteArray(asyncResult);
+            return protocol.MainPrimary().EndDownloadToByteArray(asyncResult);
         }
 
         public void EndDownloadToFile(IAsyncResult asyncResult)
         {
-            protocol.Main().EndDownloadToFile(asyncResult);
+            protocol.MainPrimary().EndDownloadToFile(asyncResult);
         }
 
         public void EndDownloadToStream(IAsyncResult asyncResult)
         {
-            protocol.Main().EndDownloadToStream(asyncResult);
+            protocol.MainPrimary().EndDownloadToStream(asyncResult);
         }
 
         public bool EndExists(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndExists(asyncResult);
+            return protocol.MainPrimary().EndExists(asyncResult);
         }
 
         public void EndFetchAttributes(IAsyncResult asyncResult)
         {
-            protocol.Main().EndFetchAttributes(asyncResult);
+            protocol.MainPrimary().EndFetchAttributes(asyncResult);
         }
 
         public Stream EndOpenRead(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndOpenRead(asyncResult);
+            return protocol.MainPrimary().EndOpenRead(asyncResult);
         }
 
         public void EndReleaseLease(IAsyncResult asyncResult)
         {
-            protocol.Main().EndReleaseLease(asyncResult);
+            protocol.MainPrimary().EndReleaseLease(asyncResult);
         }
 
         public void EndRenewLease(IAsyncResult asyncResult)
         {
-            protocol.Main().EndRenewLease(asyncResult);
+            protocol.MainPrimary().EndRenewLease(asyncResult);
         }
 
         public void EndSetMetadata(IAsyncResult asyncResult)
         {
-            protocol.Main().EndSetMetadata(asyncResult);
+            protocol.MainPrimary().EndSetMetadata(asyncResult);
         }
 
         public void EndSetProperties(IAsyncResult asyncResult)
         {
-            protocol.Main().EndSetProperties(asyncResult);
+            protocol.MainPrimary().EndSetProperties(asyncResult);
         }
 
         public string EndStartCopyFromBlob(IAsyncResult asyncResult)
         {
-            return protocol.Main().EndStartCopyFromBlob(asyncResult);
+            return protocol.MainPrimary().EndStartCopyFromBlob(asyncResult);
         }
 
         public void EndUploadFromByteArray(IAsyncResult asyncResult)
         {
-            protocol.Main().EndUploadFromByteArray(asyncResult);
+            protocol.MainPrimary().EndUploadFromByteArray(asyncResult);
         }
 
         public void EndUploadFromFile(IAsyncResult asyncResult)
         {
-            protocol.Main().EndUploadFromFile(asyncResult);
+            protocol.MainPrimary().EndUploadFromFile(asyncResult);
         }
 
         public void EndUploadFromStream(IAsyncResult asyncResult)
         {
-            protocol.Main().EndUploadFromStream(asyncResult);
+            protocol.MainPrimary().EndUploadFromStream(asyncResult);
         }
 
         public bool Exists(BlobRequestOptions options = null, OperationContext operationContext = null)
@@ -692,22 +696,22 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public Task<bool> ExistsAsync(BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().ExistsAsync(options, operationContext, cancellationToken);
+            return protocol.MainPrimary().ExistsAsync(options, operationContext, cancellationToken);
         }
 
         public Task<bool> ExistsAsync(BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().ExistsAsync(options, operationContext);
+            return protocol.MainPrimary().ExistsAsync(options, operationContext);
         }
 
         public Task<bool> ExistsAsync(CancellationToken cancellationToken)
         {
-            return protocol.Main().ExistsAsync(cancellationToken);
+            return protocol.MainPrimary().ExistsAsync(cancellationToken);
         }
 
         public Task<bool> ExistsAsync()
         {
-            return protocol.Main().ExistsAsync();
+            return protocol.MainPrimary().ExistsAsync();
         }
 
         public void FetchAttributes(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
@@ -717,52 +721,52 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public Task FetchAttributesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().FetchAttributesAsync(accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().FetchAttributesAsync(accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task FetchAttributesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().FetchAttributesAsync(accessCondition, options, operationContext);
+            return protocol.MainPrimary().FetchAttributesAsync(accessCondition, options, operationContext);
         }
 
         public Task FetchAttributesAsync(CancellationToken cancellationToken)
         {
-            return protocol.Main().FetchAttributesAsync(cancellationToken);
+            return protocol.MainPrimary().FetchAttributesAsync(cancellationToken);
         }
 
         public Task FetchAttributesAsync()
         {
-            return protocol.Main().FetchAttributesAsync();
+            return protocol.MainPrimary().FetchAttributesAsync();
         }
 
         public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers, string groupPolicyIdentifier, string sasVersion)
         {
-            return protocol.Main().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier,sasVersion);
+            return protocol.MainPrimary().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier,sasVersion);
         }
 
         public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers, string groupPolicyIdentifier)
         {
-            return protocol.Main().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier);
+            return protocol.MainPrimary().GetSharedAccessSignature(policy, headers, groupPolicyIdentifier);
         }
 
         public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, SharedAccessBlobHeaders headers)
         {
-            return protocol.Main().GetSharedAccessSignature(policy, headers);
+            return protocol.MainPrimary().GetSharedAccessSignature(policy, headers);
         }
 
         public string GetSharedAccessSignature(SharedAccessBlobPolicy policy, string groupPolicyIdentifier)
         {
-            return protocol.Main().GetSharedAccessSignature(policy, groupPolicyIdentifier);
+            return protocol.MainPrimary().GetSharedAccessSignature(policy, groupPolicyIdentifier);
         }
 
         public string GetSharedAccessSignature(SharedAccessBlobPolicy policy)
         {
-            return protocol.Main().GetSharedAccessSignature(policy);
+            return protocol.MainPrimary().GetSharedAccessSignature(policy);
         }
 
         public bool IsSnapshot
         {
-            get { return protocol.Main().IsSnapshot; }
+            get { return protocol.MainPrimary().IsSnapshot; }
         }
 
         public IDictionary<string, string> Metadata
@@ -772,7 +776,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public string Name
         {
-            get { return protocol.Main().Name; }
+            get { return protocol.MainPrimary().Name; }
         }
 
         public Stream OpenRead(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
@@ -784,22 +788,22 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public Task<Stream> OpenReadAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().OpenReadAsync(accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().OpenReadAsync(accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<Stream> OpenReadAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().OpenReadAsync(accessCondition, options, operationContext);
+            return protocol.MainPrimary().OpenReadAsync(accessCondition, options, operationContext);
         }
 
         public Task<Stream> OpenReadAsync(CancellationToken cancellationToken)
         {
-            return protocol.Main().OpenReadAsync(cancellationToken);
+            return protocol.MainPrimary().OpenReadAsync(cancellationToken);
         }
 
         public Task<Stream> OpenReadAsync()
         {
-            return protocol.Main().OpenReadAsync();
+            return protocol.MainPrimary().OpenReadAsync();
         }
 
         public BlobProperties Properties
@@ -809,156 +813,159 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public void ReleaseLease(AccessCondition accessCondition, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Main().ReleaseLease(accessCondition, options, operationContext);
+            protocol.MainPrimary().ReleaseLease(accessCondition, options, operationContext);
         }
 
         public Task ReleaseLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().ReleaseLeaseAsync(accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().ReleaseLeaseAsync(accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task ReleaseLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().ReleaseLeaseAsync(accessCondition, options, operationContext);
+            return protocol.MainPrimary().ReleaseLeaseAsync(accessCondition, options, operationContext);
         }
 
         public Task ReleaseLeaseAsync(AccessCondition accessCondition, CancellationToken cancellationToken)
         {
-            return protocol.Main().ReleaseLeaseAsync(accessCondition, cancellationToken);
+            return protocol.MainPrimary().ReleaseLeaseAsync(accessCondition, cancellationToken);
         }
 
         public Task ReleaseLeaseAsync(AccessCondition accessCondition)
         {
-            return protocol.Main().ReleaseLeaseAsync(accessCondition);
+            return protocol.MainPrimary().ReleaseLeaseAsync(accessCondition);
         }
 
         public void RenewLease(AccessCondition accessCondition, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Main().RenewLease(accessCondition, options, operationContext);
+            protocol.MainPrimary().RenewLease(accessCondition, options, operationContext);
         }
 
         public Task RenewLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().RenewLeaseAsync(accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().RenewLeaseAsync(accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task RenewLeaseAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().RenewLeaseAsync(accessCondition, options, operationContext);
+            return protocol.MainPrimary().RenewLeaseAsync(accessCondition, options, operationContext);
         }
 
         public Task RenewLeaseAsync(AccessCondition accessCondition, CancellationToken cancellationToken)
         {
-            return protocol.Main().RenewLeaseAsync(accessCondition, cancellationToken);
+            return protocol.MainPrimary().RenewLeaseAsync(accessCondition, cancellationToken);
         }
 
         public Task RenewLeaseAsync(AccessCondition accessCondition)
         {
-            return protocol.Main().RenewLeaseAsync(accessCondition);
+            return protocol.MainPrimary().RenewLeaseAsync(accessCondition);
         }
 
         public CloudBlobClient ServiceClient
         {
-            get { return protocol.Main().ServiceClient; }
+            get { return protocol.MainPrimary().ServiceClient; }
         }
 
         public void SetMetadata(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Write(blob => blob.SetMetadata(accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => blob.SetMetadata(ac, options, operationContext), ac);
         }
 
         public Task SetMetadataAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().SetMetadataAsync(accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().SetMetadataAsync(accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task SetMetadataAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().SetMetadataAsync(accessCondition, options, operationContext);
+            return protocol.MainPrimary().SetMetadataAsync(accessCondition, options, operationContext);
         }
 
         public Task SetMetadataAsync(CancellationToken cancellationToken)
         {
-            return protocol.Main().SetMetadataAsync(cancellationToken);
+            return protocol.MainPrimary().SetMetadataAsync(cancellationToken);
         }
 
         public Task SetMetadataAsync()
         {
-            return protocol.Main().SetMetadataAsync();
+            return protocol.MainPrimary().SetMetadataAsync();
         }
 
         public void SetProperties(AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Write(blob => blob.SetProperties(accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => blob.SetProperties(ac, options, operationContext), ac);
         }
 
         public Task SetPropertiesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().SetPropertiesAsync(accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().SetPropertiesAsync(accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task SetPropertiesAsync(AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().SetPropertiesAsync(accessCondition, options, operationContext);
+            return protocol.MainPrimary().SetPropertiesAsync(accessCondition, options, operationContext);
         }
 
         public Task SetPropertiesAsync(CancellationToken cancellationToken)
         {
-            return protocol.Main().SetPropertiesAsync(cancellationToken);
+            return protocol.MainPrimary().SetPropertiesAsync(cancellationToken);
         }
 
         public Task SetPropertiesAsync()
         {
-            return protocol.Main().SetPropertiesAsync();
+            return protocol.MainPrimary().SetPropertiesAsync();
         }
 
         public StorageUri SnapshotQualifiedStorageUri
         {
-            get { return protocol.Main().SnapshotQualifiedStorageUri; }
+            get { return protocol.MainPrimary().SnapshotQualifiedStorageUri; }
         }
 
         public Uri SnapshotQualifiedUri
         {
-            get { return protocol.Main().SnapshotQualifiedUri; }
+            get { return protocol.MainPrimary().SnapshotQualifiedUri; }
         }
 
         public DateTimeOffset? SnapshotTime
         {
-            get { return protocol.Main().SnapshotTime; }
+            get { return protocol.MainPrimary().SnapshotTime; }
         }
 
         public string StartCopyFromBlob(Uri source, AccessCondition sourceAccessCondition = null, AccessCondition destAccessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
             string result = null;
-            protocol.Write(blob => result = blob.StartCopyFromBlob(source, sourceAccessCondition, destAccessCondition, options, operationContext));
+            AccessCondition ac = (destAccessCondition == null) ? AccessCondition.GenerateEmptyCondition() : destAccessCondition;
+            protocol.Write(blob => result = blob.StartCopyFromBlob(source, sourceAccessCondition, ac, options, operationContext), ac);
             return result;
         }
 
         public Task<string> StartCopyFromBlobAsync(Uri source, AccessCondition sourceAccessCondition, AccessCondition destAccessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().StartCopyFromBlobAsync(source, sourceAccessCondition, destAccessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().StartCopyFromBlobAsync(source, sourceAccessCondition, destAccessCondition, options, operationContext, cancellationToken);
         }
 
         public Task<string> StartCopyFromBlobAsync(Uri source, AccessCondition sourceAccessCondition, AccessCondition destAccessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().StartCopyFromBlobAsync(source, sourceAccessCondition, destAccessCondition, options, operationContext);
+            return protocol.MainPrimary().StartCopyFromBlobAsync(source, sourceAccessCondition, destAccessCondition, options, operationContext);
         }
 
         public Task<string> StartCopyFromBlobAsync(Uri source, CancellationToken cancellationToken)
         {
-            return protocol.Main().StartCopyFromBlobAsync(source, cancellationToken);
+            return protocol.MainPrimary().StartCopyFromBlobAsync(source, cancellationToken);
         }
 
         public Task<string> StartCopyFromBlobAsync(Uri source)
         {
-            return protocol.Main().StartCopyFromBlobAsync(source);
+            return protocol.MainPrimary().StartCopyFromBlobAsync(source);
         }
 
         public int StreamMinimumReadSizeInBytes
         {
             get
             {
-                return protocol.Main().StreamMinimumReadSizeInBytes;
+                return protocol.MainPrimary().StreamMinimumReadSizeInBytes;
             }
             set
             {
@@ -970,7 +977,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         {
             get
             {
-                return protocol.Main().StreamWriteSizeInBytes;
+                return protocol.MainPrimary().StreamWriteSizeInBytes;
             }
             set
             {
@@ -980,125 +987,127 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         public void UploadFromByteArray(byte[] buffer, int index, int count, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Write(blob => blob.UploadFromByteArray(buffer, index, count, accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => blob.UploadFromByteArray(buffer, index, count, ac, options, operationContext), ac);
         }
 
         public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().UploadFromByteArrayAsync(buffer, index, count, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count, accessCondition, options, operationContext);
+            return protocol.MainPrimary().UploadFromByteArrayAsync(buffer, index, count, accessCondition, options, operationContext);
         }
 
         public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count, cancellationToken);
+            return protocol.MainPrimary().UploadFromByteArrayAsync(buffer, index, count, cancellationToken);
         }
 
         public Task UploadFromByteArrayAsync(byte[] buffer, int index, int count)
         {
-            return protocol.Main().UploadFromByteArrayAsync(buffer, index, count);
+            return protocol.MainPrimary().UploadFromByteArrayAsync(buffer, index, count);
         }
 
         public void UploadFromFile(string path, FileMode mode, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Write(blob => blob.UploadFromFile(path, mode, accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => blob.UploadFromFile(path, mode, ac, options, operationContext), ac);
         }
 
         public Task UploadFromFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromFileAsync(path, mode, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().UploadFromFileAsync(path, mode, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task UploadFromFileAsync(string path, FileMode mode, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().UploadFromFileAsync(path, mode, accessCondition, options, operationContext);
+            return protocol.MainPrimary().UploadFromFileAsync(path, mode, accessCondition, options, operationContext);
         }
 
         public Task UploadFromFileAsync(string path, FileMode mode, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromFileAsync(path, mode, cancellationToken);
+            return protocol.MainPrimary().UploadFromFileAsync(path, mode, cancellationToken);
         }
 
         public Task UploadFromFileAsync(string path, FileMode mode)
         {
-            return protocol.Main().UploadFromFileAsync(path, mode);
+            return protocol.MainPrimary().UploadFromFileAsync(path, mode);
         }
 
         public void UploadFromStream(Stream source, long length, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Write(blob => blob.UploadFromStream(source, length, accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => blob.UploadFromStream(source, length, ac, options, operationContext), ac);
         }
 
         public void UploadFromStream(Stream source, AccessCondition accessCondition = null, BlobRequestOptions options = null, OperationContext operationContext = null)
         {
-            protocol.Write(blob => blob.UploadFromStream(source, accessCondition, options, operationContext));
+            AccessCondition ac = (accessCondition == null) ? AccessCondition.GenerateEmptyCondition() : accessCondition;
+            protocol.Write(blob => blob.UploadFromStream(source, ac, options, operationContext), ac);
         }
 
         public Task UploadFromStreamAsync(Stream source, long length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromStreamAsync(source, length, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().UploadFromStreamAsync(source, length, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task UploadFromStreamAsync(Stream source, long length, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().UploadFromStreamAsync(source, length, accessCondition, options, operationContext);
+            return protocol.MainPrimary().UploadFromStreamAsync(source, length, accessCondition, options, operationContext);
         }
 
         public Task UploadFromStreamAsync(Stream source, long length, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromStreamAsync(source, length, cancellationToken);
+            return protocol.MainPrimary().UploadFromStreamAsync(source, length, cancellationToken);
         }
 
         public Task UploadFromStreamAsync(Stream source, long length)
         {
-            return protocol.Main().UploadFromStreamAsync(source, length);
+            return protocol.MainPrimary().UploadFromStreamAsync(source, length);
         }
 
         public Task UploadFromStreamAsync(Stream source, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromStreamAsync(source, accessCondition, options, operationContext, cancellationToken);
+            return protocol.MainPrimary().UploadFromStreamAsync(source, accessCondition, options, operationContext, cancellationToken);
         }
 
         public Task UploadFromStreamAsync(Stream source, AccessCondition accessCondition, BlobRequestOptions options, OperationContext operationContext)
         {
-            return protocol.Main().UploadFromStreamAsync(source, accessCondition, options, operationContext);
+            return protocol.MainPrimary().UploadFromStreamAsync(source, accessCondition, options, operationContext);
         }
 
         public Task UploadFromStreamAsync(Stream source, CancellationToken cancellationToken)
         {
-            return protocol.Main().UploadFromStreamAsync(source, cancellationToken);
+            return protocol.MainPrimary().UploadFromStreamAsync(source, cancellationToken);
         }
 
         public Task UploadFromStreamAsync(Stream source)
         {
-            return protocol.Main().UploadFromStreamAsync(source);
+            return protocol.MainPrimary().UploadFromStreamAsync(source);
         }
 
         public CloudBlobContainer Container
         {
-            get { return protocol.Main().Container; }
+            get { return protocol.MainPrimary().Container; }
         }
 
         public CloudBlobDirectory Parent
         {
-            get { return protocol.Main().Parent; }
+            get { return protocol.MainPrimary().Parent; }
         }
 
         public StorageUri StorageUri
         {
-            get { return protocol.Main().StorageUri; }
+            get { return protocol.MainPrimary().StorageUri; }
         }
 
         public Uri Uri
         {
-            get { return protocol.Main().Uri; }
+            get { return protocol.MainPrimary().Uri; }
         }
 
-
-        
     }
 }

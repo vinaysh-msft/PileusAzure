@@ -300,7 +300,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public void UploadFromStream(System.IO.Stream source, Microsoft.WindowsAzure.Storage.AccessCondition accessCondition = null, Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions options = null, Microsoft.WindowsAzure.Storage.OperationContext operationContext = null)
         {
             source.Position = 0;
-            protocol.Write(blob => blob.UploadFromStream(source, /*lease.getAccessConditionWithLeaseId(accessCondition)*/ accessCondition, options, operationContext));
+            protocol.Write(blob => blob.UploadFromStream(source, /*lease.getAccessConditionWithLeaseId(accessCondition)*/ accessCondition, options, operationContext), accessCondition);
             /*
             bool isDone = false;
 
@@ -368,12 +368,9 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
                                 watch.Stop();
 
-                               if (slaEngine.Monitor.replicas.ContainsKey(server))
-                                {
                                     ServerState ss = slaEngine.Monitor.GetServerState(server);
                                     ss.AddRtt(watch.ElapsedMilliseconds);
                                     slaEngine.Session.RecordObjectWritten(Name, Timestamp(blob), ss);
-                                }
                             }
 
                             done = true;

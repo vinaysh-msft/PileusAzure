@@ -53,7 +53,7 @@ namespace PileusApp.YCSB
         private static int additionalCreatedClientsPerTick;
 
 
-        private static int currentEmulationHour;
+        private static int currentEmulationHour = 1;
         #endregion
 
         

@@ -34,7 +34,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
             this.RowKey = clientName;
 
             // foreach (ServerState s in state.replicas.Values)
-            foreach (ServerState s in monitor.replicas.Values)
+            foreach (ServerState s in monitor.GetAllServersState())
                 {
                 if (s.IsPrimary)
                 {

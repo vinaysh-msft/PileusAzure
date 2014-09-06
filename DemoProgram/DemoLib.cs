@@ -28,6 +28,7 @@ namespace TechFestDemo
         static int numReadWrites = 10;
         static int opsBetweenSyncs = 6;
         static int numBlobsToUse = 10;
+        static int numBlobs = 1000;
 
         static string containerName = "democontainer";
 
@@ -35,8 +36,8 @@ namespace TechFestDemo
 
         static List<string> PrimaryServers = new List<string>() { "dbteuropestorage" };
         static List<string> SecondaryServers = new List<string>() { "dbtwestusstorage", "dbteuropestorage-secondary", "dbtwestusstorage-secondary" };
-        static List<string> NonReplicaServers = new List<string>() { "dbtsouthstorage" };
-        static List<string> ReadOnlySecondaryServers = new List<string>() { "dbteuropestorage-secondary", "dbtwestusstorage-secondary" };
+        static List<string> NonReplicaServers = new List<string>() { "dbtsouthstorage", "dbtsouthstorage-secondary", "dbtbrazilstorage", "dbteastasiastorage", "dbtjapanweststorage"/*, "dbtjapanweststorage-secondary"*/ };
+        static List<string> ReadOnlySecondaryServers = new List<string>() { "dbteuropestorage-secondary", "dbtwestusstorage-secondary", "dbtsouthstorage-secondary", "dbtjapanweststorage-secondary" };
 
         static CapCloudBlobContainer container;
 
@@ -54,14 +55,18 @@ namespace TechFestDemo
         static int opsSinceSync = 0;
         static bool startExperiment = false;
 
+        static bool reloadDatabase = false;  // should be false 
         static bool clearConfiguration = false;  // should be false unless the first time
         static bool cloudBackedConfiguration = true;  // could be either true or false for demo
         static bool stableConfiguration = true;  // should be set to true when running demo
 
+        static bool saveDataToFile = true;
+        static string samplerFileName = "DemoData.txt";
+
         #endregion
 
 
-        #region Configuration and Initialization
+        #region Initialization
 
         public static void Initialize()
         {
@@ -84,6 +89,12 @@ namespace TechFestDemo
             Log("Creating/reading configuration...");
             config = new ReplicaConfiguration(containerName, PrimaryServers, SecondaryServers, NonReplicaServers, ReadOnlySecondaryServers, cloudBackedConfiguration, stableConfiguration);
             ClientRegistry.AddConfiguration(config);
+
+            // upload data into containers if desired
+            if (reloadDatabase)
+            {
+                CreateDatabase(numBlobs);
+            }
 
             // create SLAs
             slas = new Dictionary<string, ServiceLevelAgreement>();
@@ -112,6 +123,37 @@ namespace TechFestDemo
             configurator  = new Configurator(containerName);
         }
 
+        public static void CreateDatabase(int numBlobs)
+        {
+            foreach (string site in PrimaryServers)
+            {
+                YCSBClientLoader.UploadDataToSite(numBlobs, 1024, site, containerName);
+            }
+            foreach (string site in SecondaryServers)
+            {
+                if (!ReadOnlySecondaryServers.Contains(site))
+                {
+                    YCSBClientLoader.UploadDataToSite(numBlobs, 1024, site, containerName);
+                }
+            }
+            foreach (string site in NonReplicaServers)
+            {
+                if (!ReadOnlySecondaryServers.Contains(site))
+                {
+                    YCSBClientLoader.UploadDataToSite(numBlobs, 1024, site, containerName);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Configuration
+
+        public static ReplicaConfiguration GetCurrentConfiguration()
+        {
+            return config;
+        }
+       
         public static void SetInitialConfiguration()
         {
             // Note: This is not the correct way to change the configuration.  We should actually use the Configurator.
@@ -151,37 +193,31 @@ namespace TechFestDemo
             slas["sla"].ResetHitsAndMisses();
         }
 
-        public static void CreateDatabase(int numBlobs)
-        {
-            // TODO: upload data to *all* primary and secondary sites
-            foreach (string secondarySite in SecondaryServers)
-            {
-                if (!ReadOnlySecondaryServers.Contains(secondarySite))
-                {
-                    YCSBClientLoader.UploadData(numBlobs, 1024, false, PrimaryServers.First(), secondarySite, configStorageSite, false);
-                }
-            }
-        }
-        
         #endregion
 
 
         #region Reads, Writes, Pings, and Syncs
 
-        public static Sampler PerformReadsWritesSyncs (Sampler reuseSampler = null)
+        public static Sampler NewSampler()
+        {
+            Sampler sampler = YCSBClientExecutor.NewSampler();
+            foreach (string cons in slas.Keys)
+            {
+                sampler.AddSampleName(cons + "Latency", Sampler.OutputType.Average);
+                sampler.AddSampleName(cons + "PrimaryAccesses", Sampler.OutputType.Total);
+                sampler.AddSampleName(cons + "TotalAccesses", Sampler.OutputType.Total);
+            }
+            return sampler;
+        }
+
+        public static Sampler PerformReadsWritesSyncs (Sampler reuseSampler = null, bool recon = false)
         {
             YCSBWorkload workload = new YCSBWorkload(YCSBWorkloadType.Workload_a, numBlobsToUse);
 
             sampler = reuseSampler;
             if (sampler == null)
             {
-                sampler = YCSBClientExecutor.NewSampler();
-                foreach (string cons in slas.Keys)
-                {
-                    sampler.AddSampleName(cons + "Latency", Sampler.OutputType.Average);
-                    sampler.AddSampleName(cons + "PrimaryAccesses", Sampler.OutputType.Total);
-                    sampler.AddSampleName(cons + "TotalAccesses", Sampler.OutputType.Total);
-                }
+                sampler = NewSampler();
             }
 
             byte[] BlobDataBuffer = new byte[1024];
@@ -220,7 +256,7 @@ namespace TechFestDemo
                         blob.Sla = slas[cons];
                         ServerState ss = blob.engine.FindServerToRead(op.KeyName);
                         // executing GetBlob twice substantially reduces the latency variance
-                        duration = YCSBClientExecutor.GetBlob(blob);
+                        //duration = YCSBClientExecutor.GetBlob(blob);
                         duration = YCSBClientExecutor.GetBlob(blob);
                         sampler.AddSample(cons + "Latency", duration);
                         sampler.AddSample(cons + "TotalAccesses", 1);
@@ -228,20 +264,41 @@ namespace TechFestDemo
                         {
                             sampler.AddSample(cons + "PrimaryAccesses", 1);
                         }
-
                         Log("Performed " + cons + " read for " + op.KeyName + " in " + duration + " from " + SiteName(ss.Name));
+                        //AppendDataFile(duration);
                     }
                     sampler.AddSample("ReadCount", 1);
                 }
                 else if (op.Type == YCSBOperationType.UPDATE)
                 {
                     random.NextBytes(BlobDataBuffer);
+                    
+                    // use write with multiple sessions to avoid duplicate writes to primary
+                    List<SessionState> sessions = new List<SessionState>();
+                    foreach (string cons in slas.Keys)
+                    {
+                        sessions.Add(container.GetSession(cons));
+                    }
+                    ReadWriteFramework protocol = new ReadWriteFramework(op.KeyName, config, null);
+                    Stopwatch watch = new Stopwatch();
+                    using (var ms = new MemoryStream(BlobDataBuffer))
+                    {
+                        AccessCondition ac = AccessCondition.GenerateEmptyCondition();
+                        watch.Start();
+                        protocol.Write(blob => blob.UploadFromStream(ms, ac), ac, sessions, container.Monitor);
+                    }
+                    duration = watch.ElapsedMilliseconds;
+
+                    /*  
                     foreach (string cons in slas.Keys)
                     {
                         ICloudBlob blob = container.GetBlobReference(op.KeyName, cons);
                         duration = YCSBClientExecutor.PutBlob(blob, BlobDataBuffer);
-                        Log("Performed " + cons + "Write for " + op.KeyName + " in " + duration); 
+                        Log("Performed " + cons + " write for " + op.KeyName + " in " + duration); 
                     }
+                    */
+
+                    Log("Performed " + " write for " + op.KeyName + " in " + duration);
                     sampler.AddSample("WriteCount", 1);
                     sampler.AddSample("WriteLatency", duration);
                 }
@@ -258,23 +315,35 @@ namespace TechFestDemo
 
         public static void PingAllServers()
         {
-            ServerMonitor ss = container.Monitor;
+            List<string> allServers = config.GetServers();
             Stopwatch watch = new Stopwatch();
             for (int pingCount = 0; pingCount < 5; pingCount++)
             {
-                foreach (string server in ss.replicas.Keys)
+                foreach (string server in allServers)
                 {
-                    ServerState serverState = ss.replicas[server];
-                    if (accounts.ContainsKey(server))
+                    CloudBlobClient blobClient = ClientRegistry.GetCloudBlobClient(server);
+                    if (blobClient != null)
                     {
-                        CloudBlobClient blobClient = accounts[server].CreateCloudBlobClient();
                         CloudBlobContainer blobContainer = blobClient.GetContainerReference(containerName);
+                        //Log("Pinging " + SiteName(server) + " aka " + server + "...");
                         watch.Restart();
                         //we perform a dummy operation to get the rtt latency!
-                        bool ok = blobContainer.Exists();
+                        try
+                        {
+                            bool ok = blobContainer.Exists();
+                        }
+                        catch (StorageException se)
+                        {
+                            Log("Storage exception when pinging " + SiteName(server) + ": " + se.Message);
+                        }
                         long el = watch.ElapsedMilliseconds;
-                        serverState.AddRtt(el);
-                        Log("Pinged " + SiteName(server) + " in " + el + " milliseconds");
+                        ServerState ss = container.Monitor.GetServerState(server);
+                        ss.AddRtt(el);
+                        //Log("Pinged " + SiteName(server) + " in " + el + " milliseconds");
+                    }
+                    else
+                    {
+                        Log("Failed to ping " + SiteName(server));
                     }
                 }
             }
@@ -393,7 +462,7 @@ namespace TechFestDemo
         #endregion
 
 
-        #region Loging routines
+        #region Logging Routines
 
         public delegate void Logger(string s);
 
@@ -463,6 +532,18 @@ namespace TechFestDemo
             return result;
         }
 
+        public static string PrintServerRTTs()
+        {
+            string result = null;
+            List<string> allServers = config.GetServers();
+            foreach (string server in allServers)
+            {
+                ServerState ss = container.Monitor.GetServerState(server);
+                result += SiteName(server) + " avg latency: " + ss.RTTs.FindAverage() + "\r\n";
+            }
+            return result;
+        }
+
         public static string PrintReconfigurationActions()
         {
             string result = null;
@@ -490,13 +571,90 @@ namespace TechFestDemo
             {
                 case "dbteuropestorage": site = "West Europe"; break;
                 case "dbtwestusstorage": site = "West US"; break;
-                case "dbtsouthstorage": site = "South Central US"; break;
+                case "dbtsouthstorage": site = "South US"; break;
                 case "dbteuropestorage-secondary": site = "North Europe"; break;
                 case "dbtwestusstorage-secondary": site = "East US"; break;
-                case "dbtsouthstorage-secondary": site = "North Central US"; break;
+                case "dbtsouthstorage-secondary": site = "North US"; break;
+                case "dbteastasiastorage": site = "East Asia"; break;
+                case "dbtbrazilstorage": site = "Brazil"; break;
+                case "dbtjapanweststorage": site = "West Japan"; break;
+                case "dbtjapanweststorage-secondary": site = "East Japan"; break;
                 default: site = server; break;
             }
            return site;
+        }
+
+        public static string ServerName(string site)
+        {
+            string name;
+            switch (site)
+            {
+                case "West Europe": name = "dbteuropestorage"; break;
+                case "West US": name = "dbtwestusstorage"; break;
+                case "South US": name = "dbtsouthstorage"; break;
+                case "North Europe": name = "dbteuropestorage-secondary"; break;
+                case "East US": name = "dbtwestusstorage-secondary"; break;
+                case "North US": name = "dbtsouthstorage-secondary"; break;
+                case "East Asia": name = "dbteastasiastorage"; break;
+                case "Brazil": name = "dbtbrazilstorage"; break;
+                case "West Japan": name = "dbtjapanweststorage"; break;
+                case "East Japan": name = "dbtjapanweststorage-secondary"; break;
+                default: name = site; break;
+            }
+            return name;
+        }
+
+        #endregion
+
+
+        #region Reading and Writing Files
+
+        public static void ReadDataFile(Sampler sampler) 
+        {
+            if (File.Exists(samplerFileName))
+            {
+                using (TextReader file = File.OpenText(samplerFileName))
+                {
+                    foreach (string cons in slas.Keys)
+                    {
+                        string line = file.ReadLine();
+                        if (line == null) return;  // end of file
+                        sampler.AddSample(cons + "Latency", float.Parse(line));
+                    }
+                }
+            }
+        }
+
+        public static void WriteDataFile(Sampler sampler)
+        {
+            using (TextWriter file = File.CreateText(samplerFileName))
+            {
+                Dictionary<string, float[]> samples = new Dictionary<string, float[]>();
+                int numSamples = sampler.GetAllSampleValues("strongLatency").Count;
+                foreach (string cons in slas.Keys)
+                {
+                    float[] values = sampler.GetAllSampleValues(cons + "Latency").ToArray();
+                    samples.Add(cons, values);
+                }
+                for (int i = 0; i < numSamples; i++)
+                {
+                    foreach (string cons in slas.Keys)
+                    {
+                        file.WriteLine(samples[cons][i].ToString());
+                    }
+                }
+            }
+        }
+        
+        public static void AppendDataFile(float latency)
+        {
+            if (saveDataToFile)
+            {
+                using (TextWriter file = File.AppendText(samplerFileName))
+                {
+                    file.WriteLine(latency.ToString());
+                }
+            }
         }
 
         #endregion

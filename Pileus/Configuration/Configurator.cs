@@ -47,7 +47,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
             usage.NumberOfReads = ss.GetNumberOfReadsPerMonth();
             usage.NumberOfWrites = ss.GetNumberOfWritesPerMonth();
             usage.ServerRTTs = new Dictionary<string, LatencyDistribution>();
-            foreach (ServerState server in monitor.replicas.Values)
+            foreach (ServerState server in monitor.GetAllServersState())
             {
                 usage.ServerRTTs.Add(server.Name, server.RTTs);
             }

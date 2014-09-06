@@ -12,6 +12,8 @@ using System.Windows.Forms;
 using TechFestDemo;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Threading;
+using PileusApp.YCSB;
+using Microsoft.WindowsAzure.Storage.Pileus.Configuration;
 
 
 namespace TechFestDemoApplication
@@ -27,7 +29,9 @@ namespace TechFestDemoApplication
         List<string> consistencyChoices;
         List<string> readLatency;
         List<string> readAgainLatency;
+        bool readAgain = false;
 
+        BackgroundWorker readWriteWorker;
 
         public Form1()
         {
@@ -44,6 +48,10 @@ namespace TechFestDemoApplication
             consistencyListBox.DataSource = consistencyChoices;
             consistencyListBox.ClearSelected();
 
+            readWriteWorker = new BackgroundWorker();
+            readWriteWorker.DoWork += new DoWorkEventHandler(ReadWriteWorker_DoWork);
+            readWriteWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(ReadWriteWorker_Completed);
+
             Print("Running demo program...");
             DemoLib.RegisterLogger(Print);
 
@@ -54,29 +62,60 @@ namespace TechFestDemoApplication
             DemoLib.Initialize();
             Print(DemoLib.PrintCurrentConfiguration());
 
-            // ping servers to measure and record round-trip times in the server state
+            // Read sample data from file
+            Print("Reading file data...");
+            initialSampler = DemoLib.NewSampler();
+            reconfigSampler = DemoLib.NewSampler();
+            DemoLib.ReadDataFile(initialSampler);
+
+            // Ping servers to measure and record round-trip times in the server state
             Print("Pinging servers...");
             DemoLib.PingAllServers();
+            Print("");
+            Print("Round-trip latencies to sites:");
+            Print(DemoLib.PrintServerRTTs());
         }
+
+        delegate void PrintCallback(string text);
 
         private void Print(string s)
         {
-            logTextBox.AppendText(s);
-            logTextBox.AppendText("\r\n");
+            if (this.logTextBox.InvokeRequired)
+            {
+                PrintCallback d = new PrintCallback(Print);
+                this.Invoke(d, new object[] { s });
+            }
+            else
+            {
+                logTextBox.AppendText(s);
+                logTextBox.AppendText("\r\n");
+            }
         }
-
 
         private void ReadButton_Click(object sender, EventArgs e)
         {
-            Print("Reading and writing blobs...");
+            if (!readWriteWorker.IsBusy)
+            {
+                Print("Reading and writing blobs...");
+                readAgain = false;
+                readWriteWorker.RunWorkerAsync();
+            }
+        }
+
+        void ReadWriteWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
             Sampler sampler = initialConfig ? initialSampler : reconfigSampler;
-            sampler = DemoLib.PerformReadsWritesSyncs(sampler);
+            sampler = DemoLib.PerformReadsWritesSyncs(sampler, (initialConfig == false));
             if (initialConfig)
                 initialSampler = sampler;
             else
                 reconfigSampler = sampler;
-            
+        }
+
+        void ReadWriteWorker_Completed(object sender, RunWorkerCompletedEventArgs e)
+        {
             Print("Read and write average latencies:");
+            Sampler sampler = initialConfig ? initialSampler : reconfigSampler;
             Print(DemoLib.PrintReadWriteTimes(sampler));
 
             readLatency = new List<string>();
@@ -86,34 +125,34 @@ namespace TechFestDemoApplication
             readLatency.Add(sampler.GetSampleValue("readmywritesLatency").ToString());
             readLatency.Add(sampler.GetSampleValue("monotonicLatency").ToString());
             readLatency.Add(sampler.GetSampleValue("eventualLatency").ToString());
-            readLatencyListBox.DataSource = null;
-            readLatencyListBox.DataSource = readLatency;
-            readLatencyListBox.ClearSelected();
+
+            if (!readAgain)
+            {
+                readLatencyListBox.DataSource = null;
+                readLatencyListBox.DataSource = readLatency;
+                readLatencyListBox.ClearSelected();
+            }
+            else
+            {
+                readAgainLatencyListBox.DataSource = null;
+                readAgainLatencyListBox.DataSource = readLatency;
+                readAgainLatencyListBox.ClearSelected();
+            }
+            
+            if (initialConfig)
+            {
+                DemoLib.WriteDataFile(sampler);
+            }
         }
 
         private void ReadAgainButton_Click(object sender, EventArgs e)
         {
-            Print("Reading and writing blobs...");
-            Sampler sampler = initialConfig ? initialSampler : reconfigSampler;
-            sampler = DemoLib.PerformReadsWritesSyncs(sampler);
-            if (initialConfig)
-                initialSampler = sampler;
-            else
-                reconfigSampler = sampler;
-            
-            Print("Read and write average latencies:");
-            Print(DemoLib.PrintReadWriteTimes(sampler));
-
-            readAgainLatency = new List<string>();
-            readAgainLatency.Add(sampler.GetSampleValue("strongLatency").ToString());
-            readAgainLatency.Add(sampler.GetSampleValue("causalLatency").ToString());
-            readAgainLatency.Add(sampler.GetSampleValue("boundedLatency").ToString());
-            readAgainLatency.Add(sampler.GetSampleValue("readmywritesLatency").ToString());
-            readAgainLatency.Add(sampler.GetSampleValue("monotonicLatency").ToString());
-            readAgainLatency.Add(sampler.GetSampleValue("eventualLatency").ToString());
-            readAgainLatencyListBox.DataSource = null;
-            readAgainLatencyListBox.DataSource = readAgainLatency;
-            readAgainLatencyListBox.ClearSelected();
+            if (!readWriteWorker.IsBusy)
+            {
+                Print("Reading and writing blobs...");
+                readAgain = true;
+                readWriteWorker.RunWorkerAsync();
+            }
         }
 
         private void ClearButton_Click(object sender, EventArgs e)
@@ -154,6 +193,7 @@ namespace TechFestDemoApplication
             configTextBox.AppendText("Installing new configuration...");
             DemoLib.InstallNewConfiguration();
             initialConfig = false;
+            reconfigSampler = DemoLib.NewSampler();
             configTextBox.Clear();
             configTextBox.AppendText(DemoLib.PrintCurrentConfiguration() + "\n");
         }
@@ -296,6 +336,188 @@ namespace TechFestDemoApplication
             {
                 enableHitRate = true;
             }
+        }
+
+        private void replicasTabPage_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton13_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void getReplicasButton_Click(object sender, EventArgs e)
+        {
+            ReplicaConfiguration config = DemoLib.GetCurrentConfiguration();
+            string server = DemoLib.ServerName("West US");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonWestUSPrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonWestUSSecondary.Checked = true;
+            else
+                radioButtonWestUSUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonWestUSPrimary.Enabled = false;
+            server = DemoLib.ServerName("East US");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonEastUSPrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonEastUSSecondary.Checked = true;
+            else
+                radioButtonEastUSUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonEastUSPrimary.Enabled = false;
+            server = DemoLib.ServerName("South US");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonSouthUSPrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonSouthUSSecondary.Checked = true;
+            else
+                radioButtonSouthUSUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonSouthUSPrimary.Enabled = false;
+            server = DemoLib.ServerName("North US");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonNorthUSPrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonNorthUSSecondary.Checked = true;
+            else
+                radioButtonNorthUSUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonNorthUSPrimary.Enabled = false;
+            server = DemoLib.ServerName("West Europe");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonWestEuropePrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonWestEuropeSecondary.Checked = true;
+            else
+                radioButtonWestEuropeUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonWestEuropePrimary.Enabled = false;
+            server = DemoLib.ServerName("North Europe");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonNorthEuropePrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonNorthEuropeSecondary.Checked = true;
+            else
+                radioButtonNorthEuropeUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonNorthEuropePrimary.Enabled = false;
+            server = DemoLib.ServerName("East Asia");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonAsiaPrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonAsiaSecondary.Checked = true;
+            else
+                radioButtonAsiaUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonAsiaPrimary.Enabled = false;
+            server = DemoLib.ServerName("Brazil");
+            if (config.PrimaryServers.Contains(server))
+                radioButtonBrazilPrimary.Checked = true;
+            else if (config.SecondaryServers.Contains(server))
+                radioButtonBrazilSecondary.Checked = true;
+            else
+                radioButtonBrazilUnused.Checked = true;
+            if (config.ReadOnlySecondaryServers.Contains(server))
+                radioButtonBrazilPrimary.Enabled = false;
+        }
+
+        private void setReplicasButton_Click(object sender, EventArgs e)
+        {
+            ReplicaConfiguration config = DemoLib.GetCurrentConfiguration();
+            config.PrimaryServers.Clear();
+            config.SecondaryServers.Clear();
+            config.NonReplicaServers.Clear();
+            string server = DemoLib.ServerName("West US");
+            if (radioButtonWestUSPrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonWestUSSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            server = DemoLib.ServerName("East US");
+            if (radioButtonEastUSPrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonEastUSSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            server = DemoLib.ServerName("South US");
+            if (radioButtonSouthUSPrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonSouthUSSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            server = DemoLib.ServerName("North US");
+            if (radioButtonNorthUSPrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonNorthUSSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            server = DemoLib.ServerName("West Europe");
+            if (radioButtonWestEuropePrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonWestEuropeSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            server = DemoLib.ServerName("North Europe");
+            if (radioButtonNorthEuropePrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonNorthEuropeSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            server = DemoLib.ServerName("East Asia");
+            if (radioButtonAsiaPrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonAsiaSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            server = DemoLib.ServerName("Brazil");
+            if (radioButtonBrazilPrimary.Checked)
+                config.PrimaryServers.Add(server);
+            else if (radioButtonBrazilSecondary.Checked)
+                config.SecondaryServers.Add(server);
+            else
+                config.NonReplicaServers.Add(server);
+            initialConfig = false;
+            reconfigSampler = DemoLib.NewSampler();
+        }
+
+        private void radioButtonWestUSSecondary_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButtonWestUSPrimary_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelNorthCentralUS_Click(object sender, EventArgs e)
+        {
+
         }
         
     }

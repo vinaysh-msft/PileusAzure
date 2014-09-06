@@ -23,7 +23,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         /// <summary>
         /// Holds all servers, both those currently serving as a replica and those that might someday
         /// </summary>
-        public IDictionary<string, ServerState> replicas;
+        private IDictionary<string, ServerState> replicas;
 
         private ReplicaConfiguration configuration;
 
@@ -114,7 +114,26 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         /// <returns>A server state record</returns>
         public ServerState GetServerState(string serverName)
         {
-            return replicas[serverName];
+            ServerState state;
+            if (replicas.ContainsKey(serverName))
+            {
+                state = replicas[serverName];
+            }
+            else
+            {
+                state = new ServerState(serverName, false, 100);
+                replicas[serverName] = state;  
+            }
+            return state;
+        }
+
+        /// <summary>
+        /// Gets the state of every server.
+        /// </summary>
+        /// <returns>A list of server state records</returns>
+        public List<ServerState> GetAllServersState()
+        {
+            return replicas.Values.ToList();
         }
 
         /// <summary>

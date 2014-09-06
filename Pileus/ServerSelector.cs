@@ -143,7 +143,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             foreach (string server in config.PrimaryServers)
             {
                 if (!config.WriteOnlyPrimaryServers.Contains(server)) {
-                     set.Add(monitor.replicas[server]);
+                     set.Add(monitor.GetServerState(server));
                 }
             }
             return set;
@@ -160,7 +160,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             HashSet<ServerState> set = SelectServersForStrongConsistency(objectName);
             foreach (string server in config.SecondaryServers)
             {
-                set.Add(monitor.replicas[server]);
+                set.Add(monitor.GetServerState(server));
             }
             return set;
         }
@@ -185,7 +185,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             HashSet<ServerState> set = SelectServersForStrongConsistency(objectName);
             foreach (string serverName in config.SecondaryServers)
             {
-                ServerState server = monitor.replicas[serverName];
+                ServerState server = monitor.GetServerState(serverName);
                 if (server.HighTime >= minHighTime && server.LowTime <= minHighTime)
                 {
                     set.Add(server);
@@ -214,7 +214,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             HashSet<ServerState> set = SelectServersForStrongConsistency(objectName);
             foreach (string serverName in config.SecondaryServers)
             {
-                ServerState server = monitor.replicas[serverName];
+                ServerState server = monitor.GetServerState(serverName);
                 if (server.HighTime >= minHighTime && server.LowTime <= minHighTime)
                 {
                     set.Add(server);
@@ -241,7 +241,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             HashSet<ServerState> set = SelectServersForStrongConsistency(objectName);
             foreach (string serverName in config.SecondaryServers)
             {
-                ServerState server = monitor.replicas[serverName];
+                ServerState server = monitor.GetServerState(serverName);
                 if (server.HighTime >= minHighTime)
                 {
                     set.Add(server);
@@ -274,7 +274,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             HashSet<ServerState> set = SelectServersForStrongConsistency(objectName);
             foreach (string serverName in config.SecondaryServers)
             {
-                ServerState server = monitor.replicas[serverName];
+                ServerState server = monitor.GetServerState(serverName);
                 if (server.HighTime >= minHighTime)
                 {
                     set.Add(server);

@@ -155,6 +155,33 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
             syncPeriod[server] = period;
         }
 
+        public List<string> GetServers(bool primary = true, bool secondary = true, bool nonreplica = true)
+        {
+            List<string> servers = new List<string>();
+            if (primary)
+            {
+                foreach (string server in PrimaryServers)
+                {
+                    servers.Add(server);
+                }
+            }
+            if (secondary)
+            {
+                foreach (string server in SecondaryServers)
+                {
+                    servers.Add(server);
+                }
+            }
+            if (nonreplica)
+            {
+                foreach (string server in NonReplicaServers)
+                {
+                    servers.Add(server);
+                }
+            }
+            return servers;
+        }
+
         public override string ToString()
         {
             string result;

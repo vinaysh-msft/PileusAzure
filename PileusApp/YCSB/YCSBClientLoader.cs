@@ -196,10 +196,57 @@ namespace PileusApp.YCSB
 
         }
 
+        public static void UploadDataToSite(int numBlobs, long sizeBlobs, string site, string containerName)
+        {
+            YCSBNumberofObjects = numBlobs;
+            blobSizeInB = sizeBlobs;
+
+            Dictionary<string, CloudStorageAccount> accounts = Account.GetStorageAccounts(false);
+            if (!accounts.ContainsKey(site))
+            {
+                return;
+            }
+            
+            CloudStorageAccount account = accounts[site];
+            blobClient = account.CreateCloudBlobClient();
+            container = blobClient.GetContainerReference(containerName);
+            container.CreateIfNotExists();
+            
+            try
+            {
+                foreach (ICloudBlob blob in container.ListBlobs())
+                {
+                    blob.DeleteIfExists();
+                }
+            }
+            catch
+            {
+            }
+
+            ThreadPool.SetMaxThreads(50, 50);
+
+            byte[] BlobDataBuffer = new byte[blobSizeInB];
+            Random random = new Random();
+            random.NextBytes(BlobDataBuffer);
+            List<string> keys = YCSBWorkload.GetAllKeys(numBlobs);
+
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                Put(keys[i], BlobDataBuffer);
+            }
+
+            while (Interlocked.CompareExchange(ref concurrentWorkers, -1, 0) != -1)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+
         public static void Put(string blobName, byte[] blobDataBuffer)
         {
             Interlocked.Increment(ref concurrentWorkers);
-            ICloudBlob blob = container.GetBlobReferenceFromServer(blobName);
+            CloudBlockBlob blob = container.GetBlockBlobReference(blobName);
+            //ICloudBlob blob = container.GetBlobReferenceFromServer(blobName);
 
             using (var ms = new MemoryStream(blobDataBuffer))
             {

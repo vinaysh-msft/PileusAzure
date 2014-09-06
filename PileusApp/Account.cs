@@ -55,6 +55,18 @@ namespace PileusApp
             creds = new StorageCredentials(accountName, accountKey);
             httpAcc = new CloudStorageAccount(creds, useHttps);
             result.Add(httpAcc.Credentials.AccountName, httpAcc);
+
+            accountName = "dbtbrazilstorage";
+            accountKey = "hEqR1N6ZzobmAAk/YaJTaeN/NvCwC8tb2lb4Agx63HiTsi6jqvMIelIPML1t0e6g9g0fUFqr2EPsLgBfEeBYAw==";
+            creds = new StorageCredentials(accountName, accountKey);
+            httpAcc = new CloudStorageAccount(creds, useHttps);
+            result.Add(httpAcc.Credentials.AccountName, httpAcc);
+
+            accountName = "dbtjapanweststorage";
+            accountKey = "BUYvgCD8m4TNgW7WqVDVsD0hu9UCZBbKbTgrsVpwiXyGiI6KX5MR6O3XGUgSsW+Wv1a4bVNH0Fs6VKclDCoAFw==";
+            creds = new StorageCredentials(accountName, accountKey);
+            httpAcc = new CloudStorageAccount(creds, useHttps);
+            result.Add(httpAcc.Credentials.AccountName, httpAcc);
             #endregion
 
             #region local

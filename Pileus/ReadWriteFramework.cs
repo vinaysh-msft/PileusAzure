@@ -52,7 +52,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         /// Returns the blob for the main primary site of the current configuration.
         /// </summary>
         /// <returns>the primary blob (or null if unable to renew the lease on the configuration)</returns>
-        public ICloudBlob Main()
+        public ICloudBlob MainPrimary()
         {
             ICloudBlob primary = null;
             if (configuration.IsInFastMode(renew: true))
@@ -191,7 +191,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         #region Write operations
 
-        public void Write(WriteOp op)
+        public void Write(WriteOp op, AccessCondition accessCondition, List<SessionState> sessions = null, ServerMonitor monitor = null)
         {
             // TODO: ensure that there is enough time left on the lease to complete the write
             // Can set a timeout using BlobRequestOptions and/or renew a least that is about to expire
@@ -199,20 +199,20 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             {
                 if (configuration.PrimaryServers.Count == 1)
                 {
-                    FastWrite(op);
+                    FastWrite(op, sessions, monitor);
                 }
                 else
                 {
-                    MultiWrite(op);
+                    MultiWrite(op, accessCondition, sessions, monitor);
                 }
             }
             else
             {
-                SlowWrite(op);
+                SlowWrite(op, accessCondition, sessions, monitor);
             }
         }
 
-        private void FastWrite(WriteOp op)
+        private void FastWrite(WriteOp op, List<SessionState> sessions = null, ServerMonitor monitor = null)
         {
             // there should only be one primary server since we are in fast mode
             string server = configuration.PrimaryServers.First();
@@ -222,15 +222,23 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             op(blob);
             watch.Stop();
 
-            if (slaEngine.Monitor.replicas.ContainsKey(server))
+            // update server and session state
+            ServerState ss = (monitor == null) ? slaEngine.Monitor.GetServerState(server) : monitor.GetServerState(server);
+            ss.AddRtt(watch.ElapsedMilliseconds);
+            if (sessions == null)
             {
-                ServerState ss = slaEngine.Monitor.GetServerState(server);
-                ss.AddRtt(watch.ElapsedMilliseconds);
                 slaEngine.Session.RecordObjectWritten(blobName, Timestamp(blob), ss);
+            }
+            else
+            {
+                foreach (SessionState session in sessions)
+                {
+                    session.RecordObjectWritten(blobName, Timestamp(blob), ss);
+                }
             }
         }
 
-        private void SlowWrite(WriteOp op)
+        private void SlowWrite(WriteOp op, AccessCondition accessCondition, List<SessionState> sessions = null, ServerMonitor monitor = null)
         {
             // A reconfiguration is in progress, but may not have happened yet.
             // We could try to complete this write before the reconfiguration, but that would require locking
@@ -244,11 +252,11 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                 {
                     if (configuration.PrimaryServers.Count == 1)
                     {
-                        FastWrite(op);
+                        FastWrite(op, sessions, monitor);
                     }
                     else
                     {
-                        MultiWrite(op);
+                        MultiWrite(op, accessCondition, sessions, monitor);
                     }
                     isDone = true;
                 }
@@ -260,7 +268,156 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             while (!isDone);
         }
 
-        private void MultiWrite(WriteOp op)
+        private void MultiWrite(WriteOp op, AccessCondition access, List<SessionState> sessions = null, ServerMonitor monitor = null)
+        {
+            // This protocol uses three phases and ETags
+            // It assumes that the client is in fast mode and remains so throughout the protocol
+            // i.e. it assumes that the set of primaries does not change.
+            // TODO: recover from failed clients that may leave a write partially completed
+
+            ICloudBlob blob;
+            Dictionary<string, string> eTags;
+
+            // Phase 1.  Mark intention to write with write-in-progress flags
+            eTags = SetWiPFlags();
+            if (eTags == null)
+            {
+                // flags were not successfully set, so abort the protocol
+                return;
+            }
+
+            // Phase 2.  Perform write at all primaries
+            bool didAtLeastOne = false;
+            foreach (string server in configuration.PrimaryServers)
+            {
+                blob = ClientRegistry.GetCloudBlob(server, configuration.Name, blobName, false);
+                access.IfMatchETag = eTags[server];
+                watch.Start();
+                try
+                {
+                    op(blob);
+                }
+                catch (StorageException)
+                {
+                    // If writing fails at some primary, then abort the protocol
+                    // It could be that a concurrent writer is in progress
+                    // Note that some writes may have already been performed
+                    // If so, then we leave the WiP flags set so the recovery process will kick in
+                    // or so a concurrent writer can complete its protocol and overwrite our writes
+                    // If not, then we can clear the WiP flags
+                    if (!didAtLeastOne)
+                    {
+                        ClearWiPFlags(eTags);
+                    }
+                    return;
+                }                
+                watch.Stop();
+                eTags[server] = blob.Properties.ETag;
+                didAtLeastOne = true;
+
+                // update session and server state
+                ServerState ss = (monitor == null) ? slaEngine.Monitor.GetServerState(server) : monitor.GetServerState(server);
+                ss.AddRtt(watch.ElapsedMilliseconds);
+                if (sessions == null)
+                {
+                    slaEngine.Session.RecordObjectWritten(blobName, Timestamp(blob), ss);
+                }
+                else
+                {
+                    foreach (SessionState session in sessions)
+                    {
+                        session.RecordObjectWritten(blobName, Timestamp(blob), ss);
+                    }
+                }
+            }
+
+            // Phase 3.  Clear write-in-progress flags to indicate that write has completed
+            ClearWiPFlags(eTags);
+        }
+
+        /// <summary>
+        /// Sets the WiP flags on all of the primary blobs.
+        /// </summary>
+        /// <returns>a dictionary containing the returned eTags for each primary; 
+        /// returns null if the flag-setting protocol was not successful</returns>
+        private Dictionary<string, string> SetWiPFlags()
+        {
+            ICloudBlob blob;
+            Dictionary<string, string> eTags = new Dictionary<string, string>();
+            bool didAtLeastOne = false;
+
+            foreach (string server in configuration.PrimaryServers)
+            {
+                blob = ClientRegistry.GetCloudBlob(server, configuration.Name, blobName, false);
+                blob.Metadata[ConstPool.WRITE_IN_PROGRESS] = ConstPool.WRITE_IN_PROGRESS;
+                try
+                {
+                    blob.SetMetadata();
+                    didAtLeastOne = true;
+                }
+                catch (StorageException)
+                {
+                    // If setting the flag fails at some primary, then abort the protocol
+                    // Note that some WiP flags may have already been set, so we first try to clear them
+                    if (didAtLeastOne)
+                    {
+                        ClearWiPFlags();
+                    }
+                    return null;
+                }
+                eTags[server] = blob.Properties.ETag;
+            }
+            return eTags;
+        }
+
+        /// <summary>
+        /// Clears the WiP flags on all of the primary blobs.
+        /// </summary>
+        /// <param name="eTags">if not null, then the flags should be cleared conditionally</param>
+        private void ClearWiPFlags(Dictionary<string, string> eTags = null)
+        {
+            ICloudBlob blob;
+            AccessCondition access = AccessCondition.GenerateEmptyCondition();
+            
+            // Clear WiP flags at non-main primaries first
+            foreach (string server in configuration.PrimaryServers.Skip(1))
+            {
+                blob = ClientRegistry.GetCloudBlob(server, configuration.Name, blobName, false);
+                blob.Metadata.Remove(ConstPool.WRITE_IN_PROGRESS);
+                if (eTags != null)
+                {
+                    access = AccessCondition.GenerateIfMatchCondition(eTags[server]);
+                }
+                try
+                {
+                    blob.SetMetadata(access);
+                }
+                catch (StorageException)
+                {
+                    // Ignore failures since the only consequence is that the Wip flag remains set
+                    // It could be that another write is still in progress
+                    // The flag will be cleared eventually by another writer or by the recovery process
+                }
+            }
+
+            //  Clear WiP on main primary last
+            blob = ClientRegistry.GetCloudBlob(configuration.PrimaryServers.First(), configuration.Name, blobName, false);
+            blob.Metadata.Remove(ConstPool.WRITE_IN_PROGRESS);
+            if (eTags != null)
+            {
+                access = AccessCondition.GenerateIfMatchCondition(eTags[configuration.PrimaryServers.First()]);
+            }
+            try
+            {
+                blob.SetMetadata(access);
+            }
+            catch (StorageException)
+            {
+                // Ignore
+            }
+        }
+
+        private void MultiWriteUsingBlobLease(WriteOp op)
         {
             // TODO: recover from failed clients that may leave a write partially completed
             // TODO: remove use of leases and replace with ETags
@@ -283,12 +440,9 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                                 op(blob);
                                 watch.Stop();
 
-                                if (slaEngine.Monitor.replicas.ContainsKey(server))
-                                {
                                     ServerState ss = slaEngine.Monitor.GetServerState(server);
                                     ss.AddRtt(watch.ElapsedMilliseconds);
                                     slaEngine.Session.RecordObjectWritten(blobName, Timestamp(blob), ss);
-                                }
                             }
                             done = true;
                         }

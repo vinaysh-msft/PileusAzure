@@ -102,5 +102,19 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             return new CapCloudBlob(blobName, Configuration, slaEngine);
         }
 
+        /// <summary>
+        /// Gets the state for a given session.
+        /// </summary>
+        /// <param name="session">The name of the session.</param>
+        /// <returns>A reference to the session state.</returns>
+        public SessionState GetSession(string session = "default")
+        {
+            if (!Sessions.ContainsKey(session))
+            {
+                Sessions[session] = new SessionState();
+            }
+            return Sessions[session];
+        }
+
     }
 }

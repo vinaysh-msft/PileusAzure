@@ -70,6 +70,11 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Utils
         public static readonly string RECONFIGURATION_IN_PROGRESS = "-2";
 
         /// <summary>
+        /// This field is added to the metadata of blobs involved in multi-primary writes.
+        /// </summary>
+        public static readonly string WRITE_IN_PROGRESS = "WiP";
+
+        /// <summary>
         /// Specifies how often (in milliseconds) a ping operation should be executed to gather latency of non-replica servers.
         /// </summary>
         public static readonly int LOOKUP_PING_INTERVAL = 10000;

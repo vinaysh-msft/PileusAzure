@@ -113,6 +113,21 @@ namespace PileusApp.Utils
             return result;
         }
 
+        public ConcurrentBag<float> GetAllSampleValues(string sampleName)
+        {
+            int currentEmulationHour = emulationTime.Invoke();
+            ConcurrentBag<float> result = null;
+            if (samples.ContainsKey(currentEmulationHour))
+            {
+                ConcurrentDictionary<string, MeasurementType> tmp = samples[currentEmulationHour];
+                if (tmp.ContainsKey(sampleName))
+                {
+                    result = tmp[sampleName].Values;
+                }
+            }
+            return result;
+        }
+
         public override string ToString()
         {
             string result="utchour,";

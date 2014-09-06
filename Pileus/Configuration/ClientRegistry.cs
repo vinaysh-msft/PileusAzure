@@ -170,7 +170,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
         }
 
         /// <summary>
-        /// Returns <see cref="CloudPageBlob"/> from shared clients if the request is for a read operation.
+        /// Returns <see cref="CloudBlockBlob"/> from shared clients if the request is for a read operation.
         /// Otherwise, it creates a new account, and return a new client. 
         /// 
         /// Note that if the same CloudStorageAccount object is shared between reads and writes, it will have a HUGE impact on read performance.
@@ -187,12 +187,12 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
             ICloudBlob result ;
             if (isRead)
             {
-                result = GetCloudBlobContainer(serverName, containerName).GetPageBlobReference(blobName);
+                result = GetCloudBlobContainer(serverName, containerName).GetBlockBlobReference(blobName);
             }
             else
             {
                 CloudStorageAccount httpAcc = new CloudStorageAccount(GetAccount(serverName).Credentials, false);                
-                result = httpAcc.CreateCloudBlobClient().GetContainerReference(containerName).GetPageBlobReference(blobName);
+                result = httpAcc.CreateCloudBlobClient().GetContainerReference(containerName).GetBlockBlobReference(blobName);
             }
             return result;
         }
