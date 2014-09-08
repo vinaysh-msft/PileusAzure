@@ -78,9 +78,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
                         TableOperation insertSLA = TableOperation.Insert(entity);
                         slaTable.Execute(insertSLA);
                     }
-
-                    // TODO: where does this go?  I should not be changing engine state in this class.
-                    engine.Sla.ResetHitsAndMisses();
                 }
                 catch (Exception ex)
                 {

@@ -82,7 +82,8 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
             current.PrimaryServers.ForEach(s => { if (s == ServerName) primary.Add(s); else secondary.Add(s); });
             current.NonReplicaServers.ForEach(s => { if (s == ServerName) primary.Add(s); });
 
-            return new ReplicaConfiguration(current.Name, primary, secondary);
+            ReplicaConfiguration newConfig = new ReplicaConfiguration(current.Name, primary, secondary, null, null, false, true);
+            return newConfig;
         }
 
         public override int NumberOfAddingReplica()

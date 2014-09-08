@@ -250,7 +250,8 @@ namespace TechFestDemo
                     //duration = YCSBClientExecutor.GetBlob(op.KeyName, containers["eventual"]);
                     //duration = YCSBClientExecutor.GetBlob(op.KeyName, containers["strong"]);
 
-                    foreach (string cons in slas.Keys)
+                    List<string> consInRandomOrder = slas.Keys.OrderBy(el => random.Next()).ToList();
+                    foreach (string cons in consInRandomOrder)
                     {
                         CapCloudBlob blob = (CapCloudBlob) container.GetBlobReference(op.KeyName, cons);
                         blob.Sla = slas[cons];
@@ -266,6 +267,12 @@ namespace TechFestDemo
                         }
                         Log("Performed " + cons + " read for " + op.KeyName + " in " + duration + " from " + SiteName(ss.Name));
                         //AppendDataFile(duration);
+                        if (cons == "sla")
+                        {
+                            foreach (SubSLA sub in slas[cons]) {
+                                Log("SLA: " + sub.Consistency + " hits=" + sub.NumberOfHits + " misses=" + sub.NumberOfMisses);
+                            }
+                        }
                     }
                     sampler.AddSample("ReadCount", 1);
                 }
@@ -557,9 +564,10 @@ namespace TechFestDemo
                 {
                     result += "Chosen action for " + act.ModifyingContainer.Name.ToString() + ": ";
                     result += act.GetType().Name.ToString() + " " + SiteName(act.ServerName) + "\r\n";
-                    result += "expected utility gain is " + act.GainedUtility + "\r\n";
-                    result += "expected cost is " + act.Cost + "\r\n";
                 }
+                float gain = configurator.ComputeUtilityGainFromNewConfiguration(containerName, slas["sla"], container.Sessions["sla"], container.Monitor, config, proposedActions);
+                result += "expected utility gain is " + gain + "\r\n";
+                result += "expected cost is " + proposedActions.First().Cost + "\r\n";
             }
             return result;
         }

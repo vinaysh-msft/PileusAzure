@@ -61,13 +61,14 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
 
         public static void CheckAction(ConfigurationAction action, ServiceLevelAgreement SLA, ClientUsageData usage, ReplicaConfiguration currentConfig)
         {
-            //ReplicaConfiguration currentConfig = SessionState.CreateInstance(sessionState.GetSecondaryReplicaServers().Values.ToList(), sessionState.GetPrimaryReplicaServers().Values.ToList());
             ReplicaConfiguration newConfig = action.IfApply(currentConfig);
             foreach (SubSLA s in SLA)
             {
                 float currentProbability = GetApplicableServers(s, currentConfig, usage).Max(server => server.ProbabilityOfFindingValueLessThanGiven(s.Latency));
                 //probability of new state should be computed in pessimistic mode. I.e., if there is no entry in the distribution of session state, instead of returning 1, we return 0.
                 float newProbability = GetApplicableServers(s, newConfig, usage).Max(server => server.ProbabilityOfFindingValueLessThanGiven(s.Latency, false));
+                /* 
+                // Not sure why the utility is multiplied by hits or misses
                 if (newProbability > currentProbability)
                 {
                     action.AddUtility((newProbability - currentProbability) * s.NumberOfMisses * s.Utility);
@@ -76,6 +77,8 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
                 {
                     action.AddUtility((newProbability - currentProbability) * s.NumberOfHits * s.Utility);
                 }
+                 * */
+                action.AddUtility((newProbability - currentProbability) * s.Utility);
             }
         }
 
@@ -118,26 +121,28 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
             // TODO: shouldn't this just pick one secondary with the max probability, i.e. why try to make multiple solo primaries?
             IEnumerable<string> chosenSecondaries = usage.ServerRTTs
                  .Where(sr => config.SecondaryServers.Contains(sr.Key)
+                     && !config.ReadOnlySecondaryServers.Contains(sr.Key)
                      && sr.Value.ProbabilityOfFindingValueLessThanGiven(desiredLatency) > currentMaxProbability)
                  .Select(sr => sr.Key);
             
             foreach (string server in chosenSecondaries)
             {
-                result.Add(new MakeSoloPrimaryServer(ContainerName, server, usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) * subSLA.Utility * subSLA.NumberOfMisses, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
+                float utilityGain = (usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) - currentMaxProbability) * subSLA.Utility; /* * subSLA.NumberOfMisses*/
+                result.Add(new MakeSoloPrimaryServer(ContainerName, server, utilityGain, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
             }
 
             // for any server with higher probabiliy than the primary, we create an action to make that server one of the primaries.
-            /* 
             IEnumerable<string> chosenServers = usage.ServerRTTs
                  .Where(sr => (config.SecondaryServers.Contains(sr.Key) || config.NonReplicaServers.Contains(sr.Key))
+                     && !config.ReadOnlySecondaryServers.Contains(sr.Key)
                      && sr.Value.ProbabilityOfFindingValueLessThanGiven(desiredLatency) > currentMaxProbability)
                  .Select(sr => sr.Key);
             
             foreach (string server in chosenServers)
             {
-                result.Add(new AddPrimaryServer(ContainerName, server, usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) * subSLA.Utility * subSLA.NumberOfMisses, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
+                float utilityGain = (usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) - currentMaxProbability) * subSLA.Utility; /* * subSLA.NumberOfMisses*/
+                result.Add(new AddPrimaryServer(ContainerName, server, utilityGain, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
             }
-            */
 
             return result;
         }
@@ -163,7 +168,8 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
             
             foreach (string server in chosenServers)
             {
-                result.Add(new AddSecondaryServer(ContainerName, server, usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) * subSLA.Utility * subSLA.NumberOfMisses, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
+                float utilityGain = (usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) - currentMaxProbability) * subSLA.Utility; /* * subSLA.NumberOfMisses*/
+                result.Add(new AddSecondaryServer(ContainerName, server, utilityGain, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
             }
 
             return result;
@@ -197,8 +203,12 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
             {
                 int oldInterval = config.GetSyncPeriod(nearestServer);
 
-                if ((oldInterval*ConstPool.ADJUSTING_SYNC_INTERVAL_MULTIPLIER) > ConstPool.MINIMUM_ALLOWED_SYNC_INTERVAL)
-                    result.Add(new AdjustSyncPeriod(ContainerName, nearestServer, currentMaxProbability * subSLA.Utility * subSLA.NumberOfMisses, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
+                if ((oldInterval * ConstPool.ADJUSTING_SYNC_INTERVAL_MULTIPLIER) > ConstPool.MINIMUM_ALLOWED_SYNC_INTERVAL)
+                {
+                    // TODO: This can't be right.  The utility gain for adjusting the sync period is hard to predict.
+                    float utilityGain = currentMaxProbability * subSLA.Utility; /* * subSLA.NumberOfMisses*/
+                    result.Add(new AdjustSyncPeriod(ContainerName, nearestServer, utilityGain, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
+                }
             }
 
             // For any non-replica with higher probabiliy than both the currentMaxProbability and MIN_ACCEPTABLE_PROB_FOR_EVENTUAL_CONS, we create a new action.
@@ -210,7 +220,8 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration.Actions
 
             foreach (string server in chosenServers)
             {
-                result.Add(new AddSecondaryServer(ContainerName, server, usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) * subSLA.Utility * subSLA.NumberOfMisses, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
+                float utilityGain = (usage.ServerRTTs[server].ProbabilityOfFindingValueLessThanGiven(desiredLatency) - currentMaxProbability) * subSLA.Utility; /* * subSLA.NumberOfMisses*/
+                result.Add(new AddSecondaryServer(ContainerName, server, utilityGain, slaId, ConfigurationActionSource.NonConstraint, numberOfReads, numberOfWrites));
             }
 
             return result;

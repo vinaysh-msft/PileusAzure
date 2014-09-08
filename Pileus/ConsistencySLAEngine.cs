@@ -86,11 +86,13 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             this.chosenSubSLA = chosenSLA;
 
             // Reset hits and misses if the configuration has changed
+            /*
             if (lastEpoch != Config.Epoch)
             {
                 Sla.ResetHitsAndMisses();
                 lastEpoch = Config.Epoch;
             }
+             */
 
             // Compute number of hits and misses
             // Misses are only computed for subSLA entries before the chosenSLA (i.e., those that have more preference by the client).
@@ -114,7 +116,13 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             // Console.WriteLine("selected server " + ss.Name);
             return ss;
         }
-        
+
+        public void RecordObjectRead(string name, DateTimeOffset timestamp, ServerState server, long duration)
+        {
+            server.AddRtt(duration);
+            Session.RecordObjectRead(name, timestamp, server, Sla.Id);
+            DetermineHitSubSLA(name, timestamp, server, duration);
+        }
         private ServerUtility ComputeUtilityForSubSla(string blobName, SubSLA subSla)
         {
             float maxProb = -1;
@@ -140,6 +148,49 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
             //Debug.Assert(ret != null);
             return new ServerUtility(ret, subSla.Utility * maxProb);
+        }
+
+        private void DetermineHitSubSLA(string name, DateTimeOffset timestamp, ServerState server, long duration)
+        {
+            // Determine what subSLA was actually hit
+            bool hit = false;
+            foreach (SubSLA sub in Sla)
+            {
+                if (!hit)
+                {
+                    if (duration < sub.Latency)
+                    {
+                        if (sub.Consistency == Consistency.Strong)
+                        {
+                            if (Config.PrimaryServers.Contains(server.Name))
+                            {
+                                hit = true;
+                            }
+                        }
+                        else if (sub.Consistency == Consistency.Bounded)
+                        {
+                            DateTimeOffset minHighTime = DateTimeOffset.Now - TimeSpan.FromMilliseconds(duration) - TimeSpan.FromSeconds(sub.Bound);
+                            if (timestamp >= minHighTime)
+                            {
+                                hit = true;
+                            }
+                            else
+                            {  // consistency is RMW, Monotonic, Causal, or Eventual
+                                // We know that the chosen server meets the consistency, so we hit if the latency was met
+                                hit = true;
+                            }
+                        }
+                    }
+                    if (hit)
+                    {
+                        sub.Hit();
+                    }
+                    else
+                    {
+                        sub.Miss();
+                    }
+                }
+            }
         }
 
     }

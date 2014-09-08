@@ -206,6 +206,94 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
             }
         }
 
+        /// <summary>
+        /// Picks a new configuration given a single SLA and single client's session state
+        /// </summary>
+        /// <param name="sla">The SLA for which the new configuration should be tailored</param>
+        /// <param name="ss">The session state</param>
+        /// <param name="constraints">The constraints</param>
+        /// <returns>a set of reconfiguration actions</returns>
+        public float ComputeUtilityGainFromNewConfiguration(string containerName, ServiceLevelAgreement sla, SessionState ss, ServerMonitor monitor, ReplicaConfiguration config, List<ConfigurationAction> actions)
+        {
+            Dictionary<string, ClientUsageData> clientData = new Dictionary<string, ClientUsageData>();
+            ClientUsageData usage = new ClientUsageData("local");
+
+            // Convert args into client data
+            usage.SLAs.Add(sla);
+            usage.NumberOfReads = ss.GetNumberOfReadsPerMonth();
+            usage.NumberOfWrites = ss.GetNumberOfWritesPerMonth();
+            usage.ServerRTTs = new Dictionary<string, LatencyDistribution>();
+            foreach (ServerState server in monitor.GetAllServersState())
+            {
+                usage.ServerRTTs.Add(server.Name, server.RTTs);
+            }
+
+            // Use client data for a single user
+            clientData.Add(usage.ClientName, usage);
+
+            return ComputeUtilityGain(config, actions, clientData);
+        }
+
+        private float ComputeUtilityGain(ReplicaConfiguration config, List<ConfigurationAction> actions, Dictionary<string, ClientUsageData> clientData)
+        {
+            ReplicaConfiguration newConfig = config;
+            foreach (ConfigurationAction action in actions)
+            {
+                newConfig = action.IfApply(newConfig);
+            }
+
+            float gain = ExpectedUtilityForClients(newConfig, clientData) - ExpectedUtilityForClients(config, clientData);
+            return gain;
+        }
+
+        // Compute expected utility as a weighted average over all of the SLAs used by all clients
+        private float ExpectedUtilityForClients(ReplicaConfiguration config, Dictionary<string, ClientUsageData> clientData)
+        {
+            float avgExpectedUtility = 0;
+            int totalReads = clientData.Values.Sum(client => client.NumberOfReads);
+            float totalUtility = 0;
+            foreach (string clientName in clientData.Keys)
+            {
+                float totalClientUtility = 0;
+                foreach (ServiceLevelAgreement sla in clientData[clientName].SLAs)
+                {
+                    float slaUtility = ExpectedUtilityForSla(config, sla, clientData[clientName].ServerRTTs);
+                    totalClientUtility += slaUtility;
+                }
+                float avgClientUtility = 0;
+                if (totalClientUtility > 0) {
+                    avgClientUtility = totalClientUtility / clientData[clientName].SLAs.Count;
+                }
+                totalUtility += avgClientUtility * clientData[clientName].NumberOfReads;
+            }
+            avgExpectedUtility = totalUtility / totalReads;
+            return avgExpectedUtility;
+        }
+
+        private float ExpectedUtilityForSla(ReplicaConfiguration config, ServiceLevelAgreement sla, Dictionary<string, LatencyDistribution> serverRTTs)
+        {
+            float utility = 0;
+            float cumulativeProb = 0;
+            foreach (SubSLA sub in sla)
+            {
+                List<string> potentialServers = config.PrimaryServers.ToList();
+                if (sub.Consistency != Consistency.Strong)
+                {
+                    foreach (string secondary in config.SecondaryServers)
+                    {
+                        // note that all secondaries are considered accepted for intermediate consistencies
+                        // this possibly overestimates the expected utility
+                        potentialServers.Add(secondary);
+                    }
+                }
+                float prob = potentialServers.Max(server => serverRTTs[server].ProbabilityOfFindingValueLessThanGiven(sub.Latency));
+                float subUtility = (1 - cumulativeProb) * prob * sub.Utility;
+                utility += subUtility;
+                cumulativeProb += (1 - cumulativeProb) * prob;
+            }
+            return utility;
+        }
+
         protected void AppendToLogger(string log)
         {
             long curSecond = DateTime.Now.ToUniversalTime().Ticks / 10000000;

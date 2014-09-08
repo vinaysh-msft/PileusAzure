@@ -103,9 +103,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             op(blobForRead);
             watch.Stop();
             
-            ss.AddRtt(watch.ElapsedMilliseconds);
-            slaEngine.Session.RecordObjectRead(blobForRead.Name, Timestamp(blobForRead), ss, slaEngine.Sla.Id);
-            // TODO: compute delivered utility
+            slaEngine.RecordObjectRead(blobForRead.Name, Timestamp(blobForRead), ss, watch.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -156,8 +154,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                         if (configuration.PrimaryServers.Contains(ss.Name))
                         {
                             //We have contacted the primary replica, hence we are good to go.
-                            ss.AddRtt(watch.ElapsedMilliseconds);
-                            slaEngine.Session.RecordObjectRead(blobForRead.Name, Timestamp(blobForRead), ss, slaEngine.Sla.Id);
+                            slaEngine.RecordObjectRead(blobForRead.Name, Timestamp(blobForRead), ss, watch.ElapsedMilliseconds);
                             isDone = true;
                         }
                         isDone = false;  // not done

@@ -242,6 +242,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             foreach (string serverName in config.SecondaryServers)
             {
                 ServerState server = monitor.GetServerState(serverName);
+                // TODO: check timestamp on Azure secondary site
                 if (server.HighTime >= minHighTime)
                 {
                     set.Add(server);
