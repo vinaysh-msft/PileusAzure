@@ -119,12 +119,12 @@ namespace TechFestDemoApplication
             Print(DemoLib.PrintReadWriteTimes(sampler));
 
             readLatency = new List<string>();
-            readLatency.Add(sampler.GetSampleValue("strongLatency").ToString());
-            readLatency.Add(sampler.GetSampleValue("causalLatency").ToString());
-            readLatency.Add(sampler.GetSampleValue("boundedLatency").ToString());
-            readLatency.Add(sampler.GetSampleValue("readmywritesLatency").ToString());
-            readLatency.Add(sampler.GetSampleValue("monotonicLatency").ToString());
-            readLatency.Add(sampler.GetSampleValue("eventualLatency").ToString());
+            readLatency.Add(sampler.GetSampleValue("strongLatency").ToString("F2").PadLeft(8));
+            readLatency.Add(sampler.GetSampleValue("causalLatency").ToString("F2").PadLeft(8));
+            readLatency.Add(sampler.GetSampleValue("boundedLatency").ToString("F2").PadLeft(8));
+            readLatency.Add(sampler.GetSampleValue("readmywritesLatency").ToString("F2").PadLeft(8));
+            readLatency.Add(sampler.GetSampleValue("monotonicLatency").ToString("F2").PadLeft(8));
+            readLatency.Add(sampler.GetSampleValue("eventualLatency").ToString("F2").PadLeft(8));
 
             if (!readAgain)
             {
@@ -225,7 +225,12 @@ namespace TechFestDemoApplication
             List<string> slaUtility = new List<string>();
             foreach (SubSLA sub in sla)
             {
-                slaConsistency.Add(sub.Consistency.ToString());
+                string consistency = sub.Consistency.ToString();
+                if (sub.Bound != 0)
+                {
+                    consistency += " (" + sub.Bound.ToString() + " sec)";
+                }
+                slaConsistency.Add(consistency);
                 slaLatency.Add(sub.Latency.ToString() + " ms.");
                 slaUtility.Add(sub.Utility.ToString());
             }
@@ -240,8 +245,8 @@ namespace TechFestDemoApplication
             slaUtilityListBox.ClearSelected();
             
             Sampler sampler = initialConfig ? initialSampler : reconfigSampler;
-            slaDeliveredUtility.Text = DemoLib.GetCurrentSLAUtility().ToString();
-            slaReadTime.Text = sampler.GetSampleValue("slaLatency").ToString();
+            slaDeliveredUtility.Text = DemoLib.GetCurrentSLAUtility().ToString("F2");
+            slaReadTime.Text = sampler.GetSampleValue("slaLatency").ToString("F2");
         }
 
 
@@ -336,30 +341,6 @@ namespace TechFestDemoApplication
             {
                 enableHitRate = true;
             }
-        }
-
-        private void replicasTabPage_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton3_CheckedChanged(object sender, EventArgs e)
-        {
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton13_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void getReplicasButton_Click(object sender, EventArgs e)
@@ -503,21 +484,42 @@ namespace TechFestDemoApplication
                 config.NonReplicaServers.Add(server);
             initialConfig = false;
             reconfigSampler = DemoLib.NewSampler();
+            DemoLib.SetCurrentConfiguration(config);
         }
 
-        private void radioButtonWestUSSecondary_CheckedChanged(object sender, EventArgs e)
+        private void buttonGetLatency_Click(object sender, EventArgs e)
         {
+            ServerMonitor monitor = DemoLib.GetServerMonitor();
+            ReplicaConfiguration config = DemoLib.GetCurrentConfiguration();
+            List<string> allServers = config.GetServers();
+            List<string> siteNames = new List<string>();
+            List<string> siteLatency = new List<string>();
+            
+            foreach (string server in allServers)
+            {
+                ServerState ss = monitor.GetServerState(server);
+                siteNames.Add(DemoLib.SiteName(server));
+                siteLatency.Add(ss.RTTs.FindAverage().ToString("F0").PadLeft(5));
+            }
 
+            listBoxLatencySites.DataSource = null;
+            listBoxLatencySites.DataSource = siteNames;
+            listBoxLatencySites.ClearSelected();
+            listBoxLatencyTimes.DataSource = null;
+            listBoxLatencyTimes.DataSource = siteLatency;
+            listBoxLatencyTimes.ClearSelected();
         }
 
-        private void radioButtonWestUSPrimary_CheckedChanged(object sender, EventArgs e)
+        private void buttonPingLatency_Click(object sender, EventArgs e)
         {
-
+            DemoLib.PingAllServers();
+            buttonGetLatency_Click(sender, e);
         }
 
-        private void labelNorthCentralUS_Click(object sender, EventArgs e)
+        private void buttonClearLatency_Click(object sender, EventArgs e)
         {
-
+            listBoxLatencyTimes.DataSource = null;
+            listBoxLatencySites.ClearSelected();
         }
         
     }

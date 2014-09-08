@@ -153,7 +153,13 @@ namespace TechFestDemo
         {
             return config;
         }
-       
+
+        public static void SetCurrentConfiguration(ReplicaConfiguration newConfig)
+        {
+            config = newConfig;
+            slas["sla"].ResetHitsAndMisses();
+        }
+
         public static void SetInitialConfiguration()
         {
             // Note: This is not the correct way to change the configuration.  We should actually use the Configurator.
@@ -255,17 +261,16 @@ namespace TechFestDemo
                     {
                         CapCloudBlob blob = (CapCloudBlob) container.GetBlobReference(op.KeyName, cons);
                         blob.Sla = slas[cons];
-                        ServerState ss = blob.engine.FindServerToRead(op.KeyName);
                         // executing GetBlob twice substantially reduces the latency variance
                         //duration = YCSBClientExecutor.GetBlob(blob);
                         duration = YCSBClientExecutor.GetBlob(blob);
                         sampler.AddSample(cons + "Latency", duration);
                         sampler.AddSample(cons + "TotalAccesses", 1);
-                        if (ss.IsPrimary == true)
+                        if (config.PrimaryServers.Contains(blob.engine.chosenServer.Name))
                         {
                             sampler.AddSample(cons + "PrimaryAccesses", 1);
                         }
-                        Log("Performed " + cons + " read for " + op.KeyName + " in " + duration + " from " + SiteName(ss.Name));
+                        Log("Performed " + cons + " read for " + op.KeyName + " in " + duration + " from " + SiteName(blob.engine.chosenServer.Name));
                         //AppendDataFile(duration);
                         if (cons == "sla")
                         {
@@ -354,6 +359,11 @@ namespace TechFestDemo
                     }
                 }
             }
+        }
+
+        public static ServerMonitor GetServerMonitor()
+        {
+            return container.Monitor;
         }
 
         private static void SyncSecondaryServers()
@@ -566,13 +576,13 @@ namespace TechFestDemo
                     result += act.GetType().Name.ToString() + " " + SiteName(act.ServerName) + "\r\n";
                 }
                 float gain = configurator.ComputeUtilityGainFromNewConfiguration(containerName, slas["sla"], container.Sessions["sla"], container.Monitor, config, proposedActions);
-                result += "expected utility gain is " + gain + "\r\n";
-                result += "expected cost is " + proposedActions.First().Cost + "\r\n";
+                result += "expected utility gain is " + gain.ToString("F2") + "\r\n";
+                result += "expected cost is " + proposedActions.First().Cost.ToString("F2") + "\r\n";
             }
             return result;
         }
 
-        private static string SiteName(string server)
+        public static string SiteName(string server)
         {
             string site;
             switch (server)

@@ -15,10 +15,16 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         // The last subSLA that was chosen
         public SubSLA chosenSubSLA { get; private set; }
-        
+
+        // The last subSLA that was hit, which may differ from last chosen
+        public SubSLA hitSubSLA { get; private set; }
+
         // A callback method for determining the utility of the chosen subSLA
         // It is only used for registering the chosen utility during the evaluation.
         private ChosenUtility chosenUtility;
+
+        // The server that was last accessed
+        public ServerState chosenServer { get; private set; }
 
         public ReplicaConfiguration Config { get; set; }
 
@@ -94,19 +100,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             }
              */
 
-            // Compute number of hits and misses
-            // Misses are only computed for subSLA entries before the chosenSLA (i.e., those that have more preference by the client).
-            foreach (SubSLA s in Sla)
-                if (s == chosenSLA)
-                {
-                    s.Hit();
-                    break;
-                }
-                else
-                {
-                    s.Miss();
-                }
-
             // Report chosen utility
             if (chosenUtility != null)
             {
@@ -114,6 +107,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             }
             
             // Console.WriteLine("selected server " + ss.Name);
+            this.chosenServer = ss;
             return ss;
         }
 
@@ -123,6 +117,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             Session.RecordObjectRead(name, timestamp, server, Sla.Id);
             DetermineHitSubSLA(name, timestamp, server, duration);
         }
+
         private ServerUtility ComputeUtilityForSubSla(string blobName, SubSLA subSla)
         {
             float maxProb = -1;
@@ -150,45 +145,30 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             return new ServerUtility(ret, subSla.Utility * maxProb);
         }
 
-        private void DetermineHitSubSLA(string name, DateTimeOffset timestamp, ServerState server, long duration)
+        private void DetermineHitSubSLA(string objectName, DateTimeOffset timestamp, ServerState server, long duration)
         {
             // Determine what subSLA was actually hit
             bool hit = false;
             foreach (SubSLA sub in Sla)
             {
-                if (!hit)
+                if (duration <= sub.Latency)
                 {
-                    if (duration < sub.Latency)
+                    // met latency; see if it also meets consistency
+                    HashSet<ServerState> servers = selector.SelectServersForConsistency(objectName, sub.Consistency, sub.Bound);
+                    if (servers.Contains(server))
                     {
-                        if (sub.Consistency == Consistency.Strong)
-                        {
-                            if (Config.PrimaryServers.Contains(server.Name))
-                            {
-                                hit = true;
-                            }
-                        }
-                        else if (sub.Consistency == Consistency.Bounded)
-                        {
-                            DateTimeOffset minHighTime = DateTimeOffset.Now - TimeSpan.FromMilliseconds(duration) - TimeSpan.FromSeconds(sub.Bound);
-                            if (timestamp >= minHighTime)
-                            {
-                                hit = true;
-                            }
-                            else
-                            {  // consistency is RMW, Monotonic, Causal, or Eventual
-                                // We know that the chosen server meets the consistency, so we hit if the latency was met
-                                hit = true;
-                            }
-                        }
+                        hit = true;
                     }
-                    if (hit)
-                    {
-                        sub.Hit();
-                    }
-                    else
-                    {
-                        sub.Miss();
-                    }
+                }
+                if (hit)
+                {
+                    sub.Hit();
+                    hitSubSLA = sub;
+                    return;
+                }
+                else
+                {
+                    sub.Miss();
                 }
             }
         }

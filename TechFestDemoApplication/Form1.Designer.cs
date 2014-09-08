@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend9 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series17 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series18 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title9 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.chartTabPage = new System.Windows.Forms.TabPage();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -70,48 +70,56 @@
             this.readButton = new System.Windows.Forms.Button();
             this.TabControl = new System.Windows.Forms.TabControl();
             this.replicasTabPage = new System.Windows.Forms.TabPage();
-            this.labelWestUS = new System.Windows.Forms.Label();
-            this.labelEastUS = new System.Windows.Forms.Label();
-            this.labelNorthCentralUS = new System.Windows.Forms.Label();
+            this.groupBoxBrazil = new System.Windows.Forms.GroupBox();
+            this.radioButtonBrazilPrimary = new System.Windows.Forms.RadioButton();
+            this.radioButtonBrazilUnused = new System.Windows.Forms.RadioButton();
+            this.radioButtonBrazilSecondary = new System.Windows.Forms.RadioButton();
+            this.groupBoxAsia = new System.Windows.Forms.GroupBox();
+            this.radioButtonAsiaPrimary = new System.Windows.Forms.RadioButton();
+            this.radioButtonAsiaUnused = new System.Windows.Forms.RadioButton();
+            this.radioButtonAsiaSecondary = new System.Windows.Forms.RadioButton();
+            this.groupBoxNorthEurope = new System.Windows.Forms.GroupBox();
+            this.radioButtonNorthEuropePrimary = new System.Windows.Forms.RadioButton();
+            this.radioButtonNorthEuropeUnused = new System.Windows.Forms.RadioButton();
+            this.radioButtonNorthEuropeSecondary = new System.Windows.Forms.RadioButton();
+            this.groupBoxWestEurope = new System.Windows.Forms.GroupBox();
+            this.radioButtonWestEuropePrimary = new System.Windows.Forms.RadioButton();
+            this.radioButtonWestEuropeUnused = new System.Windows.Forms.RadioButton();
+            this.radioButtonWestEuropeSecondary = new System.Windows.Forms.RadioButton();
+            this.groupBoxNorthCentralUS = new System.Windows.Forms.GroupBox();
+            this.radioButtonNorthUSPrimary = new System.Windows.Forms.RadioButton();
+            this.radioButtonNorthUSUnused = new System.Windows.Forms.RadioButton();
+            this.radioButtonNorthUSSecondary = new System.Windows.Forms.RadioButton();
+            this.groupBoxSouthCentralUS = new System.Windows.Forms.GroupBox();
+            this.radioButtonSouthUSPrimary = new System.Windows.Forms.RadioButton();
+            this.radioButtonSouthUSUnused = new System.Windows.Forms.RadioButton();
+            this.radioButtonSouthUSSecondary = new System.Windows.Forms.RadioButton();
+            this.groupBoxEastUS = new System.Windows.Forms.GroupBox();
+            this.radioButtonEastUSPrimary = new System.Windows.Forms.RadioButton();
+            this.radioButtonEastUSUnused = new System.Windows.Forms.RadioButton();
+            this.radioButtonEastUSSecondary = new System.Windows.Forms.RadioButton();
+            this.setReplicasButton = new System.Windows.Forms.Button();
+            this.getReplicasButton = new System.Windows.Forms.Button();
+            this.labelBrazil = new System.Windows.Forms.Label();
+            this.labelAsia = new System.Windows.Forms.Label();
+            this.labelNorthEurope = new System.Windows.Forms.Label();
+            this.labelWestEurope = new System.Windows.Forms.Label();
             this.labelSouthCentralUS = new System.Windows.Forms.Label();
             this.groupBoxWestUS = new System.Windows.Forms.GroupBox();
             this.radioButtonWestUSPrimary = new System.Windows.Forms.RadioButton();
             this.radioButtonWestUSUnused = new System.Windows.Forms.RadioButton();
             this.radioButtonWestUSSecondary = new System.Windows.Forms.RadioButton();
-            this.labelWestEurope = new System.Windows.Forms.Label();
-            this.labelNorthEurope = new System.Windows.Forms.Label();
-            this.labelAsia = new System.Windows.Forms.Label();
-            this.labelBrazil = new System.Windows.Forms.Label();
-            this.getReplicasButton = new System.Windows.Forms.Button();
-            this.setReplicasButton = new System.Windows.Forms.Button();
-            this.groupBoxEastUS = new System.Windows.Forms.GroupBox();
-            this.radioButtonEastUSPrimary = new System.Windows.Forms.RadioButton();
-            this.radioButtonEastUSUnused = new System.Windows.Forms.RadioButton();
-            this.radioButtonEastUSSecondary = new System.Windows.Forms.RadioButton();
-            this.groupBoxSouthCentralUS = new System.Windows.Forms.GroupBox();
-            this.radioButtonSouthUSPrimary = new System.Windows.Forms.RadioButton();
-            this.radioButtonSouthUSUnused = new System.Windows.Forms.RadioButton();
-            this.radioButtonSouthUSSecondary = new System.Windows.Forms.RadioButton();
-            this.groupBoxNorthCentralUS = new System.Windows.Forms.GroupBox();
-            this.radioButtonNorthUSPrimary = new System.Windows.Forms.RadioButton();
-            this.radioButtonNorthUSUnused = new System.Windows.Forms.RadioButton();
-            this.radioButtonNorthUSSecondary = new System.Windows.Forms.RadioButton();
-            this.groupBoxWestEurope = new System.Windows.Forms.GroupBox();
-            this.radioButtonWestEuropePrimary = new System.Windows.Forms.RadioButton();
-            this.radioButtonWestEuropeUnused = new System.Windows.Forms.RadioButton();
-            this.radioButtonWestEuropeSecondary = new System.Windows.Forms.RadioButton();
-            this.groupBoxNorthEurope = new System.Windows.Forms.GroupBox();
-            this.radioButtonNorthEuropePrimary = new System.Windows.Forms.RadioButton();
-            this.radioButtonNorthEuropeUnused = new System.Windows.Forms.RadioButton();
-            this.radioButtonNorthEuropeSecondary = new System.Windows.Forms.RadioButton();
-            this.groupBoxAsia = new System.Windows.Forms.GroupBox();
-            this.radioButtonAsiaPrimary = new System.Windows.Forms.RadioButton();
-            this.radioButtonAsiaUnused = new System.Windows.Forms.RadioButton();
-            this.radioButtonAsiaSecondary = new System.Windows.Forms.RadioButton();
-            this.groupBoxBrazil = new System.Windows.Forms.GroupBox();
-            this.radioButtonBrazilPrimary = new System.Windows.Forms.RadioButton();
-            this.radioButtonBrazilUnused = new System.Windows.Forms.RadioButton();
-            this.radioButtonBrazilSecondary = new System.Windows.Forms.RadioButton();
+            this.labelNorthCentralUS = new System.Windows.Forms.Label();
+            this.labelEastUS = new System.Windows.Forms.Label();
+            this.labelWestUS = new System.Windows.Forms.Label();
+            this.tabPageLatency = new System.Windows.Forms.TabPage();
+            this.buttonClearLatency = new System.Windows.Forms.Button();
+            this.buttonPingLatency = new System.Windows.Forms.Button();
+            this.buttonGetLatency = new System.Windows.Forms.Button();
+            this.labelLatencyTimes = new System.Windows.Forms.Label();
+            this.labelLatencySites = new System.Windows.Forms.Label();
+            this.listBoxLatencyTimes = new System.Windows.Forms.ListBox();
+            this.listBoxLatencySites = new System.Windows.Forms.ListBox();
             this.chartTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.logTabPage.SuspendLayout();
@@ -120,14 +128,15 @@
             this.consistencyTabPage.SuspendLayout();
             this.TabControl.SuspendLayout();
             this.replicasTabPage.SuspendLayout();
-            this.groupBoxWestUS.SuspendLayout();
-            this.groupBoxEastUS.SuspendLayout();
-            this.groupBoxSouthCentralUS.SuspendLayout();
-            this.groupBoxNorthCentralUS.SuspendLayout();
-            this.groupBoxWestEurope.SuspendLayout();
-            this.groupBoxNorthEurope.SuspendLayout();
-            this.groupBoxAsia.SuspendLayout();
             this.groupBoxBrazil.SuspendLayout();
+            this.groupBoxAsia.SuspendLayout();
+            this.groupBoxNorthEurope.SuspendLayout();
+            this.groupBoxWestEurope.SuspendLayout();
+            this.groupBoxNorthCentralUS.SuspendLayout();
+            this.groupBoxSouthCentralUS.SuspendLayout();
+            this.groupBoxEastUS.SuspendLayout();
+            this.groupBoxWestUS.SuspendLayout();
+            this.tabPageLatency.SuspendLayout();
             this.SuspendLayout();
             // 
             // chartTabPage
@@ -165,46 +174,46 @@
             // 
             // chart1
             // 
-            chartArea9.AxisX.IsStartedFromZero = false;
-            chartArea9.AxisX.Title = "Consistency";
-            chartArea9.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            chartArea9.AxisY.Title = "Latency";
-            chartArea9.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            chartArea9.AxisY2.MajorGrid.Enabled = false;
-            chartArea9.AxisY2.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
-            chartArea9.AxisY2.Title = "Primary hit rate (%)";
-            chartArea9.AxisY2.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            chartArea9.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea9);
-            legend9.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend9.Enabled = false;
-            legend9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            legend9.IsDockedInsideChartArea = false;
-            legend9.IsTextAutoFit = false;
-            legend9.Name = "Latency";
-            legend9.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.chart1.Legends.Add(legend9);
+            chartArea4.AxisX.IsStartedFromZero = false;
+            chartArea4.AxisX.Title = "Consistency";
+            chartArea4.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            chartArea4.AxisY.Title = "Latency";
+            chartArea4.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            chartArea4.AxisY2.MajorGrid.Enabled = false;
+            chartArea4.AxisY2.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
+            chartArea4.AxisY2.Title = "Primary hit rate (%)";
+            chartArea4.AxisY2.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            chartArea4.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea4);
+            legend4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend4.Enabled = false;
+            legend4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            legend4.IsDockedInsideChartArea = false;
+            legend4.IsTextAutoFit = false;
+            legend4.Name = "Latency";
+            legend4.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.chart1.Legends.Add(legend4);
             this.chart1.Location = new System.Drawing.Point(38, 6);
             this.chart1.Name = "chart1";
-            series17.ChartArea = "ChartArea1";
-            series17.Legend = "Latency";
-            series17.Name = "Latency";
-            series17.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
-            series18.ChartArea = "ChartArea1";
-            series18.IsVisibleInLegend = false;
-            series18.Legend = "Latency";
-            series18.Name = "Primary hit rate";
-            series18.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
-            series18.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            this.chart1.Series.Add(series17);
-            this.chart1.Series.Add(series18);
+            series7.ChartArea = "ChartArea1";
+            series7.Legend = "Latency";
+            series7.Name = "Latency";
+            series7.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
+            series8.ChartArea = "ChartArea1";
+            series8.IsVisibleInLegend = false;
+            series8.Legend = "Latency";
+            series8.Name = "Primary hit rate";
+            series8.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
+            series8.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.chart1.Series.Add(series7);
+            this.chart1.Series.Add(series8);
             this.chart1.Size = new System.Drawing.Size(786, 568);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
-            title9.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            title9.Name = "Title1";
-            title9.Text = "Consistency - Latency Tradeoff";
-            this.chart1.Titles.Add(title9);
+            title4.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            title4.Name = "Title1";
+            title4.Text = "Consistency - Latency Tradeoff";
+            this.chart1.Titles.Add(title4);
             this.chart1.Click += new System.EventHandler(this.chart1_Click);
             // 
             // logTabPage
@@ -247,11 +256,11 @@
             // 
             // configTextBox
             // 
-            this.configTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.configTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.configTextBox.Location = new System.Drawing.Point(55, 96);
             this.configTextBox.Multiline = true;
             this.configTextBox.Name = "configTextBox";
-            this.configTextBox.Size = new System.Drawing.Size(526, 284);
+            this.configTextBox.Size = new System.Drawing.Size(651, 418);
             this.configTextBox.TabIndex = 4;
             // 
             // restroreConfigButton
@@ -363,7 +372,7 @@
             this.slaUtilityListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.slaUtilityListBox.FormattingEnabled = true;
             this.slaUtilityListBox.ItemHeight = 31;
-            this.slaUtilityListBox.Location = new System.Drawing.Point(508, 146);
+            this.slaUtilityListBox.Location = new System.Drawing.Point(566, 146);
             this.slaUtilityListBox.Name = "slaUtilityListBox";
             this.slaUtilityListBox.Size = new System.Drawing.Size(167, 217);
             this.slaUtilityListBox.TabIndex = 8;
@@ -374,7 +383,7 @@
             this.slaLatencyListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.slaLatencyListBox.FormattingEnabled = true;
             this.slaLatencyListBox.ItemHeight = 31;
-            this.slaLatencyListBox.Location = new System.Drawing.Point(351, 146);
+            this.slaLatencyListBox.Location = new System.Drawing.Point(409, 146);
             this.slaLatencyListBox.Name = "slaLatencyListBox";
             this.slaLatencyListBox.Size = new System.Drawing.Size(143, 217);
             this.slaLatencyListBox.TabIndex = 7;
@@ -387,13 +396,13 @@
             this.slaConsistencyListBox.ItemHeight = 31;
             this.slaConsistencyListBox.Location = new System.Drawing.Point(134, 146);
             this.slaConsistencyListBox.Name = "slaConsistencyListBox";
-            this.slaConsistencyListBox.Size = new System.Drawing.Size(194, 217);
+            this.slaConsistencyListBox.Size = new System.Drawing.Size(255, 217);
             this.slaConsistencyListBox.TabIndex = 6;
             // 
             // slaUtilityLabel
             // 
             this.slaUtilityLabel.AutoSize = true;
-            this.slaUtilityLabel.Location = new System.Drawing.Point(502, 104);
+            this.slaUtilityLabel.Location = new System.Drawing.Point(560, 104);
             this.slaUtilityLabel.Name = "slaUtilityLabel";
             this.slaUtilityLabel.Size = new System.Drawing.Size(77, 31);
             this.slaUtilityLabel.TabIndex = 5;
@@ -402,7 +411,7 @@
             // slaLatencyLabel
             // 
             this.slaLatencyLabel.AutoSize = true;
-            this.slaLatencyLabel.Location = new System.Drawing.Point(345, 104);
+            this.slaLatencyLabel.Location = new System.Drawing.Point(403, 104);
             this.slaLatencyLabel.Name = "slaLatencyLabel";
             this.slaLatencyLabel.Size = new System.Drawing.Size(101, 31);
             this.slaLatencyLabel.TabIndex = 4;
@@ -473,7 +482,7 @@
             // 
             this.readtimelabel.AutoSize = true;
             this.readtimelabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.readtimelabel.Location = new System.Drawing.Point(345, 92);
+            this.readtimelabel.Location = new System.Drawing.Point(436, 92);
             this.readtimelabel.Name = "readtimelabel";
             this.readtimelabel.Size = new System.Drawing.Size(153, 26);
             this.readtimelabel.TabIndex = 7;
@@ -492,35 +501,37 @@
             // readAgainLatencyListBox
             // 
             this.readAgainLatencyListBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.readAgainLatencyListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readAgainLatencyListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readAgainLatencyListBox.FormatString = "N2";
             this.readAgainLatencyListBox.FormattingEnabled = true;
-            this.readAgainLatencyListBox.ItemHeight = 31;
-            this.readAgainLatencyListBox.Location = new System.Drawing.Point(478, 127);
+            this.readAgainLatencyListBox.ItemHeight = 37;
+            this.readAgainLatencyListBox.Location = new System.Drawing.Point(625, 127);
             this.readAgainLatencyListBox.Name = "readAgainLatencyListBox";
-            this.readAgainLatencyListBox.Size = new System.Drawing.Size(123, 186);
+            this.readAgainLatencyListBox.Size = new System.Drawing.Size(211, 370);
             this.readAgainLatencyListBox.TabIndex = 5;
             // 
             // readLatencyListBox
             // 
             this.readLatencyListBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.readLatencyListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readLatencyListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.readLatencyListBox.FormatString = "N2";
             this.readLatencyListBox.FormattingEnabled = true;
-            this.readLatencyListBox.ItemHeight = 31;
-            this.readLatencyListBox.Location = new System.Drawing.Point(341, 127);
+            this.readLatencyListBox.ItemHeight = 37;
+            this.readLatencyListBox.Location = new System.Drawing.Point(432, 127);
             this.readLatencyListBox.Name = "readLatencyListBox";
-            this.readLatencyListBox.Size = new System.Drawing.Size(119, 186);
+            this.readLatencyListBox.Size = new System.Drawing.Size(187, 370);
             this.readLatencyListBox.TabIndex = 4;
             // 
             // consistencyListBox
             // 
             this.consistencyListBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.consistencyListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.consistencyListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.consistencyListBox.FormattingEnabled = true;
             this.consistencyListBox.IntegralHeight = false;
-            this.consistencyListBox.ItemHeight = 31;
+            this.consistencyListBox.ItemHeight = 37;
             this.consistencyListBox.Location = new System.Drawing.Point(43, 127);
             this.consistencyListBox.Name = "consistencyListBox";
-            this.consistencyListBox.Size = new System.Drawing.Size(280, 248);
+            this.consistencyListBox.Size = new System.Drawing.Size(370, 401);
             this.consistencyListBox.TabIndex = 3;
             // 
             // clearButton
@@ -558,9 +569,10 @@
             // 
             // TabControl
             // 
+            this.TabControl.Controls.Add(this.tabPageLatency);
+            this.TabControl.Controls.Add(this.replicasTabPage);
             this.TabControl.Controls.Add(this.consistencyTabPage);
             this.TabControl.Controls.Add(this.slaTabPage);
-            this.TabControl.Controls.Add(this.replicasTabPage);
             this.TabControl.Controls.Add(this.configTabPage);
             this.TabControl.Controls.Add(this.chartTabPage);
             this.TabControl.Controls.Add(this.logTabPage);
@@ -599,471 +611,6 @@
             this.replicasTabPage.TabIndex = 5;
             this.replicasTabPage.Text = "Replicas";
             this.replicasTabPage.UseVisualStyleBackColor = true;
-            this.replicasTabPage.Click += new System.EventHandler(this.replicasTabPage_Click);
-            // 
-            // labelWestUS
-            // 
-            this.labelWestUS.AutoSize = true;
-            this.labelWestUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelWestUS.Location = new System.Drawing.Point(217, 101);
-            this.labelWestUS.Name = "labelWestUS";
-            this.labelWestUS.Size = new System.Drawing.Size(121, 31);
-            this.labelWestUS.TabIndex = 4;
-            this.labelWestUS.Text = "West US";
-            // 
-            // labelEastUS
-            // 
-            this.labelEastUS.AutoSize = true;
-            this.labelEastUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelEastUS.Location = new System.Drawing.Point(224, 150);
-            this.labelEastUS.Name = "labelEastUS";
-            this.labelEastUS.Size = new System.Drawing.Size(114, 31);
-            this.labelEastUS.TabIndex = 6;
-            this.labelEastUS.Text = "East US";
-            this.labelEastUS.Click += new System.EventHandler(this.label4_Click);
-            // 
-            // labelNorthCentralUS
-            // 
-            this.labelNorthCentralUS.AutoSize = true;
-            this.labelNorthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelNorthCentralUS.Location = new System.Drawing.Point(208, 246);
-            this.labelNorthCentralUS.Name = "labelNorthCentralUS";
-            this.labelNorthCentralUS.Size = new System.Drawing.Size(126, 31);
-            this.labelNorthCentralUS.TabIndex = 8;
-            this.labelNorthCentralUS.Text = "North US";
-            this.labelNorthCentralUS.Click += new System.EventHandler(this.labelNorthCentralUS_Click);
-            // 
-            // labelSouthCentralUS
-            // 
-            this.labelSouthCentralUS.AutoSize = true;
-            this.labelSouthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelSouthCentralUS.Location = new System.Drawing.Point(208, 198);
-            this.labelSouthCentralUS.Name = "labelSouthCentralUS";
-            this.labelSouthCentralUS.Size = new System.Drawing.Size(130, 31);
-            this.labelSouthCentralUS.TabIndex = 10;
-            this.labelSouthCentralUS.Text = "South US";
-            // 
-            // groupBoxWestUS
-            // 
-            this.groupBoxWestUS.Controls.Add(this.radioButtonWestUSPrimary);
-            this.groupBoxWestUS.Controls.Add(this.radioButtonWestUSUnused);
-            this.groupBoxWestUS.Controls.Add(this.radioButtonWestUSSecondary);
-            this.groupBoxWestUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxWestUS.Location = new System.Drawing.Point(399, 92);
-            this.groupBoxWestUS.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBoxWestUS.Name = "groupBoxWestUS";
-            this.groupBoxWestUS.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBoxWestUS.Size = new System.Drawing.Size(429, 40);
-            this.groupBoxWestUS.TabIndex = 11;
-            this.groupBoxWestUS.TabStop = false;
-            // 
-            // radioButtonWestUSPrimary
-            // 
-            this.radioButtonWestUSPrimary.AutoSize = true;
-            this.radioButtonWestUSPrimary.BackColor = System.Drawing.Color.Transparent;
-            this.radioButtonWestUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonWestUSPrimary.Location = new System.Drawing.Point(12, 9);
-            this.radioButtonWestUSPrimary.Name = "radioButtonWestUSPrimary";
-            this.radioButtonWestUSPrimary.Size = new System.Drawing.Size(103, 30);
-            this.radioButtonWestUSPrimary.TabIndex = 0;
-            this.radioButtonWestUSPrimary.TabStop = true;
-            this.radioButtonWestUSPrimary.Text = "primary";
-            this.radioButtonWestUSPrimary.UseVisualStyleBackColor = false;
-            this.radioButtonWestUSPrimary.CheckedChanged += new System.EventHandler(this.radioButtonWestUSPrimary_CheckedChanged);
-            // 
-            // radioButtonWestUSUnused
-            // 
-            this.radioButtonWestUSUnused.AutoSize = true;
-            this.radioButtonWestUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonWestUSUnused.Location = new System.Drawing.Point(282, 9);
-            this.radioButtonWestUSUnused.Name = "radioButtonWestUSUnused";
-            this.radioButtonWestUSUnused.Size = new System.Drawing.Size(101, 30);
-            this.radioButtonWestUSUnused.TabIndex = 2;
-            this.radioButtonWestUSUnused.TabStop = true;
-            this.radioButtonWestUSUnused.Text = "unused";
-            this.radioButtonWestUSUnused.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonWestUSSecondary
-            // 
-            this.radioButtonWestUSSecondary.AutoSize = true;
-            this.radioButtonWestUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonWestUSSecondary.Location = new System.Drawing.Point(131, 9);
-            this.radioButtonWestUSSecondary.Margin = new System.Windows.Forms.Padding(0);
-            this.radioButtonWestUSSecondary.Name = "radioButtonWestUSSecondary";
-            this.radioButtonWestUSSecondary.Size = new System.Drawing.Size(130, 30);
-            this.radioButtonWestUSSecondary.TabIndex = 1;
-            this.radioButtonWestUSSecondary.TabStop = true;
-            this.radioButtonWestUSSecondary.Text = "secondary";
-            this.radioButtonWestUSSecondary.UseVisualStyleBackColor = true;
-            this.radioButtonWestUSSecondary.CheckedChanged += new System.EventHandler(this.radioButtonWestUSSecondary_CheckedChanged);
-            // 
-            // labelWestEurope
-            // 
-            this.labelWestEurope.AutoSize = true;
-            this.labelWestEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelWestEurope.Location = new System.Drawing.Point(168, 294);
-            this.labelWestEurope.Name = "labelWestEurope";
-            this.labelWestEurope.Size = new System.Drawing.Size(170, 31);
-            this.labelWestEurope.TabIndex = 12;
-            this.labelWestEurope.Text = "West Europe";
-            // 
-            // labelNorthEurope
-            // 
-            this.labelNorthEurope.AutoSize = true;
-            this.labelNorthEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelNorthEurope.Location = new System.Drawing.Point(163, 340);
-            this.labelNorthEurope.Name = "labelNorthEurope";
-            this.labelNorthEurope.Size = new System.Drawing.Size(175, 31);
-            this.labelNorthEurope.TabIndex = 13;
-            this.labelNorthEurope.Text = "North Europe";
-            // 
-            // labelAsia
-            // 
-            this.labelAsia.AutoSize = true;
-            this.labelAsia.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelAsia.Location = new System.Drawing.Point(209, 388);
-            this.labelAsia.Name = "labelAsia";
-            this.labelAsia.Size = new System.Drawing.Size(129, 31);
-            this.labelAsia.TabIndex = 14;
-            this.labelAsia.Text = "East Asia";
-            // 
-            // labelBrazil
-            // 
-            this.labelBrazil.AutoSize = true;
-            this.labelBrazil.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelBrazil.Location = new System.Drawing.Point(256, 432);
-            this.labelBrazil.Name = "labelBrazil";
-            this.labelBrazil.Size = new System.Drawing.Size(82, 31);
-            this.labelBrazil.TabIndex = 15;
-            this.labelBrazil.Text = "Brazil";
-            // 
-            // getReplicasButton
-            // 
-            this.getReplicasButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.getReplicasButton.Location = new System.Drawing.Point(60, 28);
-            this.getReplicasButton.Name = "getReplicasButton";
-            this.getReplicasButton.Size = new System.Drawing.Size(102, 35);
-            this.getReplicasButton.TabIndex = 16;
-            this.getReplicasButton.Text = "Get";
-            this.getReplicasButton.UseVisualStyleBackColor = true;
-            this.getReplicasButton.Click += new System.EventHandler(this.getReplicasButton_Click);
-            // 
-            // setReplicasButton
-            // 
-            this.setReplicasButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.setReplicasButton.Location = new System.Drawing.Point(184, 28);
-            this.setReplicasButton.Name = "setReplicasButton";
-            this.setReplicasButton.Size = new System.Drawing.Size(102, 35);
-            this.setReplicasButton.TabIndex = 17;
-            this.setReplicasButton.Text = "Set";
-            this.setReplicasButton.UseVisualStyleBackColor = true;
-            this.setReplicasButton.Click += new System.EventHandler(this.setReplicasButton_Click);
-            // 
-            // groupBoxEastUS
-            // 
-            this.groupBoxEastUS.Controls.Add(this.radioButtonEastUSPrimary);
-            this.groupBoxEastUS.Controls.Add(this.radioButtonEastUSUnused);
-            this.groupBoxEastUS.Controls.Add(this.radioButtonEastUSSecondary);
-            this.groupBoxEastUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxEastUS.Location = new System.Drawing.Point(399, 141);
-            this.groupBoxEastUS.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBoxEastUS.Name = "groupBoxEastUS";
-            this.groupBoxEastUS.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBoxEastUS.Size = new System.Drawing.Size(429, 40);
-            this.groupBoxEastUS.TabIndex = 18;
-            this.groupBoxEastUS.TabStop = false;
-            // 
-            // radioButtonEastUSPrimary
-            // 
-            this.radioButtonEastUSPrimary.AutoSize = true;
-            this.radioButtonEastUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonEastUSPrimary.Location = new System.Drawing.Point(12, 9);
-            this.radioButtonEastUSPrimary.Name = "radioButtonEastUSPrimary";
-            this.radioButtonEastUSPrimary.Size = new System.Drawing.Size(103, 30);
-            this.radioButtonEastUSPrimary.TabIndex = 0;
-            this.radioButtonEastUSPrimary.TabStop = true;
-            this.radioButtonEastUSPrimary.Text = "primary";
-            this.radioButtonEastUSPrimary.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonEastUSUnused
-            // 
-            this.radioButtonEastUSUnused.AutoSize = true;
-            this.radioButtonEastUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonEastUSUnused.Location = new System.Drawing.Point(282, 9);
-            this.radioButtonEastUSUnused.Name = "radioButtonEastUSUnused";
-            this.radioButtonEastUSUnused.Size = new System.Drawing.Size(101, 30);
-            this.radioButtonEastUSUnused.TabIndex = 2;
-            this.radioButtonEastUSUnused.TabStop = true;
-            this.radioButtonEastUSUnused.Text = "unused";
-            this.radioButtonEastUSUnused.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonEastUSSecondary
-            // 
-            this.radioButtonEastUSSecondary.AutoSize = true;
-            this.radioButtonEastUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonEastUSSecondary.Location = new System.Drawing.Point(131, 9);
-            this.radioButtonEastUSSecondary.Margin = new System.Windows.Forms.Padding(0);
-            this.radioButtonEastUSSecondary.Name = "radioButtonEastUSSecondary";
-            this.radioButtonEastUSSecondary.Size = new System.Drawing.Size(130, 30);
-            this.radioButtonEastUSSecondary.TabIndex = 1;
-            this.radioButtonEastUSSecondary.TabStop = true;
-            this.radioButtonEastUSSecondary.Text = "secondary";
-            this.radioButtonEastUSSecondary.UseVisualStyleBackColor = true;
-            // 
-            // groupBoxSouthCentralUS
-            // 
-            this.groupBoxSouthCentralUS.Controls.Add(this.radioButtonSouthUSPrimary);
-            this.groupBoxSouthCentralUS.Controls.Add(this.radioButtonSouthUSUnused);
-            this.groupBoxSouthCentralUS.Controls.Add(this.radioButtonSouthUSSecondary);
-            this.groupBoxSouthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxSouthCentralUS.Location = new System.Drawing.Point(399, 189);
-            this.groupBoxSouthCentralUS.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBoxSouthCentralUS.Name = "groupBoxSouthCentralUS";
-            this.groupBoxSouthCentralUS.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBoxSouthCentralUS.Size = new System.Drawing.Size(429, 40);
-            this.groupBoxSouthCentralUS.TabIndex = 19;
-            this.groupBoxSouthCentralUS.TabStop = false;
-            // 
-            // radioButtonSouthUSPrimary
-            // 
-            this.radioButtonSouthUSPrimary.AutoSize = true;
-            this.radioButtonSouthUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonSouthUSPrimary.Location = new System.Drawing.Point(12, 9);
-            this.radioButtonSouthUSPrimary.Name = "radioButtonSouthUSPrimary";
-            this.radioButtonSouthUSPrimary.Size = new System.Drawing.Size(103, 30);
-            this.radioButtonSouthUSPrimary.TabIndex = 0;
-            this.radioButtonSouthUSPrimary.TabStop = true;
-            this.radioButtonSouthUSPrimary.Text = "primary";
-            this.radioButtonSouthUSPrimary.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonSouthUSUnused
-            // 
-            this.radioButtonSouthUSUnused.AutoSize = true;
-            this.radioButtonSouthUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonSouthUSUnused.Location = new System.Drawing.Point(282, 9);
-            this.radioButtonSouthUSUnused.Name = "radioButtonSouthUSUnused";
-            this.radioButtonSouthUSUnused.Size = new System.Drawing.Size(101, 30);
-            this.radioButtonSouthUSUnused.TabIndex = 2;
-            this.radioButtonSouthUSUnused.TabStop = true;
-            this.radioButtonSouthUSUnused.Text = "unused";
-            this.radioButtonSouthUSUnused.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonSouthUSSecondary
-            // 
-            this.radioButtonSouthUSSecondary.AutoSize = true;
-            this.radioButtonSouthUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonSouthUSSecondary.Location = new System.Drawing.Point(131, 9);
-            this.radioButtonSouthUSSecondary.Margin = new System.Windows.Forms.Padding(0);
-            this.radioButtonSouthUSSecondary.Name = "radioButtonSouthUSSecondary";
-            this.radioButtonSouthUSSecondary.Size = new System.Drawing.Size(130, 30);
-            this.radioButtonSouthUSSecondary.TabIndex = 1;
-            this.radioButtonSouthUSSecondary.TabStop = true;
-            this.radioButtonSouthUSSecondary.Text = "secondary";
-            this.radioButtonSouthUSSecondary.UseVisualStyleBackColor = true;
-            // 
-            // groupBoxNorthCentralUS
-            // 
-            this.groupBoxNorthCentralUS.Controls.Add(this.radioButtonNorthUSPrimary);
-            this.groupBoxNorthCentralUS.Controls.Add(this.radioButtonNorthUSUnused);
-            this.groupBoxNorthCentralUS.Controls.Add(this.radioButtonNorthUSSecondary);
-            this.groupBoxNorthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxNorthCentralUS.Location = new System.Drawing.Point(399, 237);
-            this.groupBoxNorthCentralUS.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBoxNorthCentralUS.Name = "groupBoxNorthCentralUS";
-            this.groupBoxNorthCentralUS.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBoxNorthCentralUS.Size = new System.Drawing.Size(429, 40);
-            this.groupBoxNorthCentralUS.TabIndex = 19;
-            this.groupBoxNorthCentralUS.TabStop = false;
-            // 
-            // radioButtonNorthUSPrimary
-            // 
-            this.radioButtonNorthUSPrimary.AutoSize = true;
-            this.radioButtonNorthUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonNorthUSPrimary.Location = new System.Drawing.Point(12, 9);
-            this.radioButtonNorthUSPrimary.Name = "radioButtonNorthUSPrimary";
-            this.radioButtonNorthUSPrimary.Size = new System.Drawing.Size(103, 30);
-            this.radioButtonNorthUSPrimary.TabIndex = 0;
-            this.radioButtonNorthUSPrimary.TabStop = true;
-            this.radioButtonNorthUSPrimary.Text = "primary";
-            this.radioButtonNorthUSPrimary.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonNorthUSUnused
-            // 
-            this.radioButtonNorthUSUnused.AutoSize = true;
-            this.radioButtonNorthUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonNorthUSUnused.Location = new System.Drawing.Point(282, 9);
-            this.radioButtonNorthUSUnused.Name = "radioButtonNorthUSUnused";
-            this.radioButtonNorthUSUnused.Size = new System.Drawing.Size(101, 30);
-            this.radioButtonNorthUSUnused.TabIndex = 2;
-            this.radioButtonNorthUSUnused.TabStop = true;
-            this.radioButtonNorthUSUnused.Text = "unused";
-            this.radioButtonNorthUSUnused.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonNorthUSSecondary
-            // 
-            this.radioButtonNorthUSSecondary.AutoSize = true;
-            this.radioButtonNorthUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonNorthUSSecondary.Location = new System.Drawing.Point(131, 9);
-            this.radioButtonNorthUSSecondary.Margin = new System.Windows.Forms.Padding(0);
-            this.radioButtonNorthUSSecondary.Name = "radioButtonNorthUSSecondary";
-            this.radioButtonNorthUSSecondary.Size = new System.Drawing.Size(130, 30);
-            this.radioButtonNorthUSSecondary.TabIndex = 1;
-            this.radioButtonNorthUSSecondary.TabStop = true;
-            this.radioButtonNorthUSSecondary.Text = "secondary";
-            this.radioButtonNorthUSSecondary.UseVisualStyleBackColor = true;
-            // 
-            // groupBoxWestEurope
-            // 
-            this.groupBoxWestEurope.Controls.Add(this.radioButtonWestEuropePrimary);
-            this.groupBoxWestEurope.Controls.Add(this.radioButtonWestEuropeUnused);
-            this.groupBoxWestEurope.Controls.Add(this.radioButtonWestEuropeSecondary);
-            this.groupBoxWestEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxWestEurope.Location = new System.Drawing.Point(399, 285);
-            this.groupBoxWestEurope.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBoxWestEurope.Name = "groupBoxWestEurope";
-            this.groupBoxWestEurope.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBoxWestEurope.Size = new System.Drawing.Size(429, 40);
-            this.groupBoxWestEurope.TabIndex = 19;
-            this.groupBoxWestEurope.TabStop = false;
-            // 
-            // radioButtonWestEuropePrimary
-            // 
-            this.radioButtonWestEuropePrimary.AutoSize = true;
-            this.radioButtonWestEuropePrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonWestEuropePrimary.Location = new System.Drawing.Point(12, 9);
-            this.radioButtonWestEuropePrimary.Name = "radioButtonWestEuropePrimary";
-            this.radioButtonWestEuropePrimary.Size = new System.Drawing.Size(103, 30);
-            this.radioButtonWestEuropePrimary.TabIndex = 0;
-            this.radioButtonWestEuropePrimary.TabStop = true;
-            this.radioButtonWestEuropePrimary.Text = "primary";
-            this.radioButtonWestEuropePrimary.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonWestEuropeUnused
-            // 
-            this.radioButtonWestEuropeUnused.AutoSize = true;
-            this.radioButtonWestEuropeUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonWestEuropeUnused.Location = new System.Drawing.Point(282, 9);
-            this.radioButtonWestEuropeUnused.Name = "radioButtonWestEuropeUnused";
-            this.radioButtonWestEuropeUnused.Size = new System.Drawing.Size(101, 30);
-            this.radioButtonWestEuropeUnused.TabIndex = 2;
-            this.radioButtonWestEuropeUnused.TabStop = true;
-            this.radioButtonWestEuropeUnused.Text = "unused";
-            this.radioButtonWestEuropeUnused.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonWestEuropeSecondary
-            // 
-            this.radioButtonWestEuropeSecondary.AutoSize = true;
-            this.radioButtonWestEuropeSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonWestEuropeSecondary.Location = new System.Drawing.Point(131, 9);
-            this.radioButtonWestEuropeSecondary.Margin = new System.Windows.Forms.Padding(0);
-            this.radioButtonWestEuropeSecondary.Name = "radioButtonWestEuropeSecondary";
-            this.radioButtonWestEuropeSecondary.Size = new System.Drawing.Size(130, 30);
-            this.radioButtonWestEuropeSecondary.TabIndex = 1;
-            this.radioButtonWestEuropeSecondary.TabStop = true;
-            this.radioButtonWestEuropeSecondary.Text = "secondary";
-            this.radioButtonWestEuropeSecondary.UseVisualStyleBackColor = true;
-            // 
-            // groupBoxNorthEurope
-            // 
-            this.groupBoxNorthEurope.Controls.Add(this.radioButtonNorthEuropePrimary);
-            this.groupBoxNorthEurope.Controls.Add(this.radioButtonNorthEuropeUnused);
-            this.groupBoxNorthEurope.Controls.Add(this.radioButtonNorthEuropeSecondary);
-            this.groupBoxNorthEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxNorthEurope.Location = new System.Drawing.Point(399, 331);
-            this.groupBoxNorthEurope.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBoxNorthEurope.Name = "groupBoxNorthEurope";
-            this.groupBoxNorthEurope.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBoxNorthEurope.Size = new System.Drawing.Size(429, 40);
-            this.groupBoxNorthEurope.TabIndex = 19;
-            this.groupBoxNorthEurope.TabStop = false;
-            // 
-            // radioButtonNorthEuropePrimary
-            // 
-            this.radioButtonNorthEuropePrimary.AutoSize = true;
-            this.radioButtonNorthEuropePrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonNorthEuropePrimary.Location = new System.Drawing.Point(12, 9);
-            this.radioButtonNorthEuropePrimary.Name = "radioButtonNorthEuropePrimary";
-            this.radioButtonNorthEuropePrimary.Size = new System.Drawing.Size(103, 30);
-            this.radioButtonNorthEuropePrimary.TabIndex = 0;
-            this.radioButtonNorthEuropePrimary.TabStop = true;
-            this.radioButtonNorthEuropePrimary.Text = "primary";
-            this.radioButtonNorthEuropePrimary.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonNorthEuropeUnused
-            // 
-            this.radioButtonNorthEuropeUnused.AutoSize = true;
-            this.radioButtonNorthEuropeUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonNorthEuropeUnused.Location = new System.Drawing.Point(282, 9);
-            this.radioButtonNorthEuropeUnused.Name = "radioButtonNorthEuropeUnused";
-            this.radioButtonNorthEuropeUnused.Size = new System.Drawing.Size(101, 30);
-            this.radioButtonNorthEuropeUnused.TabIndex = 2;
-            this.radioButtonNorthEuropeUnused.TabStop = true;
-            this.radioButtonNorthEuropeUnused.Text = "unused";
-            this.radioButtonNorthEuropeUnused.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonNorthEuropeSecondary
-            // 
-            this.radioButtonNorthEuropeSecondary.AutoSize = true;
-            this.radioButtonNorthEuropeSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonNorthEuropeSecondary.Location = new System.Drawing.Point(131, 9);
-            this.radioButtonNorthEuropeSecondary.Margin = new System.Windows.Forms.Padding(0);
-            this.radioButtonNorthEuropeSecondary.Name = "radioButtonNorthEuropeSecondary";
-            this.radioButtonNorthEuropeSecondary.Size = new System.Drawing.Size(130, 30);
-            this.radioButtonNorthEuropeSecondary.TabIndex = 1;
-            this.radioButtonNorthEuropeSecondary.TabStop = true;
-            this.radioButtonNorthEuropeSecondary.Text = "secondary";
-            this.radioButtonNorthEuropeSecondary.UseVisualStyleBackColor = true;
-            // 
-            // groupBoxAsia
-            // 
-            this.groupBoxAsia.Controls.Add(this.radioButtonAsiaPrimary);
-            this.groupBoxAsia.Controls.Add(this.radioButtonAsiaUnused);
-            this.groupBoxAsia.Controls.Add(this.radioButtonAsiaSecondary);
-            this.groupBoxAsia.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxAsia.Location = new System.Drawing.Point(399, 379);
-            this.groupBoxAsia.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBoxAsia.Name = "groupBoxAsia";
-            this.groupBoxAsia.Padding = new System.Windows.Forms.Padding(0);
-            this.groupBoxAsia.Size = new System.Drawing.Size(429, 40);
-            this.groupBoxAsia.TabIndex = 19;
-            this.groupBoxAsia.TabStop = false;
-            // 
-            // radioButtonAsiaPrimary
-            // 
-            this.radioButtonAsiaPrimary.AutoSize = true;
-            this.radioButtonAsiaPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonAsiaPrimary.Location = new System.Drawing.Point(12, 9);
-            this.radioButtonAsiaPrimary.Name = "radioButtonAsiaPrimary";
-            this.radioButtonAsiaPrimary.Size = new System.Drawing.Size(103, 30);
-            this.radioButtonAsiaPrimary.TabIndex = 0;
-            this.radioButtonAsiaPrimary.TabStop = true;
-            this.radioButtonAsiaPrimary.Text = "primary";
-            this.radioButtonAsiaPrimary.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonAsiaUnused
-            // 
-            this.radioButtonAsiaUnused.AutoSize = true;
-            this.radioButtonAsiaUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonAsiaUnused.Location = new System.Drawing.Point(282, 9);
-            this.radioButtonAsiaUnused.Name = "radioButtonAsiaUnused";
-            this.radioButtonAsiaUnused.Size = new System.Drawing.Size(101, 30);
-            this.radioButtonAsiaUnused.TabIndex = 2;
-            this.radioButtonAsiaUnused.TabStop = true;
-            this.radioButtonAsiaUnused.Text = "unused";
-            this.radioButtonAsiaUnused.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonAsiaSecondary
-            // 
-            this.radioButtonAsiaSecondary.AutoSize = true;
-            this.radioButtonAsiaSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonAsiaSecondary.Location = new System.Drawing.Point(131, 9);
-            this.radioButtonAsiaSecondary.Margin = new System.Windows.Forms.Padding(0);
-            this.radioButtonAsiaSecondary.Name = "radioButtonAsiaSecondary";
-            this.radioButtonAsiaSecondary.Size = new System.Drawing.Size(130, 30);
-            this.radioButtonAsiaSecondary.TabIndex = 1;
-            this.radioButtonAsiaSecondary.TabStop = true;
-            this.radioButtonAsiaSecondary.Text = "secondary";
-            this.radioButtonAsiaSecondary.UseVisualStyleBackColor = true;
             // 
             // groupBoxBrazil
             // 
@@ -1116,6 +663,560 @@
             this.radioButtonBrazilSecondary.Text = "secondary";
             this.radioButtonBrazilSecondary.UseVisualStyleBackColor = true;
             // 
+            // groupBoxAsia
+            // 
+            this.groupBoxAsia.Controls.Add(this.radioButtonAsiaPrimary);
+            this.groupBoxAsia.Controls.Add(this.radioButtonAsiaUnused);
+            this.groupBoxAsia.Controls.Add(this.radioButtonAsiaSecondary);
+            this.groupBoxAsia.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxAsia.Location = new System.Drawing.Point(399, 379);
+            this.groupBoxAsia.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBoxAsia.Name = "groupBoxAsia";
+            this.groupBoxAsia.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxAsia.Size = new System.Drawing.Size(429, 40);
+            this.groupBoxAsia.TabIndex = 19;
+            this.groupBoxAsia.TabStop = false;
+            // 
+            // radioButtonAsiaPrimary
+            // 
+            this.radioButtonAsiaPrimary.AutoSize = true;
+            this.radioButtonAsiaPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonAsiaPrimary.Location = new System.Drawing.Point(12, 9);
+            this.radioButtonAsiaPrimary.Name = "radioButtonAsiaPrimary";
+            this.radioButtonAsiaPrimary.Size = new System.Drawing.Size(103, 30);
+            this.radioButtonAsiaPrimary.TabIndex = 0;
+            this.radioButtonAsiaPrimary.TabStop = true;
+            this.radioButtonAsiaPrimary.Text = "primary";
+            this.radioButtonAsiaPrimary.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonAsiaUnused
+            // 
+            this.radioButtonAsiaUnused.AutoSize = true;
+            this.radioButtonAsiaUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonAsiaUnused.Location = new System.Drawing.Point(282, 9);
+            this.radioButtonAsiaUnused.Name = "radioButtonAsiaUnused";
+            this.radioButtonAsiaUnused.Size = new System.Drawing.Size(101, 30);
+            this.radioButtonAsiaUnused.TabIndex = 2;
+            this.radioButtonAsiaUnused.TabStop = true;
+            this.radioButtonAsiaUnused.Text = "unused";
+            this.radioButtonAsiaUnused.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonAsiaSecondary
+            // 
+            this.radioButtonAsiaSecondary.AutoSize = true;
+            this.radioButtonAsiaSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonAsiaSecondary.Location = new System.Drawing.Point(131, 9);
+            this.radioButtonAsiaSecondary.Margin = new System.Windows.Forms.Padding(0);
+            this.radioButtonAsiaSecondary.Name = "radioButtonAsiaSecondary";
+            this.radioButtonAsiaSecondary.Size = new System.Drawing.Size(130, 30);
+            this.radioButtonAsiaSecondary.TabIndex = 1;
+            this.radioButtonAsiaSecondary.TabStop = true;
+            this.radioButtonAsiaSecondary.Text = "secondary";
+            this.radioButtonAsiaSecondary.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxNorthEurope
+            // 
+            this.groupBoxNorthEurope.Controls.Add(this.radioButtonNorthEuropePrimary);
+            this.groupBoxNorthEurope.Controls.Add(this.radioButtonNorthEuropeUnused);
+            this.groupBoxNorthEurope.Controls.Add(this.radioButtonNorthEuropeSecondary);
+            this.groupBoxNorthEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxNorthEurope.Location = new System.Drawing.Point(399, 331);
+            this.groupBoxNorthEurope.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBoxNorthEurope.Name = "groupBoxNorthEurope";
+            this.groupBoxNorthEurope.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxNorthEurope.Size = new System.Drawing.Size(429, 40);
+            this.groupBoxNorthEurope.TabIndex = 19;
+            this.groupBoxNorthEurope.TabStop = false;
+            // 
+            // radioButtonNorthEuropePrimary
+            // 
+            this.radioButtonNorthEuropePrimary.AutoSize = true;
+            this.radioButtonNorthEuropePrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonNorthEuropePrimary.Location = new System.Drawing.Point(12, 9);
+            this.radioButtonNorthEuropePrimary.Name = "radioButtonNorthEuropePrimary";
+            this.radioButtonNorthEuropePrimary.Size = new System.Drawing.Size(103, 30);
+            this.radioButtonNorthEuropePrimary.TabIndex = 0;
+            this.radioButtonNorthEuropePrimary.TabStop = true;
+            this.radioButtonNorthEuropePrimary.Text = "primary";
+            this.radioButtonNorthEuropePrimary.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonNorthEuropeUnused
+            // 
+            this.radioButtonNorthEuropeUnused.AutoSize = true;
+            this.radioButtonNorthEuropeUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonNorthEuropeUnused.Location = new System.Drawing.Point(282, 9);
+            this.radioButtonNorthEuropeUnused.Name = "radioButtonNorthEuropeUnused";
+            this.radioButtonNorthEuropeUnused.Size = new System.Drawing.Size(101, 30);
+            this.radioButtonNorthEuropeUnused.TabIndex = 2;
+            this.radioButtonNorthEuropeUnused.TabStop = true;
+            this.radioButtonNorthEuropeUnused.Text = "unused";
+            this.radioButtonNorthEuropeUnused.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonNorthEuropeSecondary
+            // 
+            this.radioButtonNorthEuropeSecondary.AutoSize = true;
+            this.radioButtonNorthEuropeSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonNorthEuropeSecondary.Location = new System.Drawing.Point(131, 9);
+            this.radioButtonNorthEuropeSecondary.Margin = new System.Windows.Forms.Padding(0);
+            this.radioButtonNorthEuropeSecondary.Name = "radioButtonNorthEuropeSecondary";
+            this.radioButtonNorthEuropeSecondary.Size = new System.Drawing.Size(130, 30);
+            this.radioButtonNorthEuropeSecondary.TabIndex = 1;
+            this.radioButtonNorthEuropeSecondary.TabStop = true;
+            this.radioButtonNorthEuropeSecondary.Text = "secondary";
+            this.radioButtonNorthEuropeSecondary.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxWestEurope
+            // 
+            this.groupBoxWestEurope.Controls.Add(this.radioButtonWestEuropePrimary);
+            this.groupBoxWestEurope.Controls.Add(this.radioButtonWestEuropeUnused);
+            this.groupBoxWestEurope.Controls.Add(this.radioButtonWestEuropeSecondary);
+            this.groupBoxWestEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxWestEurope.Location = new System.Drawing.Point(399, 285);
+            this.groupBoxWestEurope.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBoxWestEurope.Name = "groupBoxWestEurope";
+            this.groupBoxWestEurope.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxWestEurope.Size = new System.Drawing.Size(429, 40);
+            this.groupBoxWestEurope.TabIndex = 19;
+            this.groupBoxWestEurope.TabStop = false;
+            // 
+            // radioButtonWestEuropePrimary
+            // 
+            this.radioButtonWestEuropePrimary.AutoSize = true;
+            this.radioButtonWestEuropePrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonWestEuropePrimary.Location = new System.Drawing.Point(12, 9);
+            this.radioButtonWestEuropePrimary.Name = "radioButtonWestEuropePrimary";
+            this.radioButtonWestEuropePrimary.Size = new System.Drawing.Size(103, 30);
+            this.radioButtonWestEuropePrimary.TabIndex = 0;
+            this.radioButtonWestEuropePrimary.TabStop = true;
+            this.radioButtonWestEuropePrimary.Text = "primary";
+            this.radioButtonWestEuropePrimary.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonWestEuropeUnused
+            // 
+            this.radioButtonWestEuropeUnused.AutoSize = true;
+            this.radioButtonWestEuropeUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonWestEuropeUnused.Location = new System.Drawing.Point(282, 9);
+            this.radioButtonWestEuropeUnused.Name = "radioButtonWestEuropeUnused";
+            this.radioButtonWestEuropeUnused.Size = new System.Drawing.Size(101, 30);
+            this.radioButtonWestEuropeUnused.TabIndex = 2;
+            this.radioButtonWestEuropeUnused.TabStop = true;
+            this.radioButtonWestEuropeUnused.Text = "unused";
+            this.radioButtonWestEuropeUnused.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonWestEuropeSecondary
+            // 
+            this.radioButtonWestEuropeSecondary.AutoSize = true;
+            this.radioButtonWestEuropeSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonWestEuropeSecondary.Location = new System.Drawing.Point(131, 9);
+            this.radioButtonWestEuropeSecondary.Margin = new System.Windows.Forms.Padding(0);
+            this.radioButtonWestEuropeSecondary.Name = "radioButtonWestEuropeSecondary";
+            this.radioButtonWestEuropeSecondary.Size = new System.Drawing.Size(130, 30);
+            this.radioButtonWestEuropeSecondary.TabIndex = 1;
+            this.radioButtonWestEuropeSecondary.TabStop = true;
+            this.radioButtonWestEuropeSecondary.Text = "secondary";
+            this.radioButtonWestEuropeSecondary.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxNorthCentralUS
+            // 
+            this.groupBoxNorthCentralUS.Controls.Add(this.radioButtonNorthUSPrimary);
+            this.groupBoxNorthCentralUS.Controls.Add(this.radioButtonNorthUSUnused);
+            this.groupBoxNorthCentralUS.Controls.Add(this.radioButtonNorthUSSecondary);
+            this.groupBoxNorthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxNorthCentralUS.Location = new System.Drawing.Point(399, 237);
+            this.groupBoxNorthCentralUS.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBoxNorthCentralUS.Name = "groupBoxNorthCentralUS";
+            this.groupBoxNorthCentralUS.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxNorthCentralUS.Size = new System.Drawing.Size(429, 40);
+            this.groupBoxNorthCentralUS.TabIndex = 19;
+            this.groupBoxNorthCentralUS.TabStop = false;
+            // 
+            // radioButtonNorthUSPrimary
+            // 
+            this.radioButtonNorthUSPrimary.AutoSize = true;
+            this.radioButtonNorthUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonNorthUSPrimary.Location = new System.Drawing.Point(12, 9);
+            this.radioButtonNorthUSPrimary.Name = "radioButtonNorthUSPrimary";
+            this.radioButtonNorthUSPrimary.Size = new System.Drawing.Size(103, 30);
+            this.radioButtonNorthUSPrimary.TabIndex = 0;
+            this.radioButtonNorthUSPrimary.TabStop = true;
+            this.radioButtonNorthUSPrimary.Text = "primary";
+            this.radioButtonNorthUSPrimary.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonNorthUSUnused
+            // 
+            this.radioButtonNorthUSUnused.AutoSize = true;
+            this.radioButtonNorthUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonNorthUSUnused.Location = new System.Drawing.Point(282, 9);
+            this.radioButtonNorthUSUnused.Name = "radioButtonNorthUSUnused";
+            this.radioButtonNorthUSUnused.Size = new System.Drawing.Size(101, 30);
+            this.radioButtonNorthUSUnused.TabIndex = 2;
+            this.radioButtonNorthUSUnused.TabStop = true;
+            this.radioButtonNorthUSUnused.Text = "unused";
+            this.radioButtonNorthUSUnused.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonNorthUSSecondary
+            // 
+            this.radioButtonNorthUSSecondary.AutoSize = true;
+            this.radioButtonNorthUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonNorthUSSecondary.Location = new System.Drawing.Point(131, 9);
+            this.radioButtonNorthUSSecondary.Margin = new System.Windows.Forms.Padding(0);
+            this.radioButtonNorthUSSecondary.Name = "radioButtonNorthUSSecondary";
+            this.radioButtonNorthUSSecondary.Size = new System.Drawing.Size(130, 30);
+            this.radioButtonNorthUSSecondary.TabIndex = 1;
+            this.radioButtonNorthUSSecondary.TabStop = true;
+            this.radioButtonNorthUSSecondary.Text = "secondary";
+            this.radioButtonNorthUSSecondary.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxSouthCentralUS
+            // 
+            this.groupBoxSouthCentralUS.Controls.Add(this.radioButtonSouthUSPrimary);
+            this.groupBoxSouthCentralUS.Controls.Add(this.radioButtonSouthUSUnused);
+            this.groupBoxSouthCentralUS.Controls.Add(this.radioButtonSouthUSSecondary);
+            this.groupBoxSouthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxSouthCentralUS.Location = new System.Drawing.Point(399, 189);
+            this.groupBoxSouthCentralUS.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBoxSouthCentralUS.Name = "groupBoxSouthCentralUS";
+            this.groupBoxSouthCentralUS.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxSouthCentralUS.Size = new System.Drawing.Size(429, 40);
+            this.groupBoxSouthCentralUS.TabIndex = 19;
+            this.groupBoxSouthCentralUS.TabStop = false;
+            // 
+            // radioButtonSouthUSPrimary
+            // 
+            this.radioButtonSouthUSPrimary.AutoSize = true;
+            this.radioButtonSouthUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonSouthUSPrimary.Location = new System.Drawing.Point(12, 9);
+            this.radioButtonSouthUSPrimary.Name = "radioButtonSouthUSPrimary";
+            this.radioButtonSouthUSPrimary.Size = new System.Drawing.Size(103, 30);
+            this.radioButtonSouthUSPrimary.TabIndex = 0;
+            this.radioButtonSouthUSPrimary.TabStop = true;
+            this.radioButtonSouthUSPrimary.Text = "primary";
+            this.radioButtonSouthUSPrimary.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonSouthUSUnused
+            // 
+            this.radioButtonSouthUSUnused.AutoSize = true;
+            this.radioButtonSouthUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonSouthUSUnused.Location = new System.Drawing.Point(282, 9);
+            this.radioButtonSouthUSUnused.Name = "radioButtonSouthUSUnused";
+            this.radioButtonSouthUSUnused.Size = new System.Drawing.Size(101, 30);
+            this.radioButtonSouthUSUnused.TabIndex = 2;
+            this.radioButtonSouthUSUnused.TabStop = true;
+            this.radioButtonSouthUSUnused.Text = "unused";
+            this.radioButtonSouthUSUnused.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonSouthUSSecondary
+            // 
+            this.radioButtonSouthUSSecondary.AutoSize = true;
+            this.radioButtonSouthUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonSouthUSSecondary.Location = new System.Drawing.Point(131, 9);
+            this.radioButtonSouthUSSecondary.Margin = new System.Windows.Forms.Padding(0);
+            this.radioButtonSouthUSSecondary.Name = "radioButtonSouthUSSecondary";
+            this.radioButtonSouthUSSecondary.Size = new System.Drawing.Size(130, 30);
+            this.radioButtonSouthUSSecondary.TabIndex = 1;
+            this.radioButtonSouthUSSecondary.TabStop = true;
+            this.radioButtonSouthUSSecondary.Text = "secondary";
+            this.radioButtonSouthUSSecondary.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxEastUS
+            // 
+            this.groupBoxEastUS.Controls.Add(this.radioButtonEastUSPrimary);
+            this.groupBoxEastUS.Controls.Add(this.radioButtonEastUSUnused);
+            this.groupBoxEastUS.Controls.Add(this.radioButtonEastUSSecondary);
+            this.groupBoxEastUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxEastUS.Location = new System.Drawing.Point(399, 141);
+            this.groupBoxEastUS.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBoxEastUS.Name = "groupBoxEastUS";
+            this.groupBoxEastUS.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxEastUS.Size = new System.Drawing.Size(429, 40);
+            this.groupBoxEastUS.TabIndex = 18;
+            this.groupBoxEastUS.TabStop = false;
+            // 
+            // radioButtonEastUSPrimary
+            // 
+            this.radioButtonEastUSPrimary.AutoSize = true;
+            this.radioButtonEastUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonEastUSPrimary.Location = new System.Drawing.Point(12, 9);
+            this.radioButtonEastUSPrimary.Name = "radioButtonEastUSPrimary";
+            this.radioButtonEastUSPrimary.Size = new System.Drawing.Size(103, 30);
+            this.radioButtonEastUSPrimary.TabIndex = 0;
+            this.radioButtonEastUSPrimary.TabStop = true;
+            this.radioButtonEastUSPrimary.Text = "primary";
+            this.radioButtonEastUSPrimary.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonEastUSUnused
+            // 
+            this.radioButtonEastUSUnused.AutoSize = true;
+            this.radioButtonEastUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonEastUSUnused.Location = new System.Drawing.Point(282, 9);
+            this.radioButtonEastUSUnused.Name = "radioButtonEastUSUnused";
+            this.radioButtonEastUSUnused.Size = new System.Drawing.Size(101, 30);
+            this.radioButtonEastUSUnused.TabIndex = 2;
+            this.radioButtonEastUSUnused.TabStop = true;
+            this.radioButtonEastUSUnused.Text = "unused";
+            this.radioButtonEastUSUnused.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonEastUSSecondary
+            // 
+            this.radioButtonEastUSSecondary.AutoSize = true;
+            this.radioButtonEastUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonEastUSSecondary.Location = new System.Drawing.Point(131, 9);
+            this.radioButtonEastUSSecondary.Margin = new System.Windows.Forms.Padding(0);
+            this.radioButtonEastUSSecondary.Name = "radioButtonEastUSSecondary";
+            this.radioButtonEastUSSecondary.Size = new System.Drawing.Size(130, 30);
+            this.radioButtonEastUSSecondary.TabIndex = 1;
+            this.radioButtonEastUSSecondary.TabStop = true;
+            this.radioButtonEastUSSecondary.Text = "secondary";
+            this.radioButtonEastUSSecondary.UseVisualStyleBackColor = true;
+            // 
+            // setReplicasButton
+            // 
+            this.setReplicasButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.setReplicasButton.Location = new System.Drawing.Point(184, 28);
+            this.setReplicasButton.Name = "setReplicasButton";
+            this.setReplicasButton.Size = new System.Drawing.Size(102, 35);
+            this.setReplicasButton.TabIndex = 17;
+            this.setReplicasButton.Text = "Set";
+            this.setReplicasButton.UseVisualStyleBackColor = true;
+            this.setReplicasButton.Click += new System.EventHandler(this.setReplicasButton_Click);
+            // 
+            // getReplicasButton
+            // 
+            this.getReplicasButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.getReplicasButton.Location = new System.Drawing.Point(60, 28);
+            this.getReplicasButton.Name = "getReplicasButton";
+            this.getReplicasButton.Size = new System.Drawing.Size(102, 35);
+            this.getReplicasButton.TabIndex = 16;
+            this.getReplicasButton.Text = "Get";
+            this.getReplicasButton.UseVisualStyleBackColor = true;
+            this.getReplicasButton.Click += new System.EventHandler(this.getReplicasButton_Click);
+            // 
+            // labelBrazil
+            // 
+            this.labelBrazil.AutoSize = true;
+            this.labelBrazil.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelBrazil.Location = new System.Drawing.Point(256, 432);
+            this.labelBrazil.Name = "labelBrazil";
+            this.labelBrazil.Size = new System.Drawing.Size(82, 31);
+            this.labelBrazil.TabIndex = 15;
+            this.labelBrazil.Text = "Brazil";
+            // 
+            // labelAsia
+            // 
+            this.labelAsia.AutoSize = true;
+            this.labelAsia.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelAsia.Location = new System.Drawing.Point(209, 388);
+            this.labelAsia.Name = "labelAsia";
+            this.labelAsia.Size = new System.Drawing.Size(129, 31);
+            this.labelAsia.TabIndex = 14;
+            this.labelAsia.Text = "East Asia";
+            // 
+            // labelNorthEurope
+            // 
+            this.labelNorthEurope.AutoSize = true;
+            this.labelNorthEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelNorthEurope.Location = new System.Drawing.Point(163, 340);
+            this.labelNorthEurope.Name = "labelNorthEurope";
+            this.labelNorthEurope.Size = new System.Drawing.Size(175, 31);
+            this.labelNorthEurope.TabIndex = 13;
+            this.labelNorthEurope.Text = "North Europe";
+            // 
+            // labelWestEurope
+            // 
+            this.labelWestEurope.AutoSize = true;
+            this.labelWestEurope.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelWestEurope.Location = new System.Drawing.Point(168, 294);
+            this.labelWestEurope.Name = "labelWestEurope";
+            this.labelWestEurope.Size = new System.Drawing.Size(170, 31);
+            this.labelWestEurope.TabIndex = 12;
+            this.labelWestEurope.Text = "West Europe";
+            // 
+            // labelSouthCentralUS
+            // 
+            this.labelSouthCentralUS.AutoSize = true;
+            this.labelSouthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSouthCentralUS.Location = new System.Drawing.Point(208, 198);
+            this.labelSouthCentralUS.Name = "labelSouthCentralUS";
+            this.labelSouthCentralUS.Size = new System.Drawing.Size(130, 31);
+            this.labelSouthCentralUS.TabIndex = 10;
+            this.labelSouthCentralUS.Text = "South US";
+            // 
+            // groupBoxWestUS
+            // 
+            this.groupBoxWestUS.Controls.Add(this.radioButtonWestUSPrimary);
+            this.groupBoxWestUS.Controls.Add(this.radioButtonWestUSUnused);
+            this.groupBoxWestUS.Controls.Add(this.radioButtonWestUSSecondary);
+            this.groupBoxWestUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxWestUS.Location = new System.Drawing.Point(399, 92);
+            this.groupBoxWestUS.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBoxWestUS.Name = "groupBoxWestUS";
+            this.groupBoxWestUS.Padding = new System.Windows.Forms.Padding(0);
+            this.groupBoxWestUS.Size = new System.Drawing.Size(429, 40);
+            this.groupBoxWestUS.TabIndex = 11;
+            this.groupBoxWestUS.TabStop = false;
+            // 
+            // radioButtonWestUSPrimary
+            // 
+            this.radioButtonWestUSPrimary.AutoSize = true;
+            this.radioButtonWestUSPrimary.BackColor = System.Drawing.Color.Transparent;
+            this.radioButtonWestUSPrimary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonWestUSPrimary.Location = new System.Drawing.Point(12, 9);
+            this.radioButtonWestUSPrimary.Name = "radioButtonWestUSPrimary";
+            this.radioButtonWestUSPrimary.Size = new System.Drawing.Size(103, 30);
+            this.radioButtonWestUSPrimary.TabIndex = 0;
+            this.radioButtonWestUSPrimary.TabStop = true;
+            this.radioButtonWestUSPrimary.Text = "primary";
+            this.radioButtonWestUSPrimary.UseVisualStyleBackColor = false;
+            // 
+            // radioButtonWestUSUnused
+            // 
+            this.radioButtonWestUSUnused.AutoSize = true;
+            this.radioButtonWestUSUnused.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonWestUSUnused.Location = new System.Drawing.Point(282, 9);
+            this.radioButtonWestUSUnused.Name = "radioButtonWestUSUnused";
+            this.radioButtonWestUSUnused.Size = new System.Drawing.Size(101, 30);
+            this.radioButtonWestUSUnused.TabIndex = 2;
+            this.radioButtonWestUSUnused.TabStop = true;
+            this.radioButtonWestUSUnused.Text = "unused";
+            this.radioButtonWestUSUnused.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonWestUSSecondary
+            // 
+            this.radioButtonWestUSSecondary.AutoSize = true;
+            this.radioButtonWestUSSecondary.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonWestUSSecondary.Location = new System.Drawing.Point(131, 9);
+            this.radioButtonWestUSSecondary.Margin = new System.Windows.Forms.Padding(0);
+            this.radioButtonWestUSSecondary.Name = "radioButtonWestUSSecondary";
+            this.radioButtonWestUSSecondary.Size = new System.Drawing.Size(130, 30);
+            this.radioButtonWestUSSecondary.TabIndex = 1;
+            this.radioButtonWestUSSecondary.TabStop = true;
+            this.radioButtonWestUSSecondary.Text = "secondary";
+            this.radioButtonWestUSSecondary.UseVisualStyleBackColor = true;
+            // 
+            // labelNorthCentralUS
+            // 
+            this.labelNorthCentralUS.AutoSize = true;
+            this.labelNorthCentralUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelNorthCentralUS.Location = new System.Drawing.Point(208, 246);
+            this.labelNorthCentralUS.Name = "labelNorthCentralUS";
+            this.labelNorthCentralUS.Size = new System.Drawing.Size(126, 31);
+            this.labelNorthCentralUS.TabIndex = 8;
+            this.labelNorthCentralUS.Text = "North US";
+            // 
+            // labelEastUS
+            // 
+            this.labelEastUS.AutoSize = true;
+            this.labelEastUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelEastUS.Location = new System.Drawing.Point(224, 150);
+            this.labelEastUS.Name = "labelEastUS";
+            this.labelEastUS.Size = new System.Drawing.Size(114, 31);
+            this.labelEastUS.TabIndex = 6;
+            this.labelEastUS.Text = "East US";
+            // 
+            // labelWestUS
+            // 
+            this.labelWestUS.AutoSize = true;
+            this.labelWestUS.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelWestUS.Location = new System.Drawing.Point(217, 101);
+            this.labelWestUS.Name = "labelWestUS";
+            this.labelWestUS.Size = new System.Drawing.Size(121, 31);
+            this.labelWestUS.TabIndex = 4;
+            this.labelWestUS.Text = "West US";
+            // 
+            // tabPageLatency
+            // 
+            this.tabPageLatency.Controls.Add(this.buttonClearLatency);
+            this.tabPageLatency.Controls.Add(this.buttonPingLatency);
+            this.tabPageLatency.Controls.Add(this.buttonGetLatency);
+            this.tabPageLatency.Controls.Add(this.labelLatencyTimes);
+            this.tabPageLatency.Controls.Add(this.labelLatencySites);
+            this.tabPageLatency.Controls.Add(this.listBoxLatencyTimes);
+            this.tabPageLatency.Controls.Add(this.listBoxLatencySites);
+            this.tabPageLatency.Location = new System.Drawing.Point(4, 29);
+            this.tabPageLatency.Name = "tabPageLatency";
+            this.tabPageLatency.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageLatency.Size = new System.Drawing.Size(1004, 574);
+            this.tabPageLatency.TabIndex = 6;
+            this.tabPageLatency.Text = "Latency";
+            this.tabPageLatency.UseVisualStyleBackColor = true;
+            // 
+            // buttonClearLatency
+            // 
+            this.buttonClearLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonClearLatency.Location = new System.Drawing.Point(296, 31);
+            this.buttonClearLatency.Name = "buttonClearLatency";
+            this.buttonClearLatency.Size = new System.Drawing.Size(107, 35);
+            this.buttonClearLatency.TabIndex = 14;
+            this.buttonClearLatency.Text = "Clear";
+            this.buttonClearLatency.UseVisualStyleBackColor = true;
+            this.buttonClearLatency.Click += new System.EventHandler(this.buttonClearLatency_Click);
+            // 
+            // buttonPingLatency
+            // 
+            this.buttonPingLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonPingLatency.Location = new System.Drawing.Point(169, 31);
+            this.buttonPingLatency.Name = "buttonPingLatency";
+            this.buttonPingLatency.Size = new System.Drawing.Size(112, 35);
+            this.buttonPingLatency.TabIndex = 13;
+            this.buttonPingLatency.Text = "Ping";
+            this.buttonPingLatency.UseVisualStyleBackColor = true;
+            this.buttonPingLatency.Click += new System.EventHandler(this.buttonPingLatency_Click);
+            // 
+            // buttonGetLatency
+            // 
+            this.buttonGetLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonGetLatency.Location = new System.Drawing.Point(53, 31);
+            this.buttonGetLatency.Name = "buttonGetLatency";
+            this.buttonGetLatency.Size = new System.Drawing.Size(102, 35);
+            this.buttonGetLatency.TabIndex = 12;
+            this.buttonGetLatency.Text = "Get";
+            this.buttonGetLatency.UseVisualStyleBackColor = true;
+            this.buttonGetLatency.Click += new System.EventHandler(this.buttonGetLatency_Click);
+            // 
+            // labelLatencyTimes
+            // 
+            this.labelLatencyTimes.AutoSize = true;
+            this.labelLatencyTimes.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLatencyTimes.Location = new System.Drawing.Point(498, 95);
+            this.labelLatencyTimes.Name = "labelLatencyTimes";
+            this.labelLatencyTimes.Size = new System.Drawing.Size(202, 26);
+            this.labelLatencyTimes.TabIndex = 11;
+            this.labelLatencyTimes.Text = "round-trip time (ms)";
+            // 
+            // labelLatencySites
+            // 
+            this.labelLatencySites.AutoSize = true;
+            this.labelLatencySites.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLatencySites.Location = new System.Drawing.Point(138, 95);
+            this.labelLatencySites.Name = "labelLatencySites";
+            this.labelLatencySites.Size = new System.Drawing.Size(57, 26);
+            this.labelLatencySites.TabIndex = 10;
+            this.labelLatencySites.Text = "sites";
+            // 
+            // listBoxLatencyTimes
+            // 
+            this.listBoxLatencyTimes.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listBoxLatencyTimes.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listBoxLatencyTimes.FormattingEnabled = true;
+            this.listBoxLatencyTimes.ItemHeight = 37;
+            this.listBoxLatencyTimes.Location = new System.Drawing.Point(524, 130);
+            this.listBoxLatencyTimes.Name = "listBoxLatencyTimes";
+            this.listBoxLatencyTimes.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.listBoxLatencyTimes.Size = new System.Drawing.Size(187, 370);
+            this.listBoxLatencyTimes.TabIndex = 9;
+            // 
+            // listBoxLatencySites
+            // 
+            this.listBoxLatencySites.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listBoxLatencySites.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listBoxLatencySites.FormattingEnabled = true;
+            this.listBoxLatencySites.IntegralHeight = false;
+            this.listBoxLatencySites.ItemHeight = 37;
+            this.listBoxLatencySites.Location = new System.Drawing.Point(135, 130);
+            this.listBoxLatencySites.Name = "listBoxLatencySites";
+            this.listBoxLatencySites.Size = new System.Drawing.Size(370, 401);
+            this.listBoxLatencySites.TabIndex = 8;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1137,22 +1238,24 @@
             this.TabControl.ResumeLayout(false);
             this.replicasTabPage.ResumeLayout(false);
             this.replicasTabPage.PerformLayout();
-            this.groupBoxWestUS.ResumeLayout(false);
-            this.groupBoxWestUS.PerformLayout();
-            this.groupBoxEastUS.ResumeLayout(false);
-            this.groupBoxEastUS.PerformLayout();
-            this.groupBoxSouthCentralUS.ResumeLayout(false);
-            this.groupBoxSouthCentralUS.PerformLayout();
-            this.groupBoxNorthCentralUS.ResumeLayout(false);
-            this.groupBoxNorthCentralUS.PerformLayout();
-            this.groupBoxWestEurope.ResumeLayout(false);
-            this.groupBoxWestEurope.PerformLayout();
-            this.groupBoxNorthEurope.ResumeLayout(false);
-            this.groupBoxNorthEurope.PerformLayout();
-            this.groupBoxAsia.ResumeLayout(false);
-            this.groupBoxAsia.PerformLayout();
             this.groupBoxBrazil.ResumeLayout(false);
             this.groupBoxBrazil.PerformLayout();
+            this.groupBoxAsia.ResumeLayout(false);
+            this.groupBoxAsia.PerformLayout();
+            this.groupBoxNorthEurope.ResumeLayout(false);
+            this.groupBoxNorthEurope.PerformLayout();
+            this.groupBoxWestEurope.ResumeLayout(false);
+            this.groupBoxWestEurope.PerformLayout();
+            this.groupBoxNorthCentralUS.ResumeLayout(false);
+            this.groupBoxNorthCentralUS.PerformLayout();
+            this.groupBoxSouthCentralUS.ResumeLayout(false);
+            this.groupBoxSouthCentralUS.PerformLayout();
+            this.groupBoxEastUS.ResumeLayout(false);
+            this.groupBoxEastUS.PerformLayout();
+            this.groupBoxWestUS.ResumeLayout(false);
+            this.groupBoxWestUS.PerformLayout();
+            this.tabPageLatency.ResumeLayout(false);
+            this.tabPageLatency.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1238,6 +1341,14 @@
         private System.Windows.Forms.RadioButton radioButtonEastUSSecondary;
         private System.Windows.Forms.Button setReplicasButton;
         private System.Windows.Forms.Button getReplicasButton;
+        private System.Windows.Forms.TabPage tabPageLatency;
+        private System.Windows.Forms.Button buttonClearLatency;
+        private System.Windows.Forms.Button buttonPingLatency;
+        private System.Windows.Forms.Button buttonGetLatency;
+        private System.Windows.Forms.Label labelLatencyTimes;
+        private System.Windows.Forms.Label labelLatencySites;
+        private System.Windows.Forms.ListBox listBoxLatencyTimes;
+        private System.Windows.Forms.ListBox listBoxLatencySites;
 
 
     }

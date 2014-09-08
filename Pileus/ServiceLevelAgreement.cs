@@ -125,6 +125,8 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
 
         #endregion
 
+        #region Hits and Misses
+
         public float GetTotalMissedUtility()
         {
             float result = 0;
@@ -154,7 +156,7 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             {
                 result += s.NumberOfHits * s.Utility;
                 num += s.NumberOfHits;
-                misses = s.NumberOfMisses;
+                misses = s.NumberOfMisses;   // we only care about misses for the last subSLA
             }
             num += misses;
             if (num > 0)
@@ -162,17 +164,6 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                 result = result / num;
             }
             return result;            
-        }
-
-        public byte[] ToBytes()
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, this);
-                stream.Position = 0;
-                return stream.ToArray();
-            }
         }
 
         /// <summary>
@@ -204,6 +195,20 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
                 s.NumberOfMisses =Convert.ToInt32( (s.NumberOfMisses / sum) * numberOfClients*100);
             }
         }
+
+        #endregion
+
+        public byte[] ToBytes()
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, this);
+                stream.Position = 0;
+                return stream.ToArray();
+            }
+        }
+
     }
 
     
@@ -258,11 +263,20 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         public int Bound { get { return bound; } }
         public float Utility { get { return utility; } }
 
+        // Each subSLA records the hits and misses for read opeartions using its parent SLA
+        // A "hit" indicates that the subSLA was met and no higher ranked subSLA was met
+        // A "miss" indicates that the subSLA was not met and neither was a higher subSLA
+
         public int NumberOfHits { get; internal set; }
         public int NumberOfMisses { get; internal set; }
 
-        public void Hit() { NumberOfHits++; }
-        public void Miss() { NumberOfMisses++; }
+        public void Hit() { 
+            NumberOfHits++; 
+        }
+
+        public void Miss() { 
+            NumberOfMisses++; 
+        }
 
         public void Update(SubSLA subSLA)
         {

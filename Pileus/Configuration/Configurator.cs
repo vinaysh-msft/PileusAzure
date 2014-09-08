@@ -242,8 +242,36 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
                 newConfig = action.IfApply(newConfig);
             }
 
-            float gain = ExpectedUtilityForClients(newConfig, clientData) - ExpectedUtilityForClients(config, clientData);
+            float gain = ExpectedUtilityForClients(newConfig, clientData) - DeliveredUtilityForClients(config, clientData);
             return gain;
+        }
+
+        // Compute actual delivered utility as a weighted average over all of the SLAs used by all clients
+        private float DeliveredUtilityForClients(ReplicaConfiguration config, Dictionary<string, ClientUsageData> clientData)
+        {
+            float avgDeliveredUtility = 0;
+            int totalReads = clientData.Values.Sum(client => client.NumberOfReads);
+            float totalUtility = 0;
+            foreach (string clientName in clientData.Keys)
+            {
+                float totalClientUtility = 0;
+                foreach (ServiceLevelAgreement sla in clientData[clientName].SLAs)
+                {
+                    float slaUtility = sla.GetAverageDeliveredUtility();
+                    totalClientUtility += slaUtility;
+                }
+                float avgClientUtility = 0;
+                if (totalClientUtility > 0)
+                {
+                    avgClientUtility = totalClientUtility / clientData[clientName].SLAs.Count;
+                }
+                totalUtility += avgClientUtility * clientData[clientName].NumberOfReads;
+            }
+            if (totalReads != 0)
+            {
+                avgDeliveredUtility = totalUtility / totalReads;
+            }
+            return avgDeliveredUtility;
         }
 
         // Compute expected utility as a weighted average over all of the SLAs used by all clients
@@ -266,7 +294,10 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
                 }
                 totalUtility += avgClientUtility * clientData[clientName].NumberOfReads;
             }
-            avgExpectedUtility = totalUtility / totalReads;
+            if (totalReads != 0)
+            {
+                avgExpectedUtility = totalUtility / totalReads;
+            }
             return avgExpectedUtility;
         }
 
@@ -274,24 +305,94 @@ namespace Microsoft.WindowsAzure.Storage.Pileus.Configuration
         {
             float utility = 0;
             float cumulativeProb = 0;
+            float prob = 0;
+            List<string> allServers = config.GetServers(true, true, false);
             foreach (SubSLA sub in sla)
             {
-                List<string> potentialServers = config.PrimaryServers.ToList();
-                if (sub.Consistency != Consistency.Strong)
+                foreach (string server in allServers)
                 {
-                    foreach (string secondary in config.SecondaryServers)
-                    {
-                        // note that all secondaries are considered accepted for intermediate consistencies
-                        // this possibly overestimates the expected utility
-                        potentialServers.Add(secondary);
-                    }
+                    prob = allServers.Max(s => serverRTTs[s].ProbabilityOfFindingValueLessThanGiven(sub.Latency) 
+                        * ProbabilityOfServerConsistency(config, s, sub.Consistency, sub.Bound));
                 }
-                float prob = potentialServers.Max(server => serverRTTs[server].ProbabilityOfFindingValueLessThanGiven(sub.Latency));
                 float subUtility = (1 - cumulativeProb) * prob * sub.Utility;
                 utility += subUtility;
                 cumulativeProb += (1 - cumulativeProb) * prob;
             }
             return utility;
+        }
+
+        // Returns the likelihood that a given server is sufficiently up-to-date to meet the given consistency
+        // For many consistencies, this is hard to predict, and better predicitve models are possible.
+        public float ProbabilityOfServerConsistency(ReplicaConfiguration config, string server, Consistency consistency, int bound)
+        {
+            float prob = 0;
+
+            switch (consistency)
+            {
+                case Consistency.Strong:
+                    if (config.PrimaryServers.Contains(server) && !config.WriteOnlyPrimaryServers.Contains(server))
+                    {
+                        prob = 1.0F;
+                    }
+                    break;
+
+                case Consistency.ReadMyWrites:
+                case Consistency.Session:
+                    // could possibly compute probability based on past performance and read/write ratio
+                    // for now, arbitrarily return 0.5
+                    prob = 0.5F;
+                    break;
+
+                case Consistency.MonotonicReads:
+                    // almost always will read from the closest server
+                    prob = 1.0F;
+                    break;
+
+                case Consistency.Causal:
+                    // could possibly compute probability based on past performance and read/write ratio
+                    // for now, arbitrarily return 0.25
+                    prob = 0.25F;
+                    break;
+
+                case Consistency.Bounded:
+                case Consistency.BoundedMonotonicReads:
+                    // depends on the sync frequency
+                    if (bound >= config.GetSyncPeriod(server))
+                    {
+                        prob = 1.0F;
+                    }
+                    else
+                    {
+                        prob = bound / config.GetSyncPeriod(server);
+                    }
+                    break;
+
+                case Consistency.BoundedReadMyWrites:
+                case Consistency.BoundedSession:
+                    // depends on the sync frequency
+                    if (bound >= config.GetSyncPeriod(server))
+                    {
+                        prob = 0.5F;
+                    }
+                    else
+                    {
+                        prob = bound / config.GetSyncPeriod(server);
+                    }
+                    break;
+
+                case Consistency.Eventual:
+                    if (config.PrimaryServers.Contains(server) || config.SecondaryServers.Contains(server))
+                    {
+                        prob = 1.0F;
+                    }
+                    break;
+
+                default:
+                    prob = 0;
+                    break;
+            }
+
+            return prob;
         }
 
         protected void AppendToLogger(string log)
