@@ -1,6 +1,7 @@
 ﻿using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Pileus.Configuration;
 using Microsoft.WindowsAzure.Storage.Pileus.Utils;
+using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -137,28 +138,94 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
         }
 
         /// <summary>
+        /// Pings all servers to obtain their round-trips times and their high timestamps.
+        /// </summary>
+        public void PingTimestampsNow()
+        {
+            Stopwatch watch = new Stopwatch();
+            foreach (string server in configuration.SecondaryServers)
+            {
+                // if the server is not reached yet, we perform a dummy operation for it.
+                if (!replicas[server].IsContacted())
+                {
+                    try
+                    {
+                        //we perform a dummy operation to get the rtt latency!
+                        DateTimeOffset? serverTime = null;
+                        long rtt;
+                        if (server.EndsWith("-secondary") && configuration.PrimaryServers.Contains(server.Replace("-secondary", "")))
+                        {
+                            // get the server's last sync time from Azure
+                            // this call only works on Azure secondaries
+                            CloudBlobClient blobClient = ClientRegistry.GetCloudBlobClient(server);
+                            watch.Restart();
+                            ServiceStats stats = blobClient.GetServiceStats();
+                            rtt = watch.ElapsedMilliseconds;
+                            replicas[server].AddRtt(rtt);
+                            if (stats.GeoReplication.LastSyncTime.HasValue)
+                            {
+                                serverTime = stats.GeoReplication.LastSyncTime.Value;
+                            }
+                        }
+                        else
+                        {
+                            // get the server's last sync time from the container's metadata
+                            CloudBlobContainer blobContainer = ClientRegistry.GetCloudBlobContainer(server, configuration.Name);
+                            watch.Restart();
+                            blobContainer.FetchAttributes();
+                            rtt = watch.ElapsedMilliseconds;
+                            if (blobContainer.Metadata.ContainsKey("lastsync"))
+                            {
+                                //if no lastmodified time is provided in the constructor, we still try to be fast.
+                                //So, we check to see if by any chance the container previously has synchronized.
+                                serverTime = DateTimeOffset.Parse(blobContainer.Metadata["lastsync"]);
+                            }
+                        }
+                        if (serverTime.HasValue && serverTime > replicas[server].HighTime)
+                        {
+                            replicas[server].HighTime = serverTime.Value;
+                        }
+                    }
+                    catch (StorageException)
+                    {
+                        // do nothing
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Pings all servers to obtain their round-trips times and their high timestamps.
+        /// </summary>
+        public void PingNow()
+        {
+            Stopwatch watch = new Stopwatch();
+            foreach (string server in replicas.Keys)
+            {
+                // if the server is not reached yet, we perform a dummy operation for it.
+                if (!replicas[server].IsContacted())
+                {
+                    //we perform a dummy operation to get the rtt latency!
+                    CloudBlobClient blobClient = ClientRegistry.GetCloudBlobClient(server);
+                    long rtt;
+                    watch.Restart();
+                    blobClient.GetServiceProperties();
+                    rtt = watch.ElapsedMilliseconds;
+                    replicas[server].AddRtt(rtt);
+                }
+            }
+        }
+
+        /// <summary>
         /// Periodically pings servers. 
         /// This is fundamental for having a correct reconfiguration since each client needs to send its latency view of the whole system to the configurator.
         /// </summary>
         public void PeriodPing()
         {
-            Stopwatch watch = new Stopwatch();
             while (true)
             {
-                foreach (string server in replicas.Keys)
-                {
-                    // if the server is not reached yet, we perform a dummy operation for it.
-                    // TODO: Should really check whether it has been contacted recently
-                    if (!replicas[server].IsContacted())
-                    {
-                        //we perform a dummy operation to get the rtt latency!
-                        watch.Restart();
-                        ClientRegistry.GetCloudBlobClient(server).GetServiceProperties();
-                        long rtt = watch.ElapsedMilliseconds;
-                        replicas[server].AddRtt(rtt);
-                    }
-                }
-
+                PingTimestampsNow();
+                PingNow();
                 Thread.Sleep(ConstPool.LOOKUP_PING_INTERVAL);
             }
         }

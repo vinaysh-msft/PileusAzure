@@ -29,15 +29,25 @@ namespace TechFestDemo
         static int opsBetweenSyncs = 6;
         static int numBlobsToUse = 10;
         static int numBlobs = 1000;
+        static int boundInSeconds = 60;
 
         static string containerName = "democontainer";
 
         static string configStorageSite = "dbtsouthstorage";
 
+        // For when demo is run in California
         static List<string> PrimaryServers = new List<string>() { "dbteuropestorage" };
         static List<string> SecondaryServers = new List<string>() { "dbtwestusstorage", "dbteuropestorage-secondary", "dbtwestusstorage-secondary" };
-        static List<string> NonReplicaServers = new List<string>() { "dbtsouthstorage", "dbtsouthstorage-secondary", "dbtbrazilstorage", "dbteastasiastorage", "dbtjapanweststorage"/*, "dbtjapanweststorage-secondary"*/ };
+        static List<string> NonReplicaServers = new List<string>() { "dbtsouthstorage", "dbtsouthstorage-secondary", "dbtbrazilstorage", "dbteastasiastorage", "dbtjapanweststorage" };
         static List<string> ReadOnlySecondaryServers = new List<string>() { "dbteuropestorage-secondary", "dbtwestusstorage-secondary", "dbtsouthstorage-secondary", "dbtjapanweststorage-secondary" };
+
+        // For Paris demo 
+        /*
+        static List<string> PrimaryServers = new List<string>() { "dbtwestusstorage" };
+        static List<string> SecondaryServers = new List<string>() { "dbteuropestorage", "dbteuropestorage-secondary", "dbtwestusstorage-secondary" };
+        static List<string> NonReplicaServers = new List<string>() { "dbtsouthstorage", "dbtsouthstorage-secondary", "dbtbrazilstorage", "dbteastasiastorage", "dbtjapanweststorage" };
+        static List<string> ReadOnlySecondaryServers = new List<string>() { "dbteuropestorage-secondary", "dbtwestusstorage-secondary", "dbtsouthstorage-secondary", "dbtjapanweststorage-secondary" };
+        */
 
         static CapCloudBlobContainer container;
 
@@ -60,7 +70,8 @@ namespace TechFestDemo
         static bool cloudBackedConfiguration = true;  // could be either true or false for demo
         static bool stableConfiguration = true;  // should be set to true when running demo
 
-        static bool saveDataToFile = true;
+        static bool readDataFromFile = false;  // should  be true, except when the initial config changes
+        static bool saveDataToFile = true;  // should be true
         static string samplerFileName = "DemoData.txt";
 
         #endregion
@@ -100,7 +111,7 @@ namespace TechFestDemo
             slas = new Dictionary<string, ServiceLevelAgreement>();
             slas["strong"] = CreateConsistencySla(Consistency.Strong);
             slas["causal"] = CreateConsistencySla(Consistency.Causal);
-            slas["bounded"] = CreateBoundedConsistencySla(120);
+            slas["bounded"] = CreateBoundedConsistencySla(boundInSeconds);
             slas["readmywrites"] = CreateConsistencySla(Consistency.ReadMyWrites);
             slas["monotonic"] = CreateConsistencySla(Consistency.MonotonicReads);
             slas["eventual"] = CreateConsistencySla(Consistency.Eventual);
@@ -119,6 +130,7 @@ namespace TechFestDemo
             }
             container = new CapCloudBlobContainer(containers, PrimaryServers.First());
             container.Configuration = config;
+            container.Monitor = new ServerMonitor(config);
 
             configurator  = new Configurator(containerName);
         }
@@ -407,9 +419,9 @@ namespace TechFestDemo
         public static ServiceLevelAgreement CreateFastOrStrongSla()
         {
             ServiceLevelAgreement sla = new ServiceLevelAgreement("Fast or Strong");
-            SubSLA subSla1 = new SubSLA(150, Consistency.Strong, 0, 1);
-            SubSLA subSla2 = new SubSLA(150, Consistency.Bounded, 1, 0.8f);
-            SubSLA subSla3 = new SubSLA(150, Consistency.Eventual, 0, 0.5f);
+            SubSLA subSla1 = new SubSLA(100, Consistency.Strong, 0, 1);
+            SubSLA subSla2 = new SubSLA(100, Consistency.Bounded, boundInSeconds, 0.8f);
+            SubSLA subSla3 = new SubSLA(100, Consistency.Eventual, 0, 0.5f);
             SubSLA subSla4 = new SubSLA(2000, Consistency.Strong, 0, 0.25f);
             sla.Add(subSla1);
             sla.Add(subSla2);
@@ -540,12 +552,20 @@ namespace TechFestDemo
 
         public static string PrintReadWriteTimes(Sampler sampler)
         {
-            string result = null;
-            foreach (string cons in slas.Keys)
+            string result = "";
+            if (sampler.GetAllSampleValues("strongLatency") != null)
             {
-                result += cons + " read: " + sampler.GetSampleValue(cons + "Latency") + "\r\n";
+                result += "Number of reads = " + sampler.GetAllSampleValues("strongLatency").Count + "\r\n";
+                foreach (string cons in slas.Keys)
+                {
+                    result += cons + " read: " + sampler.GetSampleValue(cons + "Latency") + "\r\n";
+                }
             }
-            result += "write: " + sampler.GetSampleValue("WriteLatency");
+            if (sampler.GetAllSampleValues("WriteLatency") != null)
+            {
+                result += "Number of writes = " + sampler.GetAllSampleValues("WriteLatency").Count + "\r\n";
+                result += "write: " + sampler.GetSampleValue("WriteLatency");
+            }
             return result;
         }
 
@@ -572,14 +592,32 @@ namespace TechFestDemo
             {
                 foreach (ConfigurationAction act in proposedActions)
                 {
-                    result += "Chosen action for " + act.ModifyingContainer.Name.ToString() + ": ";
-                    result += act.GetType().Name.ToString() + " " + SiteName(act.ServerName) + "\r\n";
+                    result += "Chosen action for " + act.ModifyingContainer.Name.ToString() + ": \r\n";
+                    result += ReconfigActionText(act) + "\r\n";
                 }
+                result += "\r\n";
                 float gain = configurator.ComputeUtilityGainFromNewConfiguration(containerName, slas["sla"], container.Sessions["sla"], container.Monitor, config, proposedActions);
                 result += "expected utility gain is " + gain.ToString("F2") + "\r\n";
                 result += "expected cost is " + proposedActions.First().Cost.ToString("F2") + "\r\n";
             }
             return result;
+        }
+
+        private static string ReconfigActionText(ConfigurationAction act)
+        {
+            string text;
+            switch (act.GetType().Name)
+            {
+                case "MakeSoloPrimaryServer": text = "Move the primary site to " + SiteName(act.ServerName); break;
+                case "AddPrimaryServer": text = "Add a primary replica in " + SiteName(act.ServerName); break;
+                case "AddSecondaryServer": text = "Add a secondary replica in " + SiteName(act.ServerName); break;
+                case "AdjustSyncPeriod": text = "Reduce the sync period for site " + SiteName(act.ServerName); break;
+                case "DowngradePrimary": text = "Downgrade from primary to secondary site " + SiteName(act.ServerName); break;
+                case "RemoveSecondaryServer": text = "Remove the secondary replica in " + SiteName(act.ServerName); break;
+                default: text = act.GetType().Name + " " + SiteName(act.ServerName); break;
+            }
+            return text;
+
         }
 
         public static string SiteName(string server)
@@ -629,18 +667,32 @@ namespace TechFestDemo
 
         public static void ReadDataFile(Sampler sampler) 
         {
-            if (File.Exists(samplerFileName))
+            int lines = 0;
+            bool endOfFile = false;
+            if (readDataFromFile && File.Exists(samplerFileName))
             {
                 using (TextReader file = File.OpenText(samplerFileName))
                 {
-                    foreach (string cons in slas.Keys)
+                    do
                     {
-                        string line = file.ReadLine();
-                        if (line == null) return;  // end of file
-                        sampler.AddSample(cons + "Latency", float.Parse(line));
+                        foreach (string cons in slas.Keys)
+                        {
+                            string line = file.ReadLine();
+                            if (line == null)
+                            {
+                                endOfFile = true;
+                            }
+                            else
+                            {
+                                sampler.AddSample(cons + "Latency", float.Parse(line));
+                                lines++;
+                            }
+                        }
                     }
+                    while (!endOfFile);
                 }
             }
+            Log("Read " + lines + " samples");
         }
 
         public static void WriteDataFile(Sampler sampler)

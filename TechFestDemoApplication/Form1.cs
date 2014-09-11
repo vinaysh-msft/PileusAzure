@@ -20,7 +20,7 @@ namespace TechFestDemoApplication
 {
     public partial class Form1 : Form
     {
-        bool enableHitRate = false;
+        bool enableHitRate = true;
 
         Sampler initialSampler = null;
         Sampler reconfigSampler = null;
@@ -67,11 +67,11 @@ namespace TechFestDemoApplication
             initialSampler = DemoLib.NewSampler();
             reconfigSampler = DemoLib.NewSampler();
             DemoLib.ReadDataFile(initialSampler);
+            Print(DemoLib.PrintReadWriteTimes(initialSampler));
 
             // Ping servers to measure and record round-trip times in the server state
             Print("Pinging servers...");
             DemoLib.PingAllServers();
-            Print("");
             Print("Round-trip latencies to sites:");
             Print(DemoLib.PrintServerRTTs());
         }
@@ -249,15 +249,17 @@ namespace TechFestDemoApplication
             slaReadTime.Text = sampler.GetSampleValue("slaLatency").ToString("F2");
         }
 
-
+        // Load Chart button
         private void button1_Click(object sender, EventArgs e)
         {
             Sampler sampler = initialConfig ? initialSampler : reconfigSampler;
+            /*
             sampler = DemoLib.PerformReadsWritesSyncs(sampler);
             if (initialConfig)
                 initialSampler = sampler;
             else
                 reconfigSampler = sampler;
+             */
 
             this.chart1.Series["Latency"].Points.Clear();
             this.chart1.Series["Primary hit rate"].Points.Clear(); 
@@ -319,11 +321,12 @@ namespace TechFestDemoApplication
         {
             while (true)
             {
-                this.Invoke(new Action(() => { button1.PerformClick(); }));
+                this.Invoke(new Action(() => { buttonLoadChart.PerformClick(); }));
                 Thread.Sleep(100);
             }
         }
 
+        // Chart Refresh button
         private void button2_Click(object sender, EventArgs e)
         {
            Thread workedThread = new Thread(DrawChart);

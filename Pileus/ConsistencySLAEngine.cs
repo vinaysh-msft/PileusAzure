@@ -80,6 +80,16 @@ namespace Microsoft.WindowsAzure.Storage.Pileus
             foreach (SubSLA s in Sla)
             {
                 ServerUtility su = ComputeUtilityForSubSla(blobName, s);
+                if (su.Utility <= 0)
+                {
+                    if (s.Consistency == Consistency.Bounded || s.Consistency == Consistency.BoundedMonotonicReads
+                        || s.Consistency == Consistency.BoundedReadMyWrites || s.Consistency == Consistency.BoundedSession)
+                    {
+                        // no servers are believed to be sufficiently recent
+                        // so ping the servers to get their latest high timestamps
+                        Monitor.PingTimestampsNow();
+                    }
+                }
                 if (su.Utility > maxU)
                 {
                     chosenSLA = s;

@@ -28,14 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.chartTabPage = new System.Windows.Forms.TabPage();
             this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonLoadChart = new System.Windows.Forms.Button();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.logTabPage = new System.Windows.Forms.TabPage();
             this.logTextBox = new System.Windows.Forms.TextBox();
@@ -69,6 +69,14 @@
             this.readAgainButton = new System.Windows.Forms.Button();
             this.readButton = new System.Windows.Forms.Button();
             this.TabControl = new System.Windows.Forms.TabControl();
+            this.tabPageLatency = new System.Windows.Forms.TabPage();
+            this.buttonClearLatency = new System.Windows.Forms.Button();
+            this.buttonPingLatency = new System.Windows.Forms.Button();
+            this.buttonGetLatency = new System.Windows.Forms.Button();
+            this.labelLatencyTimes = new System.Windows.Forms.Label();
+            this.labelLatencySites = new System.Windows.Forms.Label();
+            this.listBoxLatencyTimes = new System.Windows.Forms.ListBox();
+            this.listBoxLatencySites = new System.Windows.Forms.ListBox();
             this.replicasTabPage = new System.Windows.Forms.TabPage();
             this.groupBoxBrazil = new System.Windows.Forms.GroupBox();
             this.radioButtonBrazilPrimary = new System.Windows.Forms.RadioButton();
@@ -112,14 +120,6 @@
             this.labelNorthCentralUS = new System.Windows.Forms.Label();
             this.labelEastUS = new System.Windows.Forms.Label();
             this.labelWestUS = new System.Windows.Forms.Label();
-            this.tabPageLatency = new System.Windows.Forms.TabPage();
-            this.buttonClearLatency = new System.Windows.Forms.Button();
-            this.buttonPingLatency = new System.Windows.Forms.Button();
-            this.buttonGetLatency = new System.Windows.Forms.Button();
-            this.labelLatencyTimes = new System.Windows.Forms.Label();
-            this.labelLatencySites = new System.Windows.Forms.Label();
-            this.listBoxLatencyTimes = new System.Windows.Forms.ListBox();
-            this.listBoxLatencySites = new System.Windows.Forms.ListBox();
             this.chartTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.logTabPage.SuspendLayout();
@@ -127,6 +127,7 @@
             this.slaTabPage.SuspendLayout();
             this.consistencyTabPage.SuspendLayout();
             this.TabControl.SuspendLayout();
+            this.tabPageLatency.SuspendLayout();
             this.replicasTabPage.SuspendLayout();
             this.groupBoxBrazil.SuspendLayout();
             this.groupBoxAsia.SuspendLayout();
@@ -136,13 +137,12 @@
             this.groupBoxSouthCentralUS.SuspendLayout();
             this.groupBoxEastUS.SuspendLayout();
             this.groupBoxWestUS.SuspendLayout();
-            this.tabPageLatency.SuspendLayout();
             this.SuspendLayout();
             // 
             // chartTabPage
             // 
             this.chartTabPage.Controls.Add(this.button2);
-            this.chartTabPage.Controls.Add(this.button1);
+            this.chartTabPage.Controls.Add(this.buttonLoadChart);
             this.chartTabPage.Controls.Add(this.chart1);
             this.chartTabPage.Location = new System.Drawing.Point(4, 29);
             this.chartTabPage.Name = "chartTabPage";
@@ -162,58 +162,58 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button1
+            // buttonLoadChart
             // 
-            this.button1.Location = new System.Drawing.Point(840, 65);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(135, 32);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Load chart";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonLoadChart.Location = new System.Drawing.Point(840, 65);
+            this.buttonLoadChart.Name = "buttonLoadChart";
+            this.buttonLoadChart.Size = new System.Drawing.Size(135, 32);
+            this.buttonLoadChart.TabIndex = 1;
+            this.buttonLoadChart.Text = "Load chart";
+            this.buttonLoadChart.UseVisualStyleBackColor = true;
+            this.buttonLoadChart.Click += new System.EventHandler(this.button1_Click);
             // 
             // chart1
             // 
-            chartArea4.AxisX.IsStartedFromZero = false;
-            chartArea4.AxisX.Title = "Consistency";
-            chartArea4.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            chartArea4.AxisY.Title = "Latency";
-            chartArea4.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            chartArea4.AxisY2.MajorGrid.Enabled = false;
-            chartArea4.AxisY2.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
-            chartArea4.AxisY2.Title = "Primary hit rate (%)";
-            chartArea4.AxisY2.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            chartArea4.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea4);
-            legend4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend4.Enabled = false;
-            legend4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            legend4.IsDockedInsideChartArea = false;
-            legend4.IsTextAutoFit = false;
-            legend4.Name = "Latency";
-            legend4.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.chart1.Legends.Add(legend4);
+            chartArea1.AxisX.IsStartedFromZero = false;
+            chartArea1.AxisX.Title = "Consistency";
+            chartArea1.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            chartArea1.AxisY.Title = "Latency";
+            chartArea1.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            chartArea1.AxisY2.MajorGrid.Enabled = false;
+            chartArea1.AxisY2.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
+            chartArea1.AxisY2.Title = "Primary hit rate (%)";
+            chartArea1.AxisY2.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend1.Enabled = false;
+            legend1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            legend1.IsDockedInsideChartArea = false;
+            legend1.IsTextAutoFit = false;
+            legend1.Name = "Latency";
+            legend1.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.chart1.Legends.Add(legend1);
             this.chart1.Location = new System.Drawing.Point(38, 6);
             this.chart1.Name = "chart1";
-            series7.ChartArea = "ChartArea1";
-            series7.Legend = "Latency";
-            series7.Name = "Latency";
-            series7.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
-            series8.ChartArea = "ChartArea1";
-            series8.IsVisibleInLegend = false;
-            series8.Legend = "Latency";
-            series8.Name = "Primary hit rate";
-            series8.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
-            series8.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            this.chart1.Series.Add(series7);
-            this.chart1.Series.Add(series8);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Latency";
+            series1.Name = "Latency";
+            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
+            series2.ChartArea = "ChartArea1";
+            series2.IsVisibleInLegend = false;
+            series2.Legend = "Latency";
+            series2.Name = "Primary hit rate";
+            series2.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
+            series2.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.chart1.Series.Add(series1);
+            this.chart1.Series.Add(series2);
             this.chart1.Size = new System.Drawing.Size(786, 568);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
-            title4.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            title4.Name = "Title1";
-            title4.Text = "Consistency - Latency Tradeoff";
-            this.chart1.Titles.Add(title4);
+            title1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            title1.Name = "Title1";
+            title1.Text = "Consistency - Latency Tradeoff";
+            this.chart1.Titles.Add(title1);
             this.chart1.Click += new System.EventHandler(this.chart1_Click);
             // 
             // logTabPage
@@ -583,6 +583,100 @@
             this.TabControl.SelectedIndex = 0;
             this.TabControl.Size = new System.Drawing.Size(1012, 607);
             this.TabControl.TabIndex = 0;
+            // 
+            // tabPageLatency
+            // 
+            this.tabPageLatency.Controls.Add(this.buttonClearLatency);
+            this.tabPageLatency.Controls.Add(this.buttonPingLatency);
+            this.tabPageLatency.Controls.Add(this.buttonGetLatency);
+            this.tabPageLatency.Controls.Add(this.labelLatencyTimes);
+            this.tabPageLatency.Controls.Add(this.labelLatencySites);
+            this.tabPageLatency.Controls.Add(this.listBoxLatencyTimes);
+            this.tabPageLatency.Controls.Add(this.listBoxLatencySites);
+            this.tabPageLatency.Location = new System.Drawing.Point(4, 29);
+            this.tabPageLatency.Name = "tabPageLatency";
+            this.tabPageLatency.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageLatency.Size = new System.Drawing.Size(1004, 574);
+            this.tabPageLatency.TabIndex = 6;
+            this.tabPageLatency.Text = "Latency";
+            this.tabPageLatency.UseVisualStyleBackColor = true;
+            // 
+            // buttonClearLatency
+            // 
+            this.buttonClearLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonClearLatency.Location = new System.Drawing.Point(296, 31);
+            this.buttonClearLatency.Name = "buttonClearLatency";
+            this.buttonClearLatency.Size = new System.Drawing.Size(107, 35);
+            this.buttonClearLatency.TabIndex = 14;
+            this.buttonClearLatency.Text = "Clear";
+            this.buttonClearLatency.UseVisualStyleBackColor = true;
+            this.buttonClearLatency.Click += new System.EventHandler(this.buttonClearLatency_Click);
+            // 
+            // buttonPingLatency
+            // 
+            this.buttonPingLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonPingLatency.Location = new System.Drawing.Point(169, 31);
+            this.buttonPingLatency.Name = "buttonPingLatency";
+            this.buttonPingLatency.Size = new System.Drawing.Size(112, 35);
+            this.buttonPingLatency.TabIndex = 13;
+            this.buttonPingLatency.Text = "Ping";
+            this.buttonPingLatency.UseVisualStyleBackColor = true;
+            this.buttonPingLatency.Click += new System.EventHandler(this.buttonPingLatency_Click);
+            // 
+            // buttonGetLatency
+            // 
+            this.buttonGetLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonGetLatency.Location = new System.Drawing.Point(53, 31);
+            this.buttonGetLatency.Name = "buttonGetLatency";
+            this.buttonGetLatency.Size = new System.Drawing.Size(102, 35);
+            this.buttonGetLatency.TabIndex = 12;
+            this.buttonGetLatency.Text = "Get";
+            this.buttonGetLatency.UseVisualStyleBackColor = true;
+            this.buttonGetLatency.Click += new System.EventHandler(this.buttonGetLatency_Click);
+            // 
+            // labelLatencyTimes
+            // 
+            this.labelLatencyTimes.AutoSize = true;
+            this.labelLatencyTimes.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLatencyTimes.Location = new System.Drawing.Point(498, 95);
+            this.labelLatencyTimes.Name = "labelLatencyTimes";
+            this.labelLatencyTimes.Size = new System.Drawing.Size(202, 26);
+            this.labelLatencyTimes.TabIndex = 11;
+            this.labelLatencyTimes.Text = "round-trip time (ms)";
+            // 
+            // labelLatencySites
+            // 
+            this.labelLatencySites.AutoSize = true;
+            this.labelLatencySites.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLatencySites.Location = new System.Drawing.Point(138, 95);
+            this.labelLatencySites.Name = "labelLatencySites";
+            this.labelLatencySites.Size = new System.Drawing.Size(57, 26);
+            this.labelLatencySites.TabIndex = 10;
+            this.labelLatencySites.Text = "sites";
+            // 
+            // listBoxLatencyTimes
+            // 
+            this.listBoxLatencyTimes.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listBoxLatencyTimes.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listBoxLatencyTimes.FormattingEnabled = true;
+            this.listBoxLatencyTimes.ItemHeight = 37;
+            this.listBoxLatencyTimes.Location = new System.Drawing.Point(524, 130);
+            this.listBoxLatencyTimes.Name = "listBoxLatencyTimes";
+            this.listBoxLatencyTimes.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.listBoxLatencyTimes.Size = new System.Drawing.Size(187, 370);
+            this.listBoxLatencyTimes.TabIndex = 9;
+            // 
+            // listBoxLatencySites
+            // 
+            this.listBoxLatencySites.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listBoxLatencySites.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listBoxLatencySites.FormattingEnabled = true;
+            this.listBoxLatencySites.IntegralHeight = false;
+            this.listBoxLatencySites.ItemHeight = 37;
+            this.listBoxLatencySites.Location = new System.Drawing.Point(135, 130);
+            this.listBoxLatencySites.Name = "listBoxLatencySites";
+            this.listBoxLatencySites.Size = new System.Drawing.Size(370, 401);
+            this.listBoxLatencySites.TabIndex = 8;
             // 
             // replicasTabPage
             // 
@@ -1123,100 +1217,6 @@
             this.labelWestUS.TabIndex = 4;
             this.labelWestUS.Text = "West US";
             // 
-            // tabPageLatency
-            // 
-            this.tabPageLatency.Controls.Add(this.buttonClearLatency);
-            this.tabPageLatency.Controls.Add(this.buttonPingLatency);
-            this.tabPageLatency.Controls.Add(this.buttonGetLatency);
-            this.tabPageLatency.Controls.Add(this.labelLatencyTimes);
-            this.tabPageLatency.Controls.Add(this.labelLatencySites);
-            this.tabPageLatency.Controls.Add(this.listBoxLatencyTimes);
-            this.tabPageLatency.Controls.Add(this.listBoxLatencySites);
-            this.tabPageLatency.Location = new System.Drawing.Point(4, 29);
-            this.tabPageLatency.Name = "tabPageLatency";
-            this.tabPageLatency.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageLatency.Size = new System.Drawing.Size(1004, 574);
-            this.tabPageLatency.TabIndex = 6;
-            this.tabPageLatency.Text = "Latency";
-            this.tabPageLatency.UseVisualStyleBackColor = true;
-            // 
-            // buttonClearLatency
-            // 
-            this.buttonClearLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonClearLatency.Location = new System.Drawing.Point(296, 31);
-            this.buttonClearLatency.Name = "buttonClearLatency";
-            this.buttonClearLatency.Size = new System.Drawing.Size(107, 35);
-            this.buttonClearLatency.TabIndex = 14;
-            this.buttonClearLatency.Text = "Clear";
-            this.buttonClearLatency.UseVisualStyleBackColor = true;
-            this.buttonClearLatency.Click += new System.EventHandler(this.buttonClearLatency_Click);
-            // 
-            // buttonPingLatency
-            // 
-            this.buttonPingLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonPingLatency.Location = new System.Drawing.Point(169, 31);
-            this.buttonPingLatency.Name = "buttonPingLatency";
-            this.buttonPingLatency.Size = new System.Drawing.Size(112, 35);
-            this.buttonPingLatency.TabIndex = 13;
-            this.buttonPingLatency.Text = "Ping";
-            this.buttonPingLatency.UseVisualStyleBackColor = true;
-            this.buttonPingLatency.Click += new System.EventHandler(this.buttonPingLatency_Click);
-            // 
-            // buttonGetLatency
-            // 
-            this.buttonGetLatency.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonGetLatency.Location = new System.Drawing.Point(53, 31);
-            this.buttonGetLatency.Name = "buttonGetLatency";
-            this.buttonGetLatency.Size = new System.Drawing.Size(102, 35);
-            this.buttonGetLatency.TabIndex = 12;
-            this.buttonGetLatency.Text = "Get";
-            this.buttonGetLatency.UseVisualStyleBackColor = true;
-            this.buttonGetLatency.Click += new System.EventHandler(this.buttonGetLatency_Click);
-            // 
-            // labelLatencyTimes
-            // 
-            this.labelLatencyTimes.AutoSize = true;
-            this.labelLatencyTimes.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelLatencyTimes.Location = new System.Drawing.Point(498, 95);
-            this.labelLatencyTimes.Name = "labelLatencyTimes";
-            this.labelLatencyTimes.Size = new System.Drawing.Size(202, 26);
-            this.labelLatencyTimes.TabIndex = 11;
-            this.labelLatencyTimes.Text = "round-trip time (ms)";
-            // 
-            // labelLatencySites
-            // 
-            this.labelLatencySites.AutoSize = true;
-            this.labelLatencySites.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelLatencySites.Location = new System.Drawing.Point(138, 95);
-            this.labelLatencySites.Name = "labelLatencySites";
-            this.labelLatencySites.Size = new System.Drawing.Size(57, 26);
-            this.labelLatencySites.TabIndex = 10;
-            this.labelLatencySites.Text = "sites";
-            // 
-            // listBoxLatencyTimes
-            // 
-            this.listBoxLatencyTimes.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listBoxLatencyTimes.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listBoxLatencyTimes.FormattingEnabled = true;
-            this.listBoxLatencyTimes.ItemHeight = 37;
-            this.listBoxLatencyTimes.Location = new System.Drawing.Point(524, 130);
-            this.listBoxLatencyTimes.Name = "listBoxLatencyTimes";
-            this.listBoxLatencyTimes.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.listBoxLatencyTimes.Size = new System.Drawing.Size(187, 370);
-            this.listBoxLatencyTimes.TabIndex = 9;
-            // 
-            // listBoxLatencySites
-            // 
-            this.listBoxLatencySites.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listBoxLatencySites.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listBoxLatencySites.FormattingEnabled = true;
-            this.listBoxLatencySites.IntegralHeight = false;
-            this.listBoxLatencySites.ItemHeight = 37;
-            this.listBoxLatencySites.Location = new System.Drawing.Point(135, 130);
-            this.listBoxLatencySites.Name = "listBoxLatencySites";
-            this.listBoxLatencySites.Size = new System.Drawing.Size(370, 401);
-            this.listBoxLatencySites.TabIndex = 8;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1236,6 +1236,8 @@
             this.consistencyTabPage.ResumeLayout(false);
             this.consistencyTabPage.PerformLayout();
             this.TabControl.ResumeLayout(false);
+            this.tabPageLatency.ResumeLayout(false);
+            this.tabPageLatency.PerformLayout();
             this.replicasTabPage.ResumeLayout(false);
             this.replicasTabPage.PerformLayout();
             this.groupBoxBrazil.ResumeLayout(false);
@@ -1254,8 +1256,6 @@
             this.groupBoxEastUS.PerformLayout();
             this.groupBoxWestUS.ResumeLayout(false);
             this.groupBoxWestUS.PerformLayout();
-            this.tabPageLatency.ResumeLayout(false);
-            this.tabPageLatency.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1290,7 +1290,7 @@
         private System.Windows.Forms.Button readAgainButton;
         private System.Windows.Forms.Button readButton;
         private System.Windows.Forms.TabControl TabControl;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonLoadChart;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label readtimelabel;
         private System.Windows.Forms.Label readconsistencylabel;
